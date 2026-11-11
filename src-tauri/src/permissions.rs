@@ -66,6 +66,61 @@ fn which(bin: &str) -> bool {
 pub fn open_settings() {
     #[cfg(target_os = "macos")]
     {
+        // Registers the app in the Accessibility list (and shows the system prompt);
+        // merely opening the pane would leave the user to find and add the app by hand.
+        macos::prompt_accessibility();
         let _ = handy_keys::open_accessibility_settings();
+    }
+}
+
+#[cfg(target_os = "macos")]
+mod macos {
+    use std::ffi::c_void;
+
+    type CFTypeRef = *const c_void;
+
+    #[repr(C)]
+    struct CFDictionaryCallBacks([usize; 6]);
+
+    #[link(name = "CoreFoundation", kind = "framework")]
+    extern "C" {
+        static kCFBooleanTrue: CFTypeRef;
+        static kCFTypeDictionaryKeyCallBacks: CFDictionaryCallBacks;
+        static kCFTypeDictionaryValueCallBacks: CFDictionaryCallBacks;
+        fn CFDictionaryCreate(
+            allocator: CFTypeRef,
+            keys: *const CFTypeRef,
+            values: *const CFTypeRef,
+            count: isize,
+            key_callbacks: *const CFDictionaryCallBacks,
+            value_callbacks: *const CFDictionaryCallBacks,
+        ) -> CFTypeRef;
+        fn CFRelease(cf: CFTypeRef);
+    }
+
+    #[link(name = "ApplicationServices", kind = "framework")]
+    extern "C" {
+        static kAXTrustedCheckOptionPrompt: CFTypeRef;
+        fn AXIsProcessTrustedWithOptions(options: CFTypeRef) -> bool;
+    }
+
+    pub fn prompt_accessibility() -> bool {
+        unsafe {
+            let keys = [kAXTrustedCheckOptionPrompt];
+            let values = [kCFBooleanTrue];
+            let dict = CFDictionaryCreate(
+                std::ptr::null(),
+                keys.as_ptr(),
+                values.as_ptr(),
+                1,
+                &kCFTypeDictionaryKeyCallBacks,
+                &kCFTypeDictionaryValueCallBacks,
+            );
+            let trusted = AXIsProcessTrustedWithOptions(dict);
+            if !dict.is_null() {
+                CFRelease(dict);
+            }
+            trusted
+        }
     }
 }

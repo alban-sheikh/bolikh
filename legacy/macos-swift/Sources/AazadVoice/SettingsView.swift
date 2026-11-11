@@ -36,6 +36,7 @@ private struct GeneralTab: View {
             }
             Section("Output") {
                 Toggle("Add a space after each dictation", isOn: $settings.addTrailingSpace)
+                Toggle("Remove filler words (um, uh, hmm)", isOn: $settings.removeFillers)
                 Toggle("Voice commands (“new line”, “new paragraph”)", isOn: $settings.voiceCommands)
                 Toggle("Restore my clipboard after pasting", isOn: $settings.restoreClipboard)
             }

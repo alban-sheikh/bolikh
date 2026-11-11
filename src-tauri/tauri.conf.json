@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Aazad Voice",
+  "version": "0.2.0",
+  "identifier": "com.aazad.voice",
+  "build": {
+    "frontendDist": "../ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Aazad Voice",
+        "url": "index.html",
+        "width": 860,
+        "height": 600,
+        "minWidth": 760,
+        "minHeight": 540,
+        "visible": false,
+        "center": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Aazad",
+    "copyright": "© 2026 Aazad. All rights reserved.",
+    "category": "Productivity",
+    "shortDescription": "Private, offline dictation for every app",
+    "longDescription": "Hold a key, speak, and your words are typed into any app. Speech recognition runs entirely on your computer with NVIDIA Parakeet v3. No cloud, no account.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "Entitlements.plist"
+    },
+    "linux": {
+      "deb": {
+        "depends": ["libasound2"],
+        "recommends": ["wtype"]
+      }
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

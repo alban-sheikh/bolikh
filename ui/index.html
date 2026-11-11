@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aazad Voice</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7M8 11h5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V12M14 11.5V6a1.5 1.5 0 0 1 3 0v8a7 7 0 0 1-7 7h-.5A6.5 6.5 0 0 1 4 15.5V12a1.5 1.5 0 0 1 3 0v1"/></symbol>
+    <symbol id="i-return" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5v7a3 3 0 0 1-3 3H5M9 11l-4 4 4 4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><img src="icon.png" alt="" /><div><b>Aazad Voice</b><span>Offline dictation</span></div></div>
+      <nav class="nav">
+        <button data-page="home" class="active"><svg><use href="#i-home"/></svg><span>Home</span></button>
+        <button data-page="general"><svg><use href="#i-sliders"/></svg><span>Settings</span></button>
+        <button data-page="dictionary"><svg><use href="#i-book"/></svg><span>Dictionary</span></button>
+        <button data-page="history"><svg><use href="#i-clock"/></svg><span>History</span></button>
+        <button data-page="about"><svg><use href="#i-info"/></svg><span>About</span></button>
+      </nav>
+      <div class="spacer"></div>
+      <div class="privacy-chip"><b>100% on-device</b>Your voice never leaves this computer.</div>
+    </aside>
+
+    <main class="main">
+      <div class="drag" data-tauri-drag-region></div>
+
+      <!-- Home -->
+      <section class="page active" id="page-home">
+        <div class="card hero">
+          <div class="state"><span class="dot" id="hero-dot"></span><span id="hero-state">Starting…</span></div>
+          <h2 class="big" id="hero-title">Hold <span class="kbd" data-trigger>Right ⌥</span> and speak</h2>
+          <p id="hero-sub">Release to type into whatever app you're using. Quick-tap for hands-free, Esc to cancel.</p>
+          <div id="hero-progress" style="display:none;margin-top:16px;max-width:420px">
+            <div class="progress"><i id="hero-bar"></i></div>
+          </div>
+          <div id="hero-actions" style="margin-top:16px;display:none"></div>
+          <div class="hero-wave" aria-hidden="true">
+            <i style="height:28px;animation-delay:-.1s"></i><i style="height:46px;animation-delay:-.5s"></i><i style="height:64px;animation-delay:-.3s"></i>
+            <i style="height:40px;animation-delay:-.8s"></i><i style="height:56px;animation-delay:-.2s"></i><i style="height:30px;animation-delay:-.6s"></i>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="card stat"><b id="st-words">0</b><span>words dictated</span></div>
+          <div class="card stat"><b id="st-sessions">0</b><span>dictations</span></div>
+          <div class="card stat"><b id="st-saved">0 min</b><span>saved vs typing</span></div>
+        </div>
+        <h2>Tips</h2>
+        <div class="tips">
+          <div class="card tip"><div class="ico"><svg><use href="#i-hand"/></svg></div><div><b>Hands-free</b><span>Tap the key once, talk as long as you like, tap again to finish.</span></div></div>
+          <div class="card tip"><div class="ico"><svg><use href="#i-return"/></svg></div><div><b>Formatting</b><span>Say "new line" or "new paragraph". Punctuation is automatic.</span></div></div>
+          <div class="card tip"><div class="ico"><svg><use href="#i-book"/></svg></div><div><b>Names &amp; jargon</b><span>Teach spellings in Dictionary, e.g. "azad" → "Aazad".</span></div></div>
+          <div class="card tip"><div class="ico"><svg><use href="#i-x"/></svg></div><div><b>Changed your mind?</b><span>Press Esc while recording and nothing is typed.</span></div></div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section class="page" id="page-general">
+        <h1>Settings</h1>
+        <p class="sub">Choose how you trigger dictation and what gets typed.</p>
+        <h2>Shortcut</h2>
+        <div class="card rows">
+          <div class="row"><div class="label"><b>Dictation key</b><span>A modifier key you rarely use on its own.</span></div><select id="trigger"></select></div>
+          <div class="row"><div class="label"><b>Behaviour</b><span id="mode-help"></span></div>
+            <div class="seg" id="mode"><button data-v="smart">Smart</button><button data-v="hold">Hold</button><button data-v="toggle">Toggle</button></div></div>
+        </div>
+        <h2>Output</h2>
+        <div class="card rows">
+          <div class="row"><div class="label"><b>Remove filler words</b><span>Strips "um", "uh", "hmm" from what you say.</span></div><label class="switch"><input type="checkbox" data-key="removeFillers"><i></i></label></div>
+          <div class="row"><div class="label"><b>Voice commands</b><span>"new line" and "new paragraph" become line breaks.</span></div><label class="switch"><input type="checkbox" data-key="voiceCommands"><i></i></label></div>
+          <div class="row"><div class="label"><b>Add a space after each dictation</b><span>So consecutive dictations flow naturally.</span></div><label class="switch"><input type="checkbox" data-key="addTrailingSpace"><i></i></label></div>
+          <div class="row"><div class="label"><b>Restore clipboard</b><span>Put back what you had copied after the text is inserted.</span></div><label class="switch"><input type="checkbox" data-key="restoreClipboard"><i></i></label></div>
+        </div>
+        <h2>App</h2>
+        <div class="card rows">
+          <div class="row"><div class="label"><b>Sound effects</b><span>Subtle tones when recording starts and stops.</span></div><label class="switch"><input type="checkbox" data-key="playSounds"><i></i></label></div>
+          <div class="row"><div class="label"><b>Keep history</b><span>Stored only on this computer.</span></div><label class="switch"><input type="checkbox" data-key="keepHistory"><i></i></label></div>
+          <div class="row"><div class="label"><b>Launch at login</b><span>Start Aazad Voice in the background when you sign in.</span></div><label class="switch"><input type="checkbox" id="autostart"><i></i></label></div>
+        </div>
+        <h2>Status</h2>
+        <div class="card rows" id="status-rows"></div>
+      </section>
+
+      <!-- Dictionary -->
+      <section class="page" id="page-dictionary">
+        <h1>Dictionary</h1>
+        <p class="sub">Fix words the model gets wrong, or create spoken shortcuts.</p>
+        <div class="card add-row">
+          <input type="text" id="dict-from" placeholder="When I say…" />
+          <span class="arrow">→</span>
+          <input type="text" id="dict-to" placeholder="Write…" />
+          <button class="btn primary small" id="dict-add">Add</button>
+        </div>
+        <div class="card list" id="dict-list" style="margin-top:14px"></div>
+      </section>
+
+      <!-- History -->
+      <section class="page" id="page-history">
+        <h1>History</h1>
+        <p class="sub">Your recent dictations. Stored only on this computer.</p>
+        <div class="toolbar"><span id="hist-summary"></span><button class="btn small danger" id="hist-clear">Clear history</button></div>
+        <div class="card list" id="hist-list"></div>
+      </section>
+
+      <!-- About -->
+      <section class="page" id="page-about">
+        <div class="card about">
+          <img src="icon.png" alt="" />
+          <h1>Aazad Voice</h1>
+          <p class="sub" id="about-version"></p>
+          <p>Private, offline dictation for every app.<br />Speech recognition runs entirely on this computer.</p>
+          <div class="legal" style="margin-top:22px">
+            Speech model: NVIDIA Parakeet TDT 0.6B v3, licensed CC-BY-4.0<br />
+            ONNX export by istupakov · Runtime: ONNX Runtime (MIT) · transcribe-rs (MIT)<br />
+            Built with Tauri (MIT/Apache-2.0)
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Onboarding -->
+  <div class="onboarding" id="onboarding">
+    <div class="drag" data-tauri-drag-region></div>
+    <div class="ob-inner">
+      <div class="ob-head">
+        <img src="icon.png" alt="" />
+        <h1>Welcome to Aazad Voice</h1>
+        <p class="sub" style="margin:0">Speak anywhere on your computer. 100% on-device.</p>
+      </div>
+      <div class="steps" id="ob-steps"></div>
+      <div class="ob-foot">
+        <span id="ob-hint"></span>
+        <button class="btn primary" id="ob-done">Finish later</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

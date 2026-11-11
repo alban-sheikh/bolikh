@@ -1,0 +1,71 @@
+//! What the OS requires before global hotkeys and auto-paste can work.
+use serde::Serialize;
+
+#[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Permissions {
+    pub os: &'static str,
+    /// macOS: Accessibility (global key listening + simulated paste). Always true elsewhere.
+    pub accessibility: bool,
+    /// Linux: read access to /dev/input (needed for the global hotkey on X11 and Wayland).
+    pub input_devices: bool,
+    /// Linux Wayland: a tool that can type the paste shortcut (wtype or ydotool).
+    pub wayland_paste_tool: bool,
+    pub wayland: bool,
+}
+
+pub fn os_name() -> &'static str {
+    if cfg!(target_os = "macos") {
+        "macos"
+    } else if cfg!(target_os = "windows") {
+        "windows"
+    } else {
+        "linux"
+    }
+}
+
+pub fn check() -> Permissions {
+    #[cfg(target_os = "macos")]
+    let accessibility = handy_keys::check_accessibility();
+    #[cfg(not(target_os = "macos"))]
+    let accessibility = true;
+
+    #[cfg(target_os = "linux")]
+    let (input_devices, wayland, wayland_paste_tool) = {
+        let readable = std::fs::read_dir("/dev/input")
+            .map(|rd| {
+                rd.flatten().any(|e| {
+                    e.file_name().to_string_lossy().starts_with("event")
+                        && std::fs::File::open(e.path()).is_ok()
+                })
+            })
+            .unwrap_or(false);
+        let wayland = std::env::var_os("WAYLAND_DISPLAY").is_some();
+        let tool = which("wtype") || which("ydotool");
+        (readable, wayland, tool)
+    };
+    #[cfg(not(target_os = "linux"))]
+    let (input_devices, wayland, wayland_paste_tool) = (true, false, true);
+
+    Permissions { os: os_name(), accessibility, input_devices, wayland_paste_tool, wayland }
+}
+
+impl Permissions {
+    pub fn all_ok(&self) -> bool {
+        self.accessibility && self.input_devices && (!self.wayland || self.wayland_paste_tool)
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn which(bin: &str) -> bool {
+    std::env::var_os("PATH")
+        .map(|p| std::env::split_paths(&p).any(|d| d.join(bin).is_file()))
+        .unwrap_or(false)
+}
+
+pub fn open_settings() {
+    #[cfg(target_os = "macos")]
+    {
+        let _ = handy_keys::open_accessibility_settings();
+    }
+}

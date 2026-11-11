@@ -84,6 +84,7 @@ final class AppSettings: ObservableObject {
     @Published var addTrailingSpace: Bool { didSet { save(addTrailingSpace, "addTrailingSpace") } }
     @Published var restoreClipboard: Bool { didSet { save(restoreClipboard, "restoreClipboard") } }
     @Published var voiceCommands: Bool { didSet { save(voiceCommands, "voiceCommands") } }
+    @Published var removeFillers: Bool { didSet { save(removeFillers, "removeFillers") } }
     @Published var keepHistory: Bool { didSet { save(keepHistory, "keepHistory") } }
     @Published var hasCompletedOnboarding: Bool { didSet { save(hasCompletedOnboarding, "onboarded") } }
     @Published var replacements: [Replacement] {
@@ -98,6 +99,7 @@ final class AppSettings: ObservableObject {
             "addTrailingSpace": true,
             "restoreClipboard": true,
             "voiceCommands": true,
+            "removeFillers": true,
             "keepHistory": true,
             "onboarded": false,
         ])
@@ -107,6 +109,7 @@ final class AppSettings: ObservableObject {
         addTrailingSpace = defaults.bool(forKey: "addTrailingSpace")
         restoreClipboard = defaults.bool(forKey: "restoreClipboard")
         voiceCommands = defaults.bool(forKey: "voiceCommands")
+        removeFillers = defaults.bool(forKey: "removeFillers")
         keepHistory = defaults.bool(forKey: "keepHistory")
         hasCompletedOnboarding = defaults.bool(forKey: "onboarded")
         if let data = defaults.data(forKey: "replacements"),

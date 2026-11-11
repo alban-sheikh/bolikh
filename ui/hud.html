@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Aazad Voice HUD</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+    body {
+      display: flex; align-items: center; justify-content: center;
+      font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", Ubuntu, sans-serif;
+      color: rgba(255, 255, 255, 0.92); -webkit-font-smoothing: antialiased;
+      user-select: none; cursor: default;
+    }
+    .pill {
+      height: 46px; padding: 0 18px; border-radius: 23px;
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(14, 14, 24, 0.86);
+      backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      opacity: 0; transform: translateY(10px) scale(0.92);
+      transition: opacity .2s ease, transform .3s cubic-bezier(.2, .9, .3, 1.2);
+    }
+    .pill.show { opacity: 1; transform: none; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #ff4a52; box-shadow: 0 0 8px rgba(255, 74, 82, 0.8); animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 50% { transform: scale(.75); box-shadow: 0 0 2px rgba(255, 74, 82, 0.6); } }
+    .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); border-top-color: #fff; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .bars { display: flex; align-items: center; gap: 3px; height: 24px; }
+    .bars i { width: 3px; height: 3px; border-radius: 2px; background: linear-gradient(#bf9bff, #8cc4ff); transition: height .08s ease-out; }
+    .time { font: 500 12px ui-monospace, "SF Mono", Consolas, monospace; color: rgba(255,255,255,.65); min-width: 30px; }
+    .tag { font-size: 10.5px; font-weight: 650; padding: 2px 7px; border-radius: 99px; background: rgba(255,255,255,.14); }
+    .msg { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="pill" id="pill">
+    <span class="dot" id="dot"></span>
+    <span class="spin" id="spin" hidden></span>
+    <span class="bars" id="bars"></span>
+    <span class="time" id="time">0:00</span>
+    <span class="tag" id="tag" hidden>hands-free</span>
+    <span class="msg" id="msg" hidden></span>
+  </div>
+  <script>
+    const { listen } = window.__TAURI__.event;
+    const $ = (id) => document.getElementById(id);
+    const N = 26;
+    const levels = new Array(N).fill(0);
+    for (let i = 0; i < N; i++) $("bars").append(document.createElement("i"));
+    const bars = [...$("bars").children];
+    let started = 0, timer = null, hideTimer = null;
+
+    function draw() {
+      bars.forEach((b, i) => (b.style.height = Math.max(3, levels[i] * 24) + "px"));
+    }
+    function tick() {
+      const s = Math.floor((Date.now() - started) / 1000);
+      $("time").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    }
+
+    // Short synthesized tones; no audio files needed.
+    let ctx;
+    function tone(kind) {
+      try {
+        ctx = ctx || new AudioContext();
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        const t = ctx.currentTime;
+        const [f1, f2] = kind === "start" ? [660, 990] : [880, 590];
+        o.type = "sine";
+        o.frequency.setValueAtTime(f1, t);
+        o.frequency.exponentialRampToValueAtTime(f2, t + 0.09);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.12, t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+        o.connect(g).connect(ctx.destination);
+        o.start(t); o.stop(t + 0.18);
+      } catch (_) {}
+    }
+
+    function set(phase, text) {
+      clearTimeout(hideTimer);
+      const recording = phase === "listening" || phase === "handsFree";
+      $("dot").hidden = !recording;
+      $("bars").hidden = !recording;
+      $("time").hidden = !recording;
+      $("tag").hidden = phase !== "handsFree";
+      $("spin").hidden = phase !== "transcribing";
+      $("msg").hidden = !(phase === "transcribing" || phase === "message");
+      $("msg").textContent = phase === "transcribing" ? "Transcribing…" : text || "";
+      if (recording && !timer) {
+        started = Date.now(); levels.fill(0); draw(); tick();
+        timer = setInterval(tick, 500);
+      }
+      if (!recording) { clearInterval(timer); timer = null; }
+      $("pill").classList.toggle("show", phase !== "hidden");
+      if (phase === "message") hideTimer = setTimeout(() => set("hidden"), 2200);
+    }
+
+    listen("hud", (e) => {
+      const { phase, text, sound } = e.payload;
+      if (sound) tone(sound);
+      set(phase, text);
+    });
+    listen("level", (e) => {
+      levels.shift(); levels.push(e.payload); draw();
+    });
+  </script>
+</body>
+</html>

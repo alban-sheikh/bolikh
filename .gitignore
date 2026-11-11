@@ -1,6 +1,7 @@
-.build/
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+legacy/macos-swift/.build/
 build/
 dist/
-.swiftpm/
-*.xcodeproj
 .DS_Store

@@ -1,73 +1,67 @@
 # Aazad Voice
 
-**Private, offline dictation for every app on your Mac.**
-Hold a key, speak, let go — your words are typed into whatever text field you're in: Slack, Mail, VS Code, Chrome, Notes, terminals, anything.
+**Private, offline dictation for every app, on macOS, Windows and Linux.**
+Hold a key, speak, let go: your words are typed into whatever text field you're in. Slack, Gmail, VS Code, Word, terminals, anything.
 
-- **100 % on-device.** Speech recognition runs on the Apple Neural Engine. No account, no cloud, no telemetry. Audio is never written to disk.
-- **Fast.** ~10 s of speech transcribes in under 0.1 s on Apple Silicon (M5 Pro measurement).
-- **Accurate & multilingual.** NVIDIA Parakeet TDT 0.6B v3 with automatic punctuation and capitalisation, 25 European languages.
-- **Works everywhere.** Inserts at the cursor in any app; your clipboard is restored afterwards.
+- **100% on-device.** Speech recognition (NVIDIA Parakeet TDT 0.6B v3) runs locally through ONNX Runtime. No account, no cloud, no telemetry. Audio is never written to disk.
+- **Fast.** ~10 s of speech transcribes in ~0.25 s on an Apple M5 Pro CPU.
+- **Clean output.** Automatic punctuation and capitalisation, filler words (um, uh, hmm) removed, custom dictionary, "new line" / "new paragraph" commands.
+- **Works everywhere.** Inserts at the cursor in any app and restores your clipboard afterwards.
 
 ## Using it
 
 | Action | How |
 |---|---|
-| Push-to-talk | Hold **Right ⌥** while speaking, release to insert |
-| Hands-free | Quick-tap **Right ⌥**, speak as long as you like, tap again to insert |
+| Push-to-talk | Hold **Right ⌥** (macOS) or **Right Ctrl** (Windows/Linux), speak, release |
+| Hands-free | Quick-tap the key, speak as long as you like, tap again |
 | Cancel | **Esc** |
-| New line / paragraph | Say "new line" or "new paragraph" |
-| Fix names & jargon | Settings → Dictionary (e.g. "azad" → "Aazad") |
+| Line breaks | Say "new line" or "new paragraph" |
+| Fix names & jargon | Dictionary page, e.g. "azad" → "Aazad" |
 
-Trigger key and behaviour (smart / push-to-talk / toggle) are configurable in Settings.
+The key and behaviour (Smart / Hold / Toggle) are configurable in Settings.
 
-### Permissions
-- **Microphone**: to hear you, only while the key is held.
-- **Accessibility**: to paste into the focused app. Without it, text is copied to the clipboard instead.
+## Platform setup
 
-## Supported languages
-Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish, Ukrainian. The language is detected automatically.
+| OS | What's needed |
+|---|---|
+| macOS 12+ | Microphone + Accessibility permission (the app walks you through it) |
+| Windows 10/11 | Nothing extra |
+| Linux (X11 or Wayland) | Add yourself to the `input` group: `sudo usermod -aG input $USER`, then log out/in. On **Wayland** also install a typing helper: `wtype` (KDE, Sway, Hyprland) or `ydotool` (GNOME). |
 
-## Requirements
-macOS 14+ on Apple Silicon. About 500 MB of disk space for the speech model, downloaded once on first launch.
+Supported languages (auto-detected): Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish, Ukrainian.
 
-## Building from source
-Only the Xcode Command Line Tools are needed (`xcode-select --install`), not full Xcode.
+## Development
+
+Requirements: Rust (stable), Node 20+. On Linux also: `libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libxdo-dev`.
 
 ```bash
-./scripts/build-app.sh          # → dist/Aazad Voice.app (ad-hoc signed)
-./scripts/build-app.sh --dmg    # → also dist/AazadVoice-<version>.dmg
+npm install
+npm run dev                       # run with hot reload
+npm run build                     # installers in src-tauri/target/release/bundle
+cargo test --manifest-path src-tauri/Cargo.toml --lib
 ```
 
-Transcribe a file from the command line:
-```bash
-.build/release/AazadVoice --transcribe recording.wav
+Builds for all platforms run on GitHub Actions (`.github/workflows/build.yml`): trigger it manually from the Actions tab, or push a tag like `v0.2.0` to create a draft release with every installer attached.
+
+### Project layout
+```
+src-tauri/src/
+  lib.rs          app core: tray, HUD, commands, record → transcribe → insert pipeline
+  hotkey.rs       global push-to-talk state machine (smart / hold / toggle, Esc cancels)
+  audio.rs        microphone capture (cpal) + 16 kHz windowed-sinc resampler
+  engine.rs       Parakeet v3 ONNX: verified download from Hugging Face, load, transcribe
+  text.rs         filler removal, dictionary, voice commands (unit-tested)
+  insert.rs       clipboard + paste shortcut per OS (incl. Wayland), clipboard restore
+  permissions.rs  per-OS permission checks
+  settings.rs, history.rs
+ui/               settings window, onboarding, HUD (plain HTML/CSS/JS)
+legacy/macos-swift/   original native macOS prototype (CoreML / Neural Engine)
 ```
 
-> **Dev note:** ad-hoc signed builds get a new signature each build, so macOS may ask for Accessibility again after a rebuild. Remove the old entry in System Settings → Privacy & Security → Accessibility and add the new build.
-
-### Shipping a public release
-To let others install the app without Gatekeeper warnings you need an Apple Developer ID (US$99/yr):
-```bash
-SIGN_ID="Developer ID Application: Your Name (TEAMID)" VERSION=1.0.0 ./scripts/build-app.sh --dmg
-xcrun notarytool submit dist/AazadVoice-1.0.0.dmg --keychain-profile notary --wait
-xcrun stapler staple dist/AazadVoice-1.0.0.dmg
-```
-(Notarization needs full Xcode or its standalone notary tools.)
-
-## Architecture
-```
-Sources/AazadVoice/
-  main.swift              entry point (+ --transcribe CLI mode)
-  AppDelegate.swift       menu bar item, windows
-  DictationController     hotkey → record → transcribe → insert
-  HotkeyMonitor           global modifier-key push-to-talk / tap / toggle logic
-  AudioRecorder           AVAudioEngine capture, in-memory only, level meter
-  Transcriber             Parakeet v3 via FluidAudio (CoreML / ANE)
-  TextProcessor           dictionary replacements, voice commands, spacing
-  TextInserter            clipboard + ⌘V into the focused app, clipboard restore
-  HUD                     floating waveform pill
-  SettingsView / OnboardingView / History
-```
+### Shipping signed releases
+- **macOS:** Apple Developer ID (US$99/yr). Add the `APPLE_*` secrets listed in the workflow and tauri-action signs + notarizes.
+- **Windows:** without a code-signing certificate, SmartScreen shows a warning on first run. An OV/EV certificate or Azure Trusted Signing removes it.
+- **Linux:** `.deb`, `.rpm` and `.AppImage` need no signing.
 
 ## License
-MIT for this app. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the model (CC-BY-4.0) and FluidAudio (Apache-2.0).
+Proprietary, all rights reserved. Third-party components: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

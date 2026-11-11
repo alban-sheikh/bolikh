@@ -1,0 +1,14 @@
+{
+  "name": "aazad-voice",
+  "private": true,
+  "version": "0.2.0",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icon": "tauri icon assets/icon-1024.png"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

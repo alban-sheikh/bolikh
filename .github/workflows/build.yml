@@ -23,11 +23,6 @@ jobs:
             os: macos-latest
             args: --target aarch64-apple-darwin --bundles dmg
             rust_targets: aarch64-apple-darwin
-          - id: mac-intel
-            name: macOS (Intel)
-            os: macos-latest
-            args: --target x86_64-apple-darwin --bundles dmg
-            rust_targets: x86_64-apple-darwin
           - id: windows
             name: Windows
             os: windows-latest
@@ -63,6 +58,22 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
             libasound2-dev libssl-dev patchelf rpm
 
+      - name: Collect the Visual C++ runtime (Windows)
+        # Bolikh ships these DLLs next to its .exe ("app-local" deployment, allowed by Microsoft's
+        # redistribution terms), so it runs on PCs without the VC++ Redistributable and without admin rights.
+        # src-tauri/tauri.windows.conf.json lists them as resources installed beside the app.
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $crt = Get-ChildItem "$vs\VC\Redist\MSVC" -Directory | Where-Object Name -match '^\d' | Sort-Object { [version]$_.Name } |
+                 Select-Object -Last 1 | ForEach-Object { Get-ChildItem "$($_.FullName)\x64" -Directory -Filter 'Microsoft.VC14*.CRT' } | Select-Object -First 1
+          if (-not $crt) { throw "VC++ runtime folder not found" }
+          Write-Host "Using $($crt.FullName)"
+          New-Item -ItemType Directory -Force src-tauri\vcruntime | Out-Null
+          Copy-Item "$($crt.FullName)\*.dll" src-tauri\vcruntime\
+          Get-ChildItem src-tauri\vcruntime
+
       - run: npm ci
 
       - name: Unit tests
@@ -81,12 +92,23 @@ jobs:
           B=src-tauri/target
           case "${{ matrix.id }}" in
             mac-arm)   cp $B/aarch64-apple-darwin/release/bundle/dmg/*.dmg out/Bolikh-macos-apple-silicon.dmg ;;
-            mac-intel) cp $B/x86_64-apple-darwin/release/bundle/dmg/*.dmg  out/Bolikh-macos-intel.dmg ;;
             windows)   cp $B/release/bundle/nsis/*.exe out/Bolikh-windows-x64-setup.exe ;;
             linux)     cp $B/release/bundle/deb/*.deb  out/Bolikh-linux-amd64.deb
                        cp $B/release/bundle/rpm/*.rpm  out/Bolikh-linux-x86_64.rpm ;;
           esac
           ls -la out
+
+      - name: Check the Windows installer contains the VC++ runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $dumpbin = Get-ChildItem "$vs\VC\Tools\MSVC" -Recurse -Filter dumpbin.exe | Where-Object FullName -match 'Hostx64\\x64' | Select-Object -First 1
+          Write-Host "DLLs the app needs:"; & $dumpbin.FullName /dependents src-tauri\target\release\aazad-voice.exe
+          7z l out\Bolikh-windows-x64-setup.exe | Select-String -Pattern '\.dll' | Tee-Object -Variable dlls
+          foreach ($d in 'vcruntime140.dll','vcruntime140_1.dll','msvcp140.dll') {
+            if (-not ($dlls -match [regex]::Escape($d))) { throw "$d is missing from the installer" }
+          }
 
       - uses: actions/upload-artifact@v4
         with:

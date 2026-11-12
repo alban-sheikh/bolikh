@@ -301,17 +301,16 @@
 <section class="g" id="download">
   <div class="in">
     <div class="sh">
-      <span class="eb">Download · version <span id="ver">0.2.0</span></span>
+      <span class="eb">Download · version <span id="ver">0.2.1</span></span>
       <h2 class="h2">One app for macOS, Windows and Linux.</h2>
       <p class="lead">Pick your system. On first launch, Bolikh walks you through microphone and permission setup and downloads the speech model.</p>
     </div>
     <div class="dl">
       <article class="os" id="dl-mac" data-os="mac">
         <div class="os-h"><svg aria-hidden="true"><use href="#i-apple"/></svg><h3>macOS</h3><span class="tag" hidden>Your system</span></div>
-        <p class="req">macOS 12 Monterey or later. Not sure which Mac you have? Apple menu → About This Mac: “Chip: Apple M…” is Apple Silicon, “Processor: Intel” is Intel.</p>
+        <p class="req">Macs with Apple Silicon (M1 or newer), macOS 12 Monterey or later. Intel Macs aren’t supported yet.</p>
         <div class="btns">
-          <a class="btn p" data-file="macArm" href="#download">Download for Apple Silicon</a>
-          <a class="btn s" data-file="macIntel" href="#download">Download for Intel Mac</a>
+          <a class="btn p" data-file="macArm" href="#download">Download for Mac</a>
         </div>
         <p class="req">Open the .dmg and drag Bolikh to Applications.</p>
         <a class="setup-link" href="#setup" data-setup-link="mac">Step-by-step setup for macOS →</a>
@@ -379,7 +378,7 @@
     <div class="sfaq">
       <h3 class="sfh">Setup questions</h3>
       <div class="faq">
-      <details><summary>Which Mac download do I need?</summary><div class="a"><p>Open the Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4…), download the Apple Silicon version. If it says <b>Processor: Intel</b>, download the Intel version.</p></div></details>
+      <details><summary>Does Bolikh work on my Mac?</summary><div class="a"><p>Open the Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4 and later), Bolikh works. If it says <b>Processor: Intel</b>, it doesn’t yet: the speech engine Bolikh uses isn’t available for Intel Macs at the moment.</p></div></details>
       <details><summary>macOS won’t open Bolikh (“Apple could not verify…”)</summary><div class="a"><p>Click Done, then open <b>System Settings → Privacy &amp; Security</b>. Scroll down, click <b>Open Anyway</b> next to the Bolikh message, and confirm. You only need to do this the first time.</p></div></details>
       <details><summary>Windows shows “Windows protected your PC”</summary><div class="a"><p>Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this the first time.</p></div></details>
       <details><summary>Bolikh is switched on in Accessibility, but the key does nothing</summary><div class="a"><p>This can happen after an update. In <b>Privacy &amp; Security → Accessibility</b>, select Bolikh, remove it with the <b>−</b> button, then open Bolikh and switch it on again.</p></div></details>
@@ -465,11 +464,10 @@
 /* Downloads come from the public releases page. Each file keeps the same name for every version,
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {
-  version: "0.2.0",
+  version: "0.2.1",
   base: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
   files: {
     macArm:   "Bolikh-macos-apple-silicon.dmg",
-    macIntel: "Bolikh-macos-intel.dmg",
     win:      "Bolikh-windows-x64-setup.exe",
     deb:      "Bolikh-linux-amd64.deb",
     rpm:      "Bolikh-linux-x86_64.rpm"

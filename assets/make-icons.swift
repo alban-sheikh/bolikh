@@ -1,5 +1,9 @@
 // Renders assets/icon-1024.png (app icon) and src-tauri/icons/tray.png (monochrome template).
 // Usage (macOS): swift assets/make-icons.swift   then: npm run icon
+//
+// The Bolikh mark: a text cursor (I-beam) with two sound waves leaving it. Read together they form
+// a lowercase "b": speech turning into typed text. Geometry matches website/logo.svg (100-unit box,
+// y down): stem x=40.5 y 18..82, caps 33.5..47.5, waves centred (40.5,58) r=14 (±75°) and r=26 (±55°).
 import AppKit
 
 func bitmap(_ size: Int, _ draw: (CGFloat) -> Void) -> Data {
@@ -13,16 +17,20 @@ func bitmap(_ size: Int, _ draw: (CGFloat) -> Void) -> Data {
     return rep.representation(using: .png, properties: [:])!
 }
 
-let heights: [CGFloat] = [120, 230, 380, 520, 300, 440, 260, 150]
-
-func bars(scale s: CGFloat, center: CGFloat, barW: CGFloat, gap: CGFloat, fill: (NSBezierPath) -> Void) {
-    let total = CGFloat(heights.count) * barW + CGFloat(heights.count - 1) * gap
-    var x = center - total / 2
-    for h in heights {
-        let r = NSRect(x: x, y: center - h * s / 2, width: barW, height: h * s)
-        fill(NSBezierPath(roundedRect: r, xRadius: barW / 2, yRadius: barW / 2))
-        x += barW + gap
-    }
+/// The mark as stroked paths inside `box` (a square), in AppKit's y-up space.
+func mark(in box: NSRect, lineWidth: CGFloat) -> [NSBezierPath] {
+    let u = box.width / 100
+    func p(_ x: CGFloat, _ y: CGFloat) -> NSPoint { NSPoint(x: box.minX + x * u, y: box.maxY - y * u) }
+    func line(_ a: NSPoint, _ b: NSPoint) -> NSBezierPath { let l = NSBezierPath(); l.move(to: a); l.line(to: b); return l }
+    let stem = line(p(40.5, 18), p(40.5, 82))
+    let top = line(p(33.5, 18), p(47.5, 18))
+    let bottom = line(p(33.5, 82), p(47.5, 82))
+    let c = p(40.5, 58)
+    let inner = NSBezierPath(); inner.appendArc(withCenter: c, radius: 14 * u, startAngle: -75, endAngle: 75, clockwise: false)
+    let outer = NSBezierPath(); outer.appendArc(withCenter: c, radius: 26 * u, startAngle: -55, endAngle: 55, clockwise: false)
+    let all = [stem, top, bottom, inner, outer]
+    for path in all { path.lineWidth = lineWidth * u; path.lineCapStyle = .round; path.lineJoinStyle = .round }
+    return all
 }
 
 let appIcon = bitmap(1024) { size in
@@ -37,25 +45,26 @@ let appIcon = bitmap(1024) { size in
     shadow.set()
     NSColor.black.setFill(); path.fill()
     NSGraphicsContext.current?.restoreGraphicsState()
-    NSGradient(colors: [NSColor(red: 0.04, green: 0.05, blue: 0.12, alpha: 1),
-                        NSColor(red: 0.13, green: 0.10, blue: 0.32, alpha: 1)])!.draw(in: path, angle: 90)
+    // Warm charcoal body (Aazad "Golden Hour" palette) with a soft gold glow behind the mark.
+    NSGradient(colors: [NSColor(red: 0.08, green: 0.07, blue: 0.06, alpha: 1),
+                        NSColor(red: 0.17, green: 0.15, blue: 0.12, alpha: 1)])!.draw(in: path, angle: 90)
     NSGraphicsContext.current?.saveGraphicsState()
     path.addClip()
-    NSGradient(colors: [NSColor(red: 0.45, green: 0.55, blue: 1, alpha: 0.45), .clear])!
-        .draw(fromCenter: NSPoint(x: 512 * s, y: 470 * s), radius: 0,
-              toCenter: NSPoint(x: 512 * s, y: 470 * s), radius: 430 * s, options: [])
+    NSGradient(colors: [NSColor(red: 0.95, green: 0.71, blue: 0.31, alpha: 0.22), .clear])!
+        .draw(fromCenter: NSPoint(x: 560 * s, y: 480 * s), radius: 0,
+              toCenter: NSPoint(x: 560 * s, y: 480 * s), radius: 420 * s, options: [])
     NSGraphicsContext.current?.restoreGraphicsState()
-    NSColor.white.withAlphaComponent(0.10).setStroke()
+    NSColor(red: 0.93, green: 0.71, blue: 0.29, alpha: 0.18).setStroke()
     path.lineWidth = 3 * s; path.stroke()
-    let g = NSGradient(colors: [NSColor(red: 0.55, green: 0.78, blue: 1, alpha: 1),
-                                NSColor(red: 0.80, green: 0.60, blue: 1, alpha: 1)])!
-    bars(scale: s, center: 512 * s, barW: 46 * s, gap: 30 * s) { g.draw(in: $0, angle: 90) }
+    let gold = NSColor(red: 0.95, green: 0.74, blue: 0.33, alpha: 1)
+    gold.setStroke()
+    let inset: CGFloat = 200 * s
+    for p in mark(in: body.insetBy(dx: inset - 100 * s, dy: inset - 100 * s), lineWidth: 7.5) { p.stroke() }
 }
 
 let tray = bitmap(64) { size in
-    let s = size / 640
-    NSColor.black.setFill()
-    bars(scale: s, center: size / 2, barW: 4.2, gap: 2.6) { $0.fill() }
+    NSColor.black.setStroke()
+    for p in mark(in: NSRect(x: -2, y: 0, width: size, height: size), lineWidth: 9) { p.stroke() }
 }
 
 try! appIcon.write(to: URL(fileURLWithPath: "assets/icon-1024.png"))

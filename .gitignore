@@ -5,3 +5,5 @@ legacy/macos-swift/.build/
 build/
 dist/
 .DS_Store
+src-tauri/icons/android/
+src-tauri/icons/ios/

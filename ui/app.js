@@ -280,7 +280,7 @@ function renderOnboarding() {
     const b = el("button", { className: "btn small", textContent: "Open Settings" });
     b.onclick = () => invoke("open_permission_settings");
     step(2, p.accessibility, "Accessibility",
-      el("p", { textContent: "Lets Aazad Voice hear the shortcut key and type into the app you're using. Turn on Aazad Voice in System Settings → Privacy & Security → Accessibility." }),
+      el("p", { textContent: "Lets Bolikh hear the shortcut key and type into the app you're using. Turn on Bolikh in System Settings → Privacy & Security → Accessibility." }),
       p.accessibility ? null : b);
   } else if (p.os === "linux") {
     const body = [el("p", { textContent: "The global shortcut reads your keyboard directly, which needs the 'input' group. Run this, then log out and back in:" }),
@@ -291,7 +291,7 @@ function renderOnboarding() {
     }
     step(2, p.inputDevices && (!p.wayland || p.waylandPasteTool), "Keyboard access", body);
   } else {
-    step(2, true, "No extra permissions needed", el("p", { textContent: "Windows lets Aazad Voice use the shortcut and type right away." }));
+    step(2, true, "No extra permissions needed", el("p", { textContent: "Windows lets Bolikh use the shortcut and type right away." }));
   }
 
   // 3. Model
@@ -317,7 +317,7 @@ function renderOnboarding() {
   if (focused) area.focus();
 
   $("#ob-hint").replaceChildren("Then hold ", el("span", { className: "kbd", textContent: status.triggerLabel }), " anywhere to dictate.");
-  $("#ob-done").textContent = allReady ? "Start using Aazad Voice" : "Finish later";
+  $("#ob-done").textContent = allReady ? "Start using Bolikh" : "Finish later";
 }
 
 $("#ob-done").addEventListener("click", async () => {

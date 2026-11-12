@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Aazad Voice listens only while you hold the dictation key. Audio is processed on this computer and never stored or sent anywhere.</string>
+    <string>Bolikh listens only while you hold the dictation key. Audio is processed on this computer and never stored or sent anywhere.</string>
     <key>LSUIElement</key>
     <true/>
 </dict>

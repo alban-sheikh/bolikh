@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!--PREVIEW-START-->
+<title>Bolikh</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Bolikh: hold a key, speak, and your words are typed in any app. Offline dictation for macOS, Windows and Linux. Your voice never leaves your computer.">
+<meta property="og:title" content="Bolikh: speak, and it's written">
+<meta property="og:description" content="Offline voice dictation for every app on macOS, Windows and Linux.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1B1814">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<!--PREVIEW-END-HEAD-->
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#1B1814"/><g fill="none" stroke="#F2BC54" stroke-width="7.5" stroke-linecap="round"><path d="M40.5 18V82M33.5 18H47.5M33.5 82H47.5"/><path d="M44.12 44.48A14 14 0 0 1 44.12 71.52"/><path d="M55.41 36.7A26 26 0 0 1 55.41 79.3"/></g></symbol>
+  <symbol id="i-apple" viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2-1.1 2.8-2.3.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-.9-2.5-3.8ZM14.1 5.8c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2.1-.5 2.7-1.3Z"/></symbol>
+  <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.2 10.4 4v7.3H3V5.2Zm8.3-1.3L21 2.5v8.8h-9.7V3.9ZM3 12.7h7.4V20L3 18.8v-6.1Zm8.3 0H21v8.8l-9.7-1.4v-7.4Z"/></symbol>
+  <symbol id="i-linux" viewBox="0 0 24 24"><path d="M12 2.2c-2.2 0-3.4 1.9-3.4 4.4 0 1.4.3 2.3-.6 3.6-1.2 1.6-2.7 3.6-2.7 6 0 .7.2 1.3.5 1.8-.8.4-1.7.9-1.7 1.7 0 1.1 1.8 1.4 3.5 1.9 1 .3 1.8.5 2.6.5.9 0 1.4-.4 1.8-.4s.9.4 1.8.4c.8 0 1.6-.2 2.6-.5 1.7-.5 3.5-.8 3.5-1.9 0-.8-.9-1.3-1.7-1.7.3-.5.5-1.1.5-1.8 0-2.4-1.5-4.4-2.7-6-.9-1.3-.6-2.2-.6-3.6 0-2.5-1.2-4.4-3.4-4.4Zm-1.4 3.6c.5 0 .8.6.8 1.2 0 .5-.3.9-.6 1-.3-.2-.6-.3-1-.4 0-.1-.1-.3-.1-.5 0-.7.4-1.3.9-1.3Zm2.8 0c.5 0 .9.6.9 1.3 0 .3 0 .5-.1.7-.4-.2-.8-.3-1.2-.3.1-.2.1-.4.1-.6 0-.6.1-1.1.3-1.1Zm-1.4 2.7c.9 0 2 .6 2 .9 0 .4-1.1 1.2-2 1.2s-2-.8-2-1.2c0-.3 1.1-.9 2-.9Z"/></symbol>
+</svg>
+
+<header class="site g">
+  <div class="in bar">
+    <a class="brand" href="#top" aria-label="Bolikh home"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg><span class="word">Bolikh</span></a>
+    <nav class="main" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#languages">Languages</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#download">Download</a>
+      <a href="#setup">Setup</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="hb">
+      <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
+      <a class="btn p" href="#download">Download</a>
+      <button class="icon-btn burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <nav class="in mnav" id="mnav" aria-label="Menu">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#languages">Languages</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#download">Download</a>
+    <a href="#setup">Setup</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn p" href="#download">Download Bolikh</a>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero g">
+  <div class="in">
+    <div class="txt">
+      <p class="meaning"><b>Bolikh</b> <span><i>bol</i> “speak” + <i>likh</i> “write”</span></p>
+      <h1>Hold a key. Speak. <em>Bolikh writes it.</em></h1>
+      <p class="lead">Your speech becomes clean text in any app: email, team chat, documents, the terminal, the browser. It runs on your own computer, so your voice never leaves it.</p>
+      <div class="ctas">
+        <a class="btn p" href="#download" id="heroDl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg><span id="heroDlText">Download Bolikh</span></a>
+        <a class="btn s" href="#how">How it works</a>
+      </div>
+      <div class="also" id="also">
+        <span id="alsoLabel">Available for</span>
+        <a href="#dl-mac" data-os-link="mac"><svg aria-hidden="true"><use href="#i-apple"/></svg>macOS</a>
+        <a href="#dl-win" data-os-link="win"><svg aria-hidden="true"><use href="#i-win"/></svg>Windows</a>
+        <a href="#dl-linux" data-os-link="linux"><svg aria-hidden="true"><use href="#i-linux"/></svg>Linux</a>
+      </div>
+      <div class="facts" aria-label="Key facts">
+        <span class="chip">Works offline</span>
+        <span class="chip">No account</span>
+        <span class="chip">Open source</span>
+        <span class="chip">25 languages</span>
+        <span class="chip">Fillers removed</span>
+      </div>
+    </div>
+
+    <div class="demo" id="demo">
+      <div class="switch" role="tablist" aria-label="Pick an app to see Bolikh type into it">
+        <button type="button" role="tab" id="tab-email" aria-controls="screen" aria-selected="true" data-scene="email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg><span>Email</span></button>
+        <button type="button" role="tab" id="tab-chat" aria-controls="screen" aria-selected="false" data-scene="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg><span>Team chat</span></button>
+        <button type="button" role="tab" id="tab-term" aria-controls="screen" aria-selected="false" data-scene="term"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7 9 3 3-3 3M12 15h5"/></svg><span>Terminal</span></button>
+        <button type="button" role="tab" id="tab-docs" aria-controls="screen" aria-selected="false" data-scene="docs"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6V3Z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg><span>Docs</span></button>
+      </div>
+
+      <div class="screen" id="screen" role="tabpanel" aria-labelledby="tab-email" aria-live="polite">
+        <div class="scene" data-scene="email">
+          <div class="win-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">Mail · New message</span></div>
+          <div class="compose">
+            <div class="field"><span>To</span><b>Priya Mehta</b></div>
+            <div class="field"><span>Subject</span><b>Thursday review</b></div>
+            <div class="ebody" data-t="main"></div>
+          </div>
+        </div>
+
+        <div class="scene chat" data-scene="chat" hidden>
+          <aside class="side" aria-hidden="true">
+            <div class="ws">Northwind <i></i></div>
+            <div class="grp">Channels</div>
+            <a># general</a><a class="on"># launch</a><a># design</a><a># support</a>
+            <div class="grp">Direct messages</div>
+            <a>Priya Mehta</a><a>Sam Okafor</a>
+          </aside>
+          <div class="cmain">
+            <div class="chead"><b># launch</b><span>6 members</span></div>
+            <div class="msgs" data-msgs>
+              <div class="msg"><span class="av" style="background:#3E7C6A">SO</span><div><div class="who">Sam Okafor<small>10:02</small></div>The Windows build passed. Linux next?</div></div>
+              <div class="msg"><span class="av" style="background:#7A4E9B">PM</span><div><div class="who">Priya Mehta<small>10:04</small></div>Release notes are in the doc. Can someone check them?</div></div>
+            </div>
+            <div class="composer"><div class="ctext" data-t="main" data-ph="Message #launch"></div><span class="sendb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span></div>
+          </div>
+        </div>
+
+        <div class="scene term" data-scene="term" hidden>
+          <div class="win-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">zsh · ~/shop-app</span></div>
+          <div class="tlines" data-tl><div><span class="pa">~/shop-app</span> <span class="dim">on main</span></div><div><span class="pr">$</span> git status --short</div><div class="dim"> M src/checkout/total.ts</div><div class="dim"> M src/checkout/total.test.ts</div><div><span class="pr">$</span> git commit -am <span class="str">"<span data-t="main"></span>"</span></div></div>
+        </div>
+
+        <div class="scene" data-scene="docs" hidden>
+          <div class="win-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">Docs · Weekend plan</span></div>
+          <div class="tools" aria-hidden="true"><span>Normal text</span><span><b>B</b></span><span><i>I</i></span><span>• List</span><span>Link</span></div>
+          <div class="page">
+            <h4>Weekend plan</h4>
+            <span class="sub">Last edited just now</span>
+            <div class="dbody" data-t="main"></div>
+          </div>
+        </div>
+
+        <div class="hud idle" id="hud" aria-hidden="true"><span class="rec"></span><span class="bars" id="bars"></span><span class="st" id="hudSt">Ready</span></div>
+      </div>
+
+      <div class="keyrow">
+        <span class="keycap" id="keycap">Right ⌥ Option</span>
+        <span class="hint" id="keyHint">Hold the key on your keyboard to try it here.</span>
+        <span class="cleaned" id="cleaned"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="how">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">How it works</span>
+      <h2 class="h2">Three moves, in any text box.</h2>
+      <p class="lead">Click where you want the text, then use one key. There is nothing to switch to and no window to copy from.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Hold</h3><p>Press and hold your dictation key: Right Option on a Mac, Right Ctrl on Windows and Linux. A small bar at the bottom of the screen shows Bolikh is listening.</p></div>
+      <div class="step"><span class="n">2</span><h3>Speak</h3><p>Talk the way you normally would. Pauses, “um”s and “uh”s are fine. Say “new paragraph” or “new line” to format as you go.</p></div>
+      <div class="step"><span class="n">3</span><h3>Release</h3><p>Let go. In a fraction of a second the cleaned-up text appears where your cursor is, and your clipboard is put back the way it was.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="clean" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Clean text, first time</span>
+      <h2 class="h2">You talk like a person. It writes like an editor.</h2>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Clean-up examples">
+      <button type="button" role="tab" id="t0" aria-selected="true" aria-controls="cmpPanel" data-ex="0">Filler words</button>
+      <button type="button" role="tab" id="t1" aria-selected="false" aria-controls="cmpPanel" data-ex="1">Voice commands</button>
+      <button type="button" role="tab" id="t2" aria-selected="false" aria-controls="cmpPanel" data-ex="2">Your dictionary</button>
+    </div>
+    <div class="cmp" id="cmpPanel" role="tabpanel" aria-labelledby="t0">
+      <div class="pane"><span class="mono">What you said</span><p id="exIn">So <del>um</del> I was thinking we could, <del>uh</del>, move the meeting to Friday <del>hmm</del> if that works for everyone.</p></div>
+      <div class="pane out"><span class="mono">What gets typed</span><p id="exOut">So I was thinking we could move the meeting to Friday if that works for everyone.</p></div>
+    </div>
+    <p class="cmp-note" id="exNote">Um, uh, hmm, erm and mm are removed, and the commas around them are tidied up.</p>
+  </div>
+</section>
+
+<section class="g" id="features" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Features</span>
+      <h2 class="h2">Small app, careful details.</h2>
+    </div>
+    <div class="feat">
+      <div class="f wide">
+        <div class="col">
+          <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="11" rx="2.5"/><path d="M7 11h.01M10 11h.01M13 11h.01M16 11h.01M8 14.5h8"/></svg>
+          <h3>Three ways to use the key</h3>
+          <p>Pick your key and how it behaves. On a Mac: Right or Left Option, Right Ctrl, Right Cmd, Right Shift or Fn. On Windows and Linux: Right or Left Alt, Right Ctrl, Right Windows key or Right Shift. Press Esc at any time to cancel.</p>
+        </div>
+        <div class="modes">
+          <div class="mode"><b>Smart</b><span>Hold to talk. Tap once to keep listening hands-free, tap again to finish.</span></div>
+          <div class="mode"><b>Hold</b><span>Records only while the key is held down.</span></div>
+          <div class="mode"><b>Toggle</b><span>Tap to start, tap to stop.</span></div>
+        </div>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l9-11h-6l1-7Z"/></svg>
+        <h3>Fast on ordinary laptops</h3>
+        <p>In our tests on an Apple Silicon Mac, a 9.5-second sentence was transcribed in 0.24 seconds. No graphics card needed.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/><path d="m15 16 2 2 4-4"/></svg>
+        <h3>Works in every app</h3>
+        <p>If you can type in it, you can dictate into it: mail, chat, browsers, office apps, terminals and code editors.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><path d="M5 6h14M5 10h14M5 14h9"/><path d="M17 15v5M14.5 17.5 17 20l2.5-2.5"/></svg>
+        <h3>Voice commands</h3>
+        <p>Say “new line”, “next line” or “new paragraph” and Bolikh formats the text instead of typing the words.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2Z"/><path d="M4 19a2 2 0 0 1 2-2h12M9 7h5M9 10.5h5"/></svg>
+        <h3>Personal dictionary</h3>
+        <p>Teach it how to spell names, brands and jargon. Every time it hears one, it writes it your way.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="m9 14 2 2 4-4"/></svg>
+        <h3>Your clipboard stays yours</h3>
+        <p>Text is pasted through the clipboard, then whatever you had copied before (text or an image) is put back.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4M12 7.5V12l3 2"/></svg>
+        <h3>History on your device</h3>
+        <p>Your last 200 dictations stay on your computer so you can copy one again. Turn it off or clear it any time. Audio is never saved.</p>
+      </div>
+      <div class="f">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 14h3"/></svg>
+        <h3>Quiet until you need it</h3>
+        <p>Lives in the menu bar or system tray, can start when you log in, and plays soft start and stop tones you can switch off.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="languages" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Languages</span>
+      <h2 class="h2">Speaks 25 languages. Knows which one you're using.</h2>
+      <p class="lead">Talk in any of these and Bolikh writes it in that language, with punctuation and capitals. There is no language menu to change.</p>
+    </div>
+    <div class="langs">
+      <div class="lang"><img src="flags/gb.svg" alt="" loading="lazy"><div><b>English</b><span>English</span></div></div>
+      <div class="lang"><img src="flags/es.svg" alt="" loading="lazy"><div><b>Spanish</b><span>Español</span></div></div>
+      <div class="lang"><img src="flags/fr.svg" alt="" loading="lazy"><div><b>French</b><span>Français</span></div></div>
+      <div class="lang"><img src="flags/de.svg" alt="" loading="lazy"><div><b>German</b><span>Deutsch</span></div></div>
+      <div class="lang"><img src="flags/it.svg" alt="" loading="lazy"><div><b>Italian</b><span>Italiano</span></div></div>
+      <div class="lang"><img src="flags/pt.svg" alt="" loading="lazy"><div><b>Portuguese</b><span>Português</span></div></div>
+      <div class="lang"><img src="flags/nl.svg" alt="" loading="lazy"><div><b>Dutch</b><span>Nederlands</span></div></div>
+      <div class="lang"><img src="flags/pl.svg" alt="" loading="lazy"><div><b>Polish</b><span>Polski</span></div></div>
+      <div class="lang"><img src="flags/ru.svg" alt="" loading="lazy"><div><b>Russian</b><span>Русский</span></div></div>
+      <div class="lang"><img src="flags/ua.svg" alt="" loading="lazy"><div><b>Ukrainian</b><span>Українська</span></div></div>
+      <div class="lang"><img src="flags/se.svg" alt="" loading="lazy"><div><b>Swedish</b><span>Svenska</span></div></div>
+      <div class="lang"><img src="flags/dk.svg" alt="" loading="lazy"><div><b>Danish</b><span>Dansk</span></div></div>
+      <div class="lang"><img src="flags/fi.svg" alt="" loading="lazy"><div><b>Finnish</b><span>Suomi</span></div></div>
+      <div class="lang"><img src="flags/cz.svg" alt="" loading="lazy"><div><b>Czech</b><span>Čeština</span></div></div>
+      <div class="lang"><img src="flags/sk.svg" alt="" loading="lazy"><div><b>Slovak</b><span>Slovenčina</span></div></div>
+      <div class="lang"><img src="flags/si.svg" alt="" loading="lazy"><div><b>Slovenian</b><span>Slovenščina</span></div></div>
+      <div class="lang"><img src="flags/hr.svg" alt="" loading="lazy"><div><b>Croatian</b><span>Hrvatski</span></div></div>
+      <div class="lang"><img src="flags/bg.svg" alt="" loading="lazy"><div><b>Bulgarian</b><span>Български</span></div></div>
+      <div class="lang"><img src="flags/ro.svg" alt="" loading="lazy"><div><b>Romanian</b><span>Română</span></div></div>
+      <div class="lang"><img src="flags/hu.svg" alt="" loading="lazy"><div><b>Hungarian</b><span>Magyar</span></div></div>
+      <div class="lang"><img src="flags/gr.svg" alt="" loading="lazy"><div><b>Greek</b><span>Ελληνικά</span></div></div>
+      <div class="lang"><img src="flags/ee.svg" alt="" loading="lazy"><div><b>Estonian</b><span>Eesti</span></div></div>
+      <div class="lang"><img src="flags/lv.svg" alt="" loading="lazy"><div><b>Latvian</b><span>Latviešu</span></div></div>
+      <div class="lang"><img src="flags/lt.svg" alt="" loading="lazy"><div><b>Lithuanian</b><span>Lietuvių</span></div></div>
+      <div class="lang"><img src="flags/mt.svg" alt="" loading="lazy"><div><b>Maltese</b><span>Malti</span></div></div>
+    </div>
+    <div class="next">
+      <span class="chip">Planned</span>
+      <div class="lang"><img src="flags/in.svg" alt="" loading="lazy"><div><b>Hindi</b><span>हिन्दी</span></div></div>
+      <div class="lang"><img src="flags/pk.svg" alt="" loading="lazy"><div><b>Urdu</b><span>اردو</span></div></div>
+      <p>Hindi and Urdu are next. They gave Bolikh its name.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band g" id="privacy">
+  <div class="in">
+    <div style="display:grid;gap:18px">
+      <span class="eb">Privacy</span>
+      <h2 class="h2">Your voice never leaves your computer.</h2>
+      <p class="lead">Many dictation apps send your audio to a server. Bolikh runs the speech model on your own machine. After a one-time model download it works with Wi-Fi switched off. The code is public, so anyone can check this.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn s" href="privacy.html">Read the privacy policy</a><a class="btn s" href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">See the source code</a></div>
+    </div>
+    <div class="flow" aria-label="What happens to your data">
+      <div><b>Your audio</b><span>Processed in memory on your computer, then discarded.</span></div>
+      <div><b>Your text</b><span>Typed into your app. Kept in local history only if you want it.</span></div>
+      <div><b>Speech model</b><span>NVIDIA Parakeet TDT 0.6B v3, downloaded once (about 670 MB) and checked against a fixed fingerprint.</span></div>
+      <div class="no"><b>Sent to us</b><span>Nothing. No account, no analytics, no recordings.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="download">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Download · version <span id="ver">0.2.0</span></span>
+      <h2 class="h2">One app for macOS, Windows and Linux.</h2>
+      <p class="lead">Pick your system. On first launch, Bolikh walks you through microphone and permission setup and downloads the speech model.</p>
+    </div>
+    <div class="dl">
+      <article class="os" id="dl-mac" data-os="mac">
+        <div class="os-h"><svg aria-hidden="true"><use href="#i-apple"/></svg><h3>macOS</h3><span class="tag" hidden>Your system</span></div>
+        <p class="req">macOS 12 Monterey or later. Apple Silicon and Intel.</p>
+        <div class="btns">
+          <a class="btn p" data-file="macArm" href="#download">Download for Apple Silicon</a>
+          <a class="btn s" data-file="macIntel" href="#download">Download for Intel Mac</a>
+        </div>
+        <p class="req">Open the .dmg and drag Bolikh to Applications.</p>
+        <a class="setup-link" href="#setup" data-setup-link="mac">Step-by-step setup for macOS →</a>
+      </article>
+      <article class="os" id="dl-win" data-os="win">
+        <div class="os-h"><svg aria-hidden="true"><use href="#i-win"/></svg><h3>Windows</h3><span class="tag" hidden>Your system</span></div>
+        <p class="req">Windows 10 or 11, 64-bit.</p>
+        <div class="btns">
+          <a class="btn p" data-file="win" href="#download">Download for Windows</a>
+        </div>
+        <p class="req">Run the installer. No admin rights needed.</p>
+        <a class="setup-link" href="#setup" data-setup-link="win">Step-by-step setup for Windows →</a>
+      </article>
+      <article class="os" id="dl-linux" data-os="linux">
+        <div class="os-h"><svg aria-hidden="true"><use href="#i-linux"/></svg><h3>Linux</h3><span class="tag" hidden>Your system</span></div>
+        <p class="req">Ubuntu 24.04 or later, Debian 13, Fedora 39 or later, Arch. X11 and Wayland.</p>
+        <div class="btns">
+          <a class="btn p" data-file="deb" href="#download">Download .deb (Ubuntu, Debian)</a>
+          <a class="btn s" data-file="rpm" href="#download">Download .rpm (Fedora)</a>
+        </div>
+        <p class="req">Install the package, then join the input group.</p>
+        <a class="setup-link" href="#setup" data-setup-link="linux">Step-by-step setup for Linux →</a>
+      </article>
+    </div>
+    <div class="ver">
+      <span>Disk space: about 1 GB, including the speech model.</span>
+      <span>Memory: 8 GB RAM recommended.</span>
+      <span>Any microphone, built-in is fine.</span>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="setup" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Setup</span>
+      <h2 class="h2">Ready in about five minutes.</h2>
+      <p class="lead">Bolikh’s setup screen takes you through each step and ticks it off when it’s done. Here are the same steps, so you know what to expect.</p>
+    </div>
+    <div class="ostabs" role="tablist" aria-label="Choose your system">
+      <button type="button" role="tab" id="st-mac" aria-controls="sp-mac" aria-selected="true" data-setup-tab="mac"><svg aria-hidden="true"><use href="#i-apple"/></svg>macOS</button>
+      <button type="button" role="tab" id="st-win" aria-controls="sp-win" aria-selected="false" data-setup-tab="win"><svg aria-hidden="true"><use href="#i-win"/></svg>Windows</button>
+      <button type="button" role="tab" id="st-linux" aria-controls="sp-linux" aria-selected="false" data-setup-tab="linux"><svg aria-hidden="true"><use href="#i-linux"/></svg>Linux</button>
+    </div>
+    <ol class="guide" id="sp-mac" role="tabpanel" aria-labelledby="st-mac" data-setup="mac">
+        <li><span class="sn">1</span><div class="sb"><h3>Install</h3><p>Open the .dmg you downloaded and drag Bolikh into Applications. Then open Bolikh from Applications.</p><p class="note">If macOS says it can’t verify Bolikh, see “macOS won’t open Bolikh” below.</p></div></li>
+        <li><span class="sn">2</span><div class="sb"><h3>Allow the microphone</h3><p>Click <b>Test</b> in the setup screen and say a few words. macOS asks if Bolikh may use the microphone: click Allow. Bolikh then tells you the microphone works.</p></div></li>
+        <li><span class="sn">3</span><div class="sb"><h3>Turn on Accessibility</h3><p>Click Open Settings in Bolikh. In <b>Privacy &amp; Security → Accessibility</b>, switch Bolikh on, then come back. The step ticks itself off.</p><p class="note">This lets the key work while you’re in other apps, and lets Bolikh paste for you.</p></div></li>
+        <li><span class="sn">4</span><div class="sb"><h3>Let the speech model download</h3><p>Bolikh downloads its speech model once (about 670 MB) and shows the progress. After that it works offline.</p></div></li>
+        <li><span class="sn">5</span><div class="sb"><h3>Try it</h3><p>Click in the practice box, hold <span class="k">Right Option</span>, say a sentence and let go. Bolikh then waits in the menu bar. Open Settings from there to change the key or how it behaves.</p></div></li>
+    </ol>
+    <ol class="guide" id="sp-win" role="tabpanel" aria-labelledby="st-win" data-setup="win" hidden>
+        <li><span class="sn">1</span><div class="sb"><h3>Install</h3><p>Run the Bolikh setup file. It installs for your account only, so you don’t need admin rights.</p><p class="note">If Windows shows “Windows protected your PC”, see the question about it below.</p></div></li>
+        <li><span class="sn">2</span><div class="sb"><h3>Check the microphone</h3><p>Open Bolikh, click <b>Test</b> and say a few words. Bolikh tells you when the microphone works.</p><p class="note">If it says it’s very quiet or can’t find a microphone, go to <b>Settings → Privacy &amp; security → Microphone</b> and turn on “Let desktop apps access your microphone”.</p></div></li>
+        <li><span class="sn">3</span><div class="sb"><h3>Let the speech model download</h3><p>Bolikh downloads its speech model once (about 670 MB) and shows the progress. After that it works offline. Windows needs no other permissions.</p></div></li>
+        <li><span class="sn">4</span><div class="sb"><h3>Try it</h3><p>Click in the practice box, hold <span class="k">Right Ctrl</span>, say a sentence and let go. Bolikh then waits in the system tray. If you can’t see its icon, click the <b>^</b> arrow next to the clock.</p></div></li>
+    </ol>
+    <ol class="guide" id="sp-linux" role="tabpanel" aria-labelledby="st-linux" data-setup="linux" hidden>
+        <li><span class="sn">1</span><div class="sb"><h3>Install the package</h3><p>On Ubuntu or Debian:</p><div class="cmd"><code>sudo apt install ./Bolikh-linux-amd64.deb</code><button type="button" class="cbtn" data-copy="sudo apt install ./Bolikh-linux-amd64.deb">Copy</button></div><p>On Fedora:</p><div class="cmd"><code>sudo dnf install ./Bolikh-linux-x86_64.rpm</code><button type="button" class="cbtn" data-copy="sudo dnf install ./Bolikh-linux-x86_64.rpm">Copy</button></div></div></li>
+        <li><span class="sn">2</span><div class="sb"><h3>Give Bolikh keyboard access</h3><p>Bolikh reads the dictation key directly from the keyboard, which works on both X11 and Wayland. Add yourself to the <code>input</code> group, then log out and back in:</p><div class="cmd"><code>sudo usermod -aG input $USER</code><button type="button" class="cbtn" data-copy="sudo usermod -aG input $USER">Copy</button></div></div></li>
+        <li><span class="sn">3</span><div class="sb"><h3>Wayland only: install a paste helper</h3><p>Check which session you’re running:</p><div class="cmd"><code>echo $XDG_SESSION_TYPE</code><button type="button" class="cbtn" data-copy="echo $XDG_SESSION_TYPE">Copy</button></div><p>If it says <code>x11</code>, skip this step. On Wayland, install <code>wtype</code> for KDE Plasma, Sway or Hyprland. On GNOME, install <code>ydotool</code> and make sure its <code>ydotoold</code> service is running.</p><div class="cmd"><code>sudo apt install wtype</code><button type="button" class="cbtn" data-copy="sudo apt install wtype">Copy</button></div></div></li>
+        <li><span class="sn">4</span><div class="sb"><h3>Microphone and speech model</h3><p>Open Bolikh, click <b>Test</b> and say a few words to check the microphone. Then let it download the speech model once (about 670 MB).</p></div></li>
+        <li><span class="sn">5</span><div class="sb"><h3>Try it</h3><p>Click in the practice box, hold <span class="k">Right Ctrl</span>, say a sentence and let go. Bolikh then waits in the system tray.</p></div></li>
+    </ol>
+    <div class="sfaq">
+      <h3 class="sfh">Setup questions</h3>
+      <div class="faq">
+      <details><summary>macOS won’t open Bolikh (“Apple could not verify…”)</summary><div class="a"><p>Click Done, then open <b>System Settings → Privacy &amp; Security</b>. Scroll down, click <b>Open Anyway</b> next to the Bolikh message, and confirm. You only need to do this the first time.</p></div></details>
+      <details><summary>Windows shows “Windows protected your PC”</summary><div class="a"><p>Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this the first time.</p></div></details>
+      <details><summary>Bolikh is switched on in Accessibility, but the key does nothing</summary><div class="a"><p>This can happen after an update. In <b>Privacy &amp; Security → Accessibility</b>, select Bolikh, remove it with the <b>−</b> button, then open Bolikh and switch it on again.</p></div></details>
+      <details><summary>The key does nothing on Linux</summary><div class="a"><p>Run <code>groups</code> and check that <code>input</code> is in the list. If you only just added it, log out and back in. On Wayland, also check that <code>wtype</code> or <code>ydotool</code> is installed. Bolikh’s setup screen shows which of these is missing.</p></div></details>
+      <details><summary>The text doesn’t appear in one particular app</summary><div class="a"><p>On Windows, Bolikh can’t type into apps that run as administrator unless Bolikh runs as administrator too. On Linux, most terminals paste with Ctrl+Shift+V, which Bolikh doesn’t send yet, so dictating into a Linux terminal doesn’t work for now. Terminals on macOS and Windows work.</p></div></details>
+      <details><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>Bolikh uses your system’s default input. Change it in your sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>), then try again.</p></div></details>
+      <details><summary>The speech model download stopped or failed</summary><div class="a"><p>Check your internet connection and that about 1 GB of disk space is free, then click <b>Retry</b> in the setup screen. On office networks, the firewall must allow <code>huggingface.co</code>. Every file is checked when it arrives, so an interrupted download can’t leave a broken model behind.</p></div></details>
+      <details><summary>How do I change the key or how it behaves?</summary><div class="a"><p>Open Bolikh’s <b>Settings</b>. <b>Dictation key</b> picks the key and <b>Behaviour</b> picks Smart, Hold or Toggle. Fn is available on Macs only.</p></div></details>
+      <details><summary>There’s no tray icon on Linux</summary><div class="a"><p>Ubuntu shows tray icons out of the box. On GNOME in Fedora or Arch, install the AppIndicator extension. Without a tray, Bolikh keeps its window open so you can still reach Settings.</p></div></details>
+      <details><summary>How do I uninstall Bolikh?</summary><div class="a"><p>macOS: drag Bolikh from Applications to the Bin. Windows: <b>Settings → Apps → Installed apps → Bolikh → Uninstall</b>. Linux: <code>sudo apt remove bolikh</code> or <code>sudo dnf remove bolikh</code>.</p></div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="faq" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">Questions</span>
+      <h2 class="h2">Good to know.</h2>
+    </div>
+    <div class="faq">
+      <details><summary>What does “Bolikh” mean?</summary><div class="a"><p>It joins two Hindi and Urdu words: <em>bol</em>, “speak”, and <em>likh</em>, “write”. That is the whole app: you speak, it writes.</p></div></details>
+      <details><summary>Does it need the internet?</summary><div class="a"><p>Only once, to download the speech model on first launch. After that, dictation works fully offline.</p></div></details>
+      <details><summary>Which apps does it work with?</summary><div class="a"><p>Any app where you can type: Gmail and other web apps, Outlook, Slack, Teams, WhatsApp Desktop, Word, Google Docs, Notion, VS Code, terminals and more. It types at your cursor by pasting, the same way you would.</p></div></details>
+      <details><summary>Which languages can I speak?</summary><div class="a"><p>English and 24 other European languages, shown above. Bolikh detects the language on its own. Hindi and Urdu are planned for a later version.</p></div></details>
+      <details><summary>Why does it remove “um” and “uh”?</summary><div class="a"><p>Filler sounds are almost never wanted in written text, so they are taken out and the sentence is tidied up. Real words are left alone. You can switch this off in Settings if you want a word-for-word transcript.</p></div></details>
+      <details><summary>Does Bolikh record or store my voice?</summary><div class="a"><p>No. Audio stays in memory only while you speak and is discarded as soon as it has been turned into text. Nothing is sent to us or anyone else.</p></div></details>
+      <details><summary>Is Bolikh open source?</summary><div class="a"><p>Yes. The full source code is on <a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">GitHub</a> under the GPL-3.0 licence, so anyone can read it, check what it does with their voice, and build it themselves.</p></div></details>
+      <details><summary>How much does it cost?</summary><div class="a"><p>Downloading and trying Bolikh is free. Pricing will be announced before version 1.0.</p></div></details>
+      <details><summary>Who makes Bolikh?</summary><div class="a"><p>Aazad Software Solutions, a software studio that builds apps, websites and AI automation. The speech model is NVIDIA's Parakeet TDT 0.6B v3, used under the CC BY 4.0 licence.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<section class="close g" style="padding-top:0">
+  <div class="in">
+    <span class="eb">Bol. Likh.</span>
+    <h2 class="h2">Write emails, messages and notes by talking.</h2>
+    <p class="lead">For macOS, Windows and Linux. No account to create.</p>
+    <a class="btn p" href="#download">Download Bolikh</a>
+  </div>
+</section>
+</main>
+
+<footer class="g">
+  <div class="in">
+    <div class="about">
+      <a class="brand" href="#top"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg><span class="word">Bolikh</span></a>
+      <p>Offline voice dictation for macOS, Windows and Linux. <em>Bol</em> means speak, <em>likh</em> means write. Made by Aazad Software Solutions.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#languages">Languages</a></li><li><a href="#download">Download</a></li><li><a href="#setup">Setup guide</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">Source code</a></li></ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul><li><a href="https://aazadsoftwaresolutions.in">Aazad Software Solutions</a></li><li><a href="https://aazadsoftwaresolutions.in/about">About</a></li><li><a href="https://aazadsoftwaresolutions.in/contact">Contact</a></li><li><a href="privacy.html">Privacy</a></li></ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul><li><button class="copy" type="button" data-copy="info@aazadsoftwaresolutions.in">info@aazadsoftwaresolutions.in</button></li><li><button class="copy" type="button" data-copy="+91 93409 62123">+91 93409 62123</button></li><li><a href="https://wa.me/919340962123" target="_blank" rel="noopener">WhatsApp</a></li></ul>
+    </div>
+    <div class="legal">
+      <span>© 2026 Aazad Software Solutions. Bolikh is open source under GPL-3.0.</span>
+      <span>Speech model: NVIDIA Parakeet TDT 0.6B v3, CC BY 4.0. Flags: flag-icons, MIT.</span>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* Downloads come from the public releases page. Each file keeps the same name for every version,
+   so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
+const RELEASE = {
+  version: "0.2.0",
+  base: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
+  files: {
+    macArm:   "Bolikh-macos-apple-silicon.dmg",
+    macIntel: "Bolikh-macos-intel.dmg",
+    win:      "Bolikh-windows-x64-setup.exe",
+    deb:      "Bolikh-linux-amd64.deb",
+    rpm:      "Bolikh-linux-x86_64.rpm"
+  }
+};
+
+(function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* theme */
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("bolikh-theme"); if (t) root.dataset.theme = t; } catch(e) {}
+  $("#theme").addEventListener("click", () => {
+    const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    root.dataset.theme = cur === "light" ? "dark" : "light";
+    try { localStorage.setItem("bolikh-theme", root.dataset.theme); } catch(e) {}
+  });
+
+  /* mobile menu */
+  const burger = $("#burger"), mnav = $("#mnav");
+  burger.addEventListener("click", () => { const o = mnav.classList.toggle("open"); burger.setAttribute("aria-expanded", o); });
+  mnav.addEventListener("click", e => { if (e.target.closest("a")) { mnav.classList.remove("open"); burger.setAttribute("aria-expanded", false); } });
+
+  /* toast + copy */
+  const toast = $("#toast"); let tt;
+  const say = m => { toast.textContent = m; toast.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("show"), 1800); };
+  $$("[data-copy]").forEach(b => b.addEventListener("click", () => {
+    const v = b.dataset.copy;
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => say("Copied " + v)).catch(() => {
+      const r = document.createRange(); r.selectNodeContents(b); const s = getSelection(); s.removeAllRanges(); s.addRange(r); say("Selected. Press Ctrl+C to copy.");
+    });
+  }));
+
+  /* which system is the visitor on */
+  const ua = navigator.userAgent, plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+  const mobile = /Android|iPhone|iPad|iPod/i.test(ua);
+  const os = mobile ? null : /Mac/i.test(plat) || /Macintosh/.test(ua) ? "mac" : /Win/i.test(plat) || /Windows/.test(ua) ? "win" : /Linux|X11/i.test(plat + ua) ? "linux" : null;
+  const osName = { mac: "macOS", win: "Windows", linux: "Linux" };
+  if (os) {
+    const card = $(`.os[data-os="${os}"]`);
+    card.classList.add("mine"); card.querySelector(".tag").hidden = false;
+    $("#heroDlText").textContent = "Download for " + osName[os];
+    $("#heroDl").href = "#dl-" + os;
+    $("#alsoLabel").textContent = "Also for";
+    $(`[data-os-link="${os}"]`).hidden = true;
+  }
+  $("#ver").textContent = RELEASE.version;
+
+  /* download buttons point straight at the files */
+  $$("[data-file]").forEach(a => { a.href = RELEASE.base + RELEASE.files[a.dataset.file]; });
+  if (os) $("#heroDl").href = RELEASE.base + RELEASE.files[os === "mac" ? "macArm" : os === "win" ? "win" : "deb"];
+
+  /* setup guide tabs */
+  const stabs = $$("[data-setup-tab]");
+  const showSetup = k => {
+    stabs.forEach(b => b.setAttribute("aria-selected", b.dataset.setupTab === k));
+    $$("[data-setup]").forEach(p => p.hidden = p.dataset.setup !== k);
+  };
+  stabs.forEach(b => b.addEventListener("click", () => showSetup(b.dataset.setupTab)));
+  $(".ostabs").addEventListener("keydown", e => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const order = ["mac", "win", "linux"], curK = stabs.find(b => b.getAttribute("aria-selected") === "true").dataset.setupTab;
+    const n = order[(order.indexOf(curK) + (e.key === "ArrowRight" ? 1 : -1) + 3) % 3];
+    showSetup(n); $(`#st-${n}`).focus();
+  });
+  $$("[data-setup-link]").forEach(a => a.addEventListener("click", () => showSetup(a.dataset.setupLink)));
+  if (os) showSetup(os);
+
+  /* clean-up examples */
+  const EX = [
+    { i: $("#exIn").innerHTML, o: $("#exOut").innerHTML, n: $("#exNote").textContent },
+    { i: "Thanks for the update. <del>new paragraph</del> I'll send the final numbers tomorrow. <del>new line</del> Best, Sam",
+      o: "Thanks for the update.\n\nI'll send the final numbers tomorrow.\nBest, Sam",
+      n: "Say “new paragraph”, “new line” or “next line”. Commands are applied, not typed." },
+    { i: "Can you push the fix to the bolik repo and update the post gres schema?",
+      o: "Can you push the fix to the <mark>Bolikh</mark> repo and update the <mark>PostgreSQL</mark> schema?",
+      n: "Add pairs in the Dictionary tab, for example “post gres” → “PostgreSQL”." }
+  ];
+  const tabs = $$("#clean [role=tab]");
+  tabs.forEach(t => t.addEventListener("click", () => {
+    const k = +t.dataset.ex;
+    tabs.forEach(x => x.setAttribute("aria-selected", x === t));
+    $("#cmpPanel").setAttribute("aria-labelledby", t.id);
+    $("#exIn").innerHTML = EX[k].i; $("#exOut").innerHTML = EX[k].o; $("#exNote").textContent = EX[k].n;
+  }));
+
+  /* ---------- live demo ---------- */
+  const screen = $("#screen"), hud = $("#hud"), hudSt = $("#hudSt"), bars = $("#bars"), key = $("#keycap"), cleaned = $("#cleaned"), hint = $("#keyHint");
+  const ORDER = ["email", "chat", "term", "docs"];
+  const initial = {}; $$(".scene").forEach(s => initial[s.dataset.scene] = s.innerHTML);
+  const sceneEl = n => screen.querySelector(`.scene[data-scene="${n}"]`);
+  const div = (cls, html) => { const d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; return d; };
+
+  const SCENES = {
+    email: [
+      { text: "Hi Priya, thanks for sending the designs over.", rm: "um" },
+      { text: "\n\nI've left a few notes. Can we go through them on Thursday at eleven?", rm: "uh · new paragraph" }
+    ],
+    chat: [
+      { text: "Linux build is running now. Should be done in about twenty minutes.", rm: "um", send: true },
+      { text: "I'll read the release notes after lunch and leave comments.", rm: "uh", send: true }
+    ],
+    term: [
+      { text: "Fix checkout total when a coupon is removed", rm: "um",
+        after: el => { const tl = el.querySelector("[data-tl]");
+          tl.appendChild(div("dim", "[main 4f2a9c1] Fix checkout total when a coupon is removed"));
+          tl.appendChild(div("dim", " 2 files changed, 18 insertions(+), 4 deletions(-)"));
+          tl.appendChild(div("", '<span class="pr">$</span> agent'));
+          tl.appendChild(div("agent", '<span class="hd">Coding agent · ask anything about this project</span><div><span class="str">›</span> <span data-t="agent"></span></div>'));
+          return "agent"; } },
+      { text: "Add a dark mode switch to the settings page and remember the choice after reload.", rm: "uh · so", into: "agent" }
+    ],
+    docs: [
+      { text: "Buy groceries for Sunday lunch.\nCall the plumber about the kitchen tap.", rm: "um · new line" },
+      { text: "\nBook train tickets for the twelfth.", rm: "new line" }
+    ]
+  };
+
+  for (let i = 0; i < 16; i++) bars.appendChild(document.createElement("i"));
+  const barEls = [...bars.children];
+  const isMac = os === "mac" || (!os && /Mac|iPhone|iPad/.test(ua));
+  key.textContent = isMac ? "Right ⌥ Option" : "Right Ctrl";
+  hint.textContent = mobile ? "Watch it type. On a computer, hold the key to try it yourself." : `Hold ${isMac ? "Right Option" : "Right Ctrl"} on your keyboard to try it here.`;
+
+  let cur = "email", line = 0, target = "main", timers = [], level = null, manual = false, onScreen = true, paused = false;
+  const later = (fn, ms) => { const id = setTimeout(() => { timers = timers.filter(t => t !== id); fn(); }, ms); timers.push(id); };
+  const clear = () => { timers.forEach(clearTimeout); timers = []; stopBars(); key.classList.remove("down"); };
+  const setHud = (st, label) => { hud.className = "hud " + st; hudSt.textContent = label; };
+  const startBars = () => { stopBars(); let t = 0; level = setInterval(() => { t++; barEls.forEach((b, i) => { const v = Math.abs(Math.sin(t * .45 + i * .7)) * (0.4 + Math.random() * .6); b.style.height = (4 + v * 18) + "px"; }); }, 90); };
+  const stopBars = () => { clearInterval(level); level = null; barEls.forEach(b => b.style.height = "4px"); };
+  const tgt = () => sceneEl(cur).querySelector(`[data-t="${target}"]`);
+  const putCaret = () => { screen.querySelectorAll(".caret").forEach(c => c.remove()); const t = tgt(); if (!t) return; const c = document.createElement("span"); c.className = "caret"; t.appendChild(c); t.classList.add("has-caret"); };
+
+  const loadScene = n => {
+    cur = n; line = 0; target = "main";
+    const el = sceneEl(n); el.innerHTML = initial[n];
+    $$(".scene").forEach(s => s.hidden = s !== el);
+    $$(".switch [role=tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.scene === n));
+    screen.setAttribute("aria-labelledby", "tab-" + n);
+    cleaned.textContent = ""; setHud("idle", "Ready"); putCaret();
+  };
+
+  const sendChat = el => {
+    const box = el.querySelector(".ctext"), text = box.textContent;
+    const m = div("msg mine", '<span class="av">You</span><div><div class="who">You<small>now</small></div></div>');
+    m.lastChild.appendChild(document.createTextNode(text));
+    el.querySelector("[data-msgs]").appendChild(m);
+    box.textContent = ""; putCaret();
+  };
+
+  const paste = (l, instant) => {
+    const el = sceneEl(cur), t = tgt(); if (!t) return;
+    const s = document.createElement("span"); s.className = instant ? "" : "new"; s.textContent = l.text;
+    const c = t.querySelector(".caret"); t.insertBefore(s, c);
+    if (!instant) setTimeout(() => s.classList.add("settled"), 60);
+    cleaned.textContent = "Removed: " + l.rm;
+    if (l.after) { const nt = l.after(el); if (nt) { target = nt; putCaret(); } }
+    if (l.send) { if (instant) sendChat(el); else later(() => sendChat(el), 900); }
+    line++;
+    const nxt = SCENES[cur][line]; if (nxt && nxt.into && nxt.into !== target) { target = nxt.into; putCaret(); }
+  };
+
+  const listen = () => { key.classList.add("down"); setHud("on", "Listening"); startBars(); cleaned.textContent = ""; };
+  const release = () => { key.classList.remove("down"); stopBars(); setHud("busy", "Writing"); };
+
+  const playLine = () => {
+    if (line >= SCENES[cur].length) loadScene(cur);
+    const l = SCENES[cur][line];
+    listen();
+    later(release, 2300);
+    later(() => { paste(l); setHud("idle", "Ready"); later(next, 2400); }, 2650);
+  };
+  const next = () => {
+    if (manual) return;
+    if (!onScreen || document.hidden) { paused = true; return; }
+    if (line >= SCENES[cur].length) { later(() => { loadScene(ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length]); later(playLine, 700); }, 1200); return; }
+    playLine();
+  };
+  const showAll = () => { loadScene(cur); SCENES[cur].forEach(l => paste(l, true)); cleaned.textContent = "Removed: " + SCENES[cur].map(l => l.rm).join(" · "); };
+
+  $$(".switch [role=tab]").forEach(b => b.addEventListener("click", () => {
+    clear(); manual = false; loadScene(b.dataset.scene);
+    if (reduce) showAll(); else later(playLine, 450);
+  }));
+  $(".switch").addEventListener("keydown", e => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const i = ORDER.indexOf(cur) + (e.key === "ArrowRight" ? 1 : -1), n = ORDER[(i + ORDER.length) % ORDER.length];
+    const b = $(`#tab-${n}`); b.focus(); b.click();
+  });
+
+  /* try it: hold Right Option / Right Ctrl on the page */
+  const want = isMac ? "AltRight" : "ControlRight";
+  let held = false, holdStart = 0;
+  addEventListener("keydown", e => {
+    if (e.code !== want || held || mobile) return;
+    held = true; manual = true; clear(); holdStart = Date.now();
+    if (line >= SCENES[cur].length) loadScene(cur);
+    listen(); hint.textContent = "Listening… let go to type.";
+  });
+  addEventListener("keyup", e => {
+    if (e.code !== want || !held) return;
+    held = false; release();
+    if (Date.now() - holdStart < 300) { setHud("idle", "Ready"); hint.textContent = "Hold a little longer, then let go."; return; }
+    later(() => { paste(SCENES[cur][line]); setHud("idle", "Ready"); hint.textContent = line < SCENES[cur].length ? "Hold the key again for the next sentence." : "Done. Pick another app above and try again."; }, 320);
+  });
+  addEventListener("blur", () => { if (held) { held = false; key.classList.remove("down"); stopBars(); setHud("idle", "Ready"); } });
+
+  /* only animate while the demo is on screen */
+  const resume = () => { if (paused && onScreen && !document.hidden && !manual && !reduce) { paused = false; later(next, 500); } };
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => { onScreen = es[0].isIntersecting; resume(); }, { threshold: .15 }).observe(screen);
+  document.addEventListener("visibilitychange", resume);
+
+  loadScene("email");
+  if (reduce) showAll(); else later(playLine, 900);
+})();
+</script>
+<!--PREVIEW-END-->
+</body>
+</html>

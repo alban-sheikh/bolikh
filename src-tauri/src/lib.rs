@@ -1,4 +1,4 @@
-//! Aazad Voice: private, offline dictation for macOS, Windows and Linux.
+//! Bolikh: private, offline dictation for macOS, Windows and Linux.
 //!
 //! Flow: global hotkey → microphone capture → Parakeet v3 (local ONNX) →
 //! clean-up (fillers, dictionary, voice commands) → paste into the focused app.
@@ -143,7 +143,7 @@ impl Core {
             ModelState::Downloading { progress } => format!("Downloading speech model… {}%", (progress * 100.0) as u32),
             ModelState::Loading => "Preparing speech model…".into(),
             ModelState::Ready => "Ready".into(),
-            ModelState::Failed { .. } => "Speech model failed to load. Open Aazad Voice to retry.".into(),
+            ModelState::Failed { .. } => "Speech model failed to load. Open Bolikh to retry.".into(),
         }
     }
 
@@ -361,7 +361,7 @@ fn position_hud(app: &AppHandle) {
 fn create_hud(app: &tauri::App) -> tauri::Result<()> {
     // Transparent, click-through, never focusable.
     let hud = WebviewWindowBuilder::new(app, "hud", WebviewUrl::App("hud.html".into()))
-        .title("Aazad Voice HUD")
+        .title("Bolikh HUD")
         .inner_size(HUD_W, HUD_H)
         .decorations(false)
         .transparent(true)
@@ -387,7 +387,7 @@ fn create_tray(app: &tauri::App, core: Arc<Core>) -> tauri::Result<Tray> {
     let status = MenuItem::with_id(app, "status", "Starting…", false, None::<&str>)?;
     let toggle = MenuItem::with_id(app, "toggle", "Start dictation (hands-free)", true, None::<&str>)?;
     let open = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Quit Aazad Voice", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit Bolikh", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
         &[&status, &PredefinedMenuItem::separator(app)?, &toggle, &open, &PredefinedMenuItem::separator(app)?, &quit],
@@ -396,7 +396,7 @@ fn create_tray(app: &tauri::App, core: Arc<Core>) -> tauri::Result<Tray> {
     TrayIconBuilder::with_id("main")
         .icon(icon)
         .icon_as_template(true)
-        .tooltip("Aazad Voice")
+        .tooltip("Bolikh")
         .menu(&menu)
         .show_menu_on_left_click(true)
         .on_menu_event(move |app, e| match e.id().as_ref() {
@@ -609,7 +609,7 @@ pub fn run() {
             Ok(())
         })
         .build(tauri::generate_context!())
-        .expect("error while building Aazad Voice")
+        .expect("error while building Bolikh")
         .run(|_app, event| {
             // Keep running in the tray when all windows are closed.
             if let tauri::RunEvent::ExitRequested { api, code, .. } = event {

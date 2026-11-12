@@ -3,7 +3,7 @@ name = "aazad-voice"
 version = "0.2.0"
 description = "Private, offline dictation for every app"
 edition = "2021"
-license = "Proprietary"
+license = "GPL-3.0-only"
 
 [lib]
 name = "aazad_voice_lib"

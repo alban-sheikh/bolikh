@@ -1,4 +1,4 @@
-# Aazad Voice
+# Bolikh
 
 **Private, offline dictation for every app, on macOS, Windows and Linux.**
 Hold a key, speak, let go: your words are typed into whatever text field you're in. Slack, Gmail, VS Code, Word, terminals, anything.
@@ -64,4 +64,8 @@ legacy/macos-swift/   original native macOS prototype (CoreML / Neural Engine)
 - **Linux:** `.deb`, `.rpm` and `.AppImage` need no signing.
 
 ## License
-Proprietary, all rights reserved. Third-party components: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Copyright © 2026 Aazad Software Solutions.
+
+Bolikh is free software under the [GNU General Public License v3.0](LICENSE): you may use, study, change and share it, and anything you distribute that is based on it must also be released under GPL-3.0 with its source code. The name "Bolikh" and its logo identify official builds from Aazad Software Solutions.
+
+Third-party components: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The speech model (NVIDIA Parakeet TDT 0.6B v3) is downloaded separately and licensed CC BY 4.0.

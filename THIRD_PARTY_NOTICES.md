@@ -1,6 +1,6 @@
 # Third-party notices
 
-Aazad Voice includes or downloads the following third-party components.
+Bolikh includes or downloads the following third-party components.
 
 | Component | Use | License |
 |---|---|---|

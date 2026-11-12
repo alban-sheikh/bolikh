@@ -26,13 +26,13 @@ The key and behaviour (Smart / Hold / Toggle) are configurable in Settings.
 |---|---|
 | macOS 12+ | Microphone + Accessibility permission (the app walks you through it) |
 | Windows 10/11 | Nothing extra |
-| Linux (X11 or Wayland) | Add yourself to the `input` group: `sudo usermod -aG input $USER`, then log out/in. On **Wayland** also install a typing helper: `wtype` (KDE, Sway, Hyprland) or `ydotool` (GNOME). |
+| Linux (X11 or Wayland): Ubuntu 24.04+, Debian 13+, Fedora 39+, Arch | Add yourself to the `input` group: `sudo usermod -aG input $USER`, then log out/in. On **Wayland** also install a typing helper: `wtype` (KDE, Sway, Hyprland) or `ydotool` (GNOME). |
 
 Supported languages (auto-detected): Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish, Ukrainian.
 
 ## Development
 
-Requirements: Rust (stable), Node 20+. On Linux also: `libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libxdo-dev`.
+Requirements: Rust (stable), Node 20+. Linux builds need a distro with glibc 2.38+ (e.g. Ubuntu 24.04), because the bundled ONNX Runtime is built against it. Also install: `libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libssl-dev`.
 
 ```bash
 npm install

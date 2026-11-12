@@ -51,10 +51,18 @@
     "linux": {
       "deb": {
         "depends": [
-          "libasound2"
+          "libasound2t64 | libasound2",
+          "libayatana-appindicator3-1"
         ],
         "recommends": [
-          "wtype"
+          "wtype",
+          "ydotool"
+        ]
+      },
+      "rpm": {
+        "depends": [
+          "alsa-lib",
+          "libayatana-appindicator-gtk3"
         ]
       }
     },

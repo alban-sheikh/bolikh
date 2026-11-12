@@ -157,6 +157,8 @@ impl Core {
                 if phase != "hidden" {
                     position_hud(&self.app);
                     let _ = w.show();
+                    // Re-applied after every show: hiding a GTK window can drop its input shape.
+                    let _ = w.set_ignore_cursor_events(true);
                 }
                 // Hide after the fade-out (or after a message has been read), unless a
                 // newer HUD state arrived in the meantime.
@@ -356,6 +358,60 @@ fn position_hud(app: &AppHandle) {
     }
 }
 
+fn create_hud(app: &tauri::App) -> tauri::Result<()> {
+    // Transparent, click-through, never focusable.
+    let hud = WebviewWindowBuilder::new(app, "hud", WebviewUrl::App("hud.html".into()))
+        .title("Aazad Voice HUD")
+        .inner_size(HUD_W, HUD_H)
+        .decorations(false)
+        .transparent(true)
+        .shadow(false)
+        .resizable(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .visible_on_all_workspaces(true)
+        .focused(false)
+        .focusable(false)
+        .visible(HUD_ALWAYS_VISIBLE)
+        .build()?;
+    // Only on a visible window: on Linux, GTK has no native window until the window is
+    // shown, and tao panics (aborting the app) if click-through is set before that.
+    if HUD_ALWAYS_VISIBLE {
+        let _ = hud.set_ignore_cursor_events(true);
+    }
+    position_hud(app.handle());
+    Ok(())
+}
+
+fn create_tray(app: &tauri::App, core: Arc<Core>) -> tauri::Result<Tray> {
+    let status = MenuItem::with_id(app, "status", "Starting…", false, None::<&str>)?;
+    let toggle = MenuItem::with_id(app, "toggle", "Start dictation (hands-free)", true, None::<&str>)?;
+    let open = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit Aazad Voice", true, None::<&str>)?;
+    let menu = Menu::with_items(
+        app,
+        &[&status, &PredefinedMenuItem::separator(app)?, &toggle, &open, &PredefinedMenuItem::separator(app)?, &quit],
+    )?;
+    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
+    TrayIconBuilder::with_id("main")
+        .icon(icon)
+        .icon_as_template(true)
+        .tooltip("Aazad Voice")
+        .menu(&menu)
+        .show_menu_on_left_click(true)
+        .on_menu_event(move |app, e| match e.id().as_ref() {
+            "toggle" => {
+                let recording = core.session.lock().unwrap().recording;
+                if recording { core.stop_recording() } else { core.start_recording(true) }
+            }
+            "settings" => show_main(app),
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .build(app)?;
+    Ok(Tray { status, toggle })
+}
+
 fn show_main(app: &AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
@@ -443,7 +499,25 @@ async fn test_microphone(core: tauri::State<'_, Arc<Core>>) -> Result<f32, Strin
     .map_err(|e| e.to_string())?
 }
 
+/// Linux display-stack workarounds; must run before GTK/WebKit initialise.
+#[cfg(target_os = "linux")]
+fn linux_env_fixes() {
+    let unset = |k: &str| std::env::var_os(k).is_none();
+    // WebKitGTK's DMA-BUF renderer crashes ("Error 71 (Protocol error)") or renders a
+    // blank window on many Wayland / NVIDIA setups.
+    if unset("WEBKIT_DISABLE_DMABUF_RENDERER") {
+        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    }
+    // Wayland forbids apps from positioning windows or keeping them on top, which the
+    // floating HUD needs; XWayland keeps it bottom-centre, click-through and unfocused.
+    if std::env::var_os("WAYLAND_DISPLAY").is_some() && std::env::var_os("DISPLAY").is_some() && unset("GDK_BACKEND") {
+        std::env::set_var("GDK_BACKEND", "x11");
+    }
+}
+
 pub fn run() {
+    #[cfg(target_os = "linux")]
+    linux_env_fixes();
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info,ort=warn")).init();
 
     tauri::Builder::default()
@@ -498,52 +572,20 @@ pub fn run() {
             });
             app.manage(core.clone());
 
-            // HUD: transparent, click-through, never focusable.
-            let hud = WebviewWindowBuilder::new(app, "hud", WebviewUrl::App("hud.html".into()))
-                .title("Aazad Voice HUD")
-                .inner_size(HUD_W, HUD_H)
-                .decorations(false)
-                .transparent(true)
-                .shadow(false)
-                .resizable(false)
-                .always_on_top(true)
-                .skip_taskbar(true)
-                .visible_on_all_workspaces(true)
-                .focused(false)
-                .focusable(false)
-                .visible(HUD_ALWAYS_VISIBLE)
-                .build()?;
-            let _ = hud.set_ignore_cursor_events(true);
-            position_hud(&handle);
-
-            // Tray menu.
-            let status = MenuItem::with_id(app, "status", "Starting…", false, None::<&str>)?;
-            let toggle = MenuItem::with_id(app, "toggle", "Start dictation (hands-free)", true, None::<&str>)?;
-            let open = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit Aazad Voice", true, None::<&str>)?;
-            let menu = Menu::with_items(
-                app,
-                &[&status, &PredefinedMenuItem::separator(app)?, &toggle, &open, &PredefinedMenuItem::separator(app)?, &quit],
-            )?;
-            let tray_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
-            let tray_core = core.clone();
-            TrayIconBuilder::with_id("main")
-                .icon(tray_icon)
-                .icon_as_template(true)
-                .tooltip("Aazad Voice")
-                .menu(&menu)
-                .show_menu_on_left_click(true)
-                .on_menu_event(move |app, e| match e.id().as_ref() {
-                    "toggle" => {
-                        let recording = tray_core.session.lock().unwrap().recording;
-                        if recording { tray_core.stop_recording() } else { tray_core.start_recording(true) }
-                    }
-                    "settings" => show_main(app),
-                    "quit" => app.exit(0),
-                    _ => {}
-                })
-                .build(app)?;
-            *core.tray.lock().unwrap() = Some(Tray { status, toggle });
+            // The HUD and tray are conveniences: if the desktop can't provide them
+            // (e.g. no system-tray support on Linux), log it and keep the app running.
+            if let Err(e) = create_hud(app) {
+                log::error!("could not create HUD window: {e}");
+            }
+            // libappindicator panics (rather than erroring) when the tray library is
+            // missing on Linux, so guard it.
+            let tray = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| create_tray(app, core.clone())));
+            match tray {
+                Ok(Ok(t)) => *core.tray.lock().unwrap() = Some(t),
+                Ok(Err(e)) => log::error!("could not create tray icon: {e}"),
+                Err(_) => log::error!("system tray unavailable (install libayatana-appindicator3-1)"),
+            }
+            let has_tray = core.tray.lock().unwrap().is_some();
 
             // Closing the settings window just hides it; the app lives in the tray.
             if let Some(main) = app.get_webview_window("main") {
@@ -560,7 +602,8 @@ pub fn run() {
             core.prepare_model();
             core.refresh_tray();
 
-            if !settings.onboarded || !permissions::check().all_ok() {
+            // Without a tray icon the window is the only way in, so always show it.
+            if !has_tray || !settings.onboarded || !permissions::check().all_ok() {
                 show_main(&handle);
             }
             Ok(())

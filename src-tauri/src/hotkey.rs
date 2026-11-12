@@ -27,22 +27,32 @@ struct PressState {
 pub fn spawn<H: Handler>(handler: std::sync::Arc<H>) {
     std::thread::Builder::new()
         .name("hotkey".into())
-        .spawn(move || loop {
-            // Waits for OS permission (macOS Accessibility / Linux input group) and
-            // retries, so granting access takes effect without restarting the app.
-            if !crate::permissions::check().accessibility {
-                std::thread::sleep(Duration::from_secs(2));
-                continue;
-            }
-            match KeyboardListener::new() {
-                Ok(listener) => {
-                    log::info!("hotkey listener started");
-                    run(&listener, handler.as_ref());
-                    log::warn!("hotkey listener stopped; restarting");
+        .spawn(move || {
+            let mut last_error = String::new();
+            loop {
+                // Waits for OS permission (macOS Accessibility / Linux input group) and
+                // retries, so granting access takes effect without restarting the app.
+                if !crate::permissions::check().accessibility {
+                    std::thread::sleep(Duration::from_secs(2));
+                    continue;
                 }
-                Err(e) => log::warn!("hotkey listener unavailable: {e}"),
+                match KeyboardListener::new() {
+                    Ok(listener) => {
+                        log::info!("hotkey listener started");
+                        last_error.clear();
+                        run(&listener, handler.as_ref());
+                        log::warn!("hotkey listener stopped; restarting");
+                    }
+                    Err(e) => {
+                        let msg = e.to_string();
+                        if msg != last_error {
+                            log::warn!("hotkey listener unavailable (will keep retrying): {msg}");
+                            last_error = msg;
+                        }
+                    }
+                }
+                std::thread::sleep(Duration::from_secs(2));
             }
-            std::thread::sleep(Duration::from_secs(2));
         })
         .expect("spawn hotkey thread");
 }

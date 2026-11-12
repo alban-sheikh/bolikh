@@ -308,7 +308,7 @@
     <div class="dl">
       <article class="os" id="dl-mac" data-os="mac">
         <div class="os-h"><svg aria-hidden="true"><use href="#i-apple"/></svg><h3>macOS</h3><span class="tag" hidden>Your system</span></div>
-        <p class="req">macOS 12 Monterey or later. Apple Silicon and Intel.</p>
+        <p class="req">macOS 12 Monterey or later. Not sure which Mac you have? Apple menu → About This Mac: “Chip: Apple M…” is Apple Silicon, “Processor: Intel” is Intel.</p>
         <div class="btns">
           <a class="btn p" data-file="macArm" href="#download">Download for Apple Silicon</a>
           <a class="btn s" data-file="macIntel" href="#download">Download for Intel Mac</a>
@@ -327,7 +327,7 @@
       </article>
       <article class="os" id="dl-linux" data-os="linux">
         <div class="os-h"><svg aria-hidden="true"><use href="#i-linux"/></svg><h3>Linux</h3><span class="tag" hidden>Your system</span></div>
-        <p class="req">Ubuntu 24.04 or later, Debian 13, Fedora 39 or later, Arch. X11 and Wayland.</p>
+        <p class="req">Ubuntu 24.04 or later, Debian 13, Fedora 40 or later. 64-bit Intel or AMD PCs, X11 and Wayland.</p>
         <div class="btns">
           <a class="btn p" data-file="deb" href="#download">Download .deb (Ubuntu, Debian)</a>
           <a class="btn s" data-file="rpm" href="#download">Download .rpm (Fedora)</a>
@@ -379,6 +379,7 @@
     <div class="sfaq">
       <h3 class="sfh">Setup questions</h3>
       <div class="faq">
+      <details><summary>Which Mac download do I need?</summary><div class="a"><p>Open the Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4…), download the Apple Silicon version. If it says <b>Processor: Intel</b>, download the Intel version.</p></div></details>
       <details><summary>macOS won’t open Bolikh (“Apple could not verify…”)</summary><div class="a"><p>Click Done, then open <b>System Settings → Privacy &amp; Security</b>. Scroll down, click <b>Open Anyway</b> next to the Bolikh message, and confirm. You only need to do this the first time.</p></div></details>
       <details><summary>Windows shows “Windows protected your PC”</summary><div class="a"><p>Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this the first time.</p></div></details>
       <details><summary>Bolikh is switched on in Accessibility, but the key does nothing</summary><div class="a"><p>This can happen after an update. In <b>Privacy &amp; Security → Accessibility</b>, select Bolikh, remove it with the <b>−</b> button, then open Bolikh and switch it on again.</p></div></details>
@@ -386,6 +387,16 @@
       <details><summary>The text doesn’t appear in one particular app</summary><div class="a"><p>On Windows, Bolikh can’t type into apps that run as administrator unless Bolikh runs as administrator too. On Linux, most terminals paste with Ctrl+Shift+V, which Bolikh doesn’t send yet, so dictating into a Linux terminal doesn’t work for now. Terminals on macOS and Windows work.</p></div></details>
       <details><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>Bolikh uses your system’s default input. Change it in your sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>), then try again.</p></div></details>
       <details><summary>The speech model download stopped or failed</summary><div class="a"><p>Check your internet connection and that about 1 GB of disk space is free, then click <b>Retry</b> in the setup screen. On office networks, the firewall must allow <code>huggingface.co</code>. Every file is checked when it arrives, so an interrupted download can’t leave a broken model behind.</p></div></details>
+      <details><summary>macOS says Bolikh “is damaged and can’t be opened”</summary><div class="a"><p>The download is fine. macOS shows this for apps that aren’t notarized by Apple yet. Move Bolikh to Applications, open Terminal and run:</p><div class="cmd"><code>xattr -cr /Applications/Bolikh.app</code><button type="button" class="cbtn" data-copy="xattr -cr /Applications/Bolikh.app">Copy</button></div><p>Then open Bolikh again.</p></div></details>
+      <details><summary>I clicked “Don’t Allow” for the microphone</summary><div class="a"><p>macOS: <b>System Settings → Privacy &amp; Security → Microphone</b>, switch Bolikh on, then quit and reopen Bolikh. Windows: <b>Settings → Privacy &amp; security → Microphone</b>, turn on microphone access and “Let desktop apps access your microphone”.</p></div></details>
+      <details><summary>My antivirus warns about Bolikh or removes it</summary><div class="a"><p>Bolikh isn’t code-signed yet, and some antivirus tools are suspicious of any unsigned app. Bolikh contains no ads, trackers or network code beyond the one model download, and its full source code is public. Restore it from quarantine or add it to your antivirus’ allowed apps.</p></div></details>
+      <details><summary>The Windows installer wants to download WebView2</summary><div class="a"><p>Bolikh’s window uses Microsoft Edge WebView2, which Windows 11 and most updated Windows 10 PCs already have. If yours doesn’t, the installer downloads it from Microsoft automatically. This needs an internet connection and only happens once.</p></div></details>
+      <details><summary>Linux says there are dependency problems</summary><div class="a"><p>Install with <code>apt</code> rather than <code>dpkg -i</code>: <code>sudo apt install ./Bolikh-linux-amd64.deb</code> downloads everything Bolikh needs from your distribution. If you already used <code>dpkg</code>, run <code>sudo apt -f install</code> to finish. On Fedora, <code>dnf install</code> handles this automatically.</p></div></details>
+      <details><summary>Linux shows an error mentioning GLIBC</summary><div class="a"><p>Your distribution is older than Bolikh supports (for example Ubuntu 22.04 or Debian 12). Bolikh needs Ubuntu 24.04, Debian 13, Fedora 40 or newer.</p></div></details>
+      <details><summary>I hold the key and nothing happens at all</summary><div class="a"><p>Bolikh has to be running: look for its icon in the menu bar (Mac) or system tray (Windows, Linux) and open it if it isn’t there. Turn on <b>Launch at login</b> in Settings so it’s always ready. Also check that setup is finished: every step in the setup screen should have a tick.</p></div></details>
+      <details><summary>The text appears in the wrong place</summary><div class="a"><p>Bolikh types wherever your cursor is when you let go of the key. Click into the text box first, then hold the key and speak.</p></div></details>
+      <details><summary>Some words come out wrong</summary><div class="a"><p>Speak at a normal pace, keep a steady distance from the microphone and reduce background noise. A headset helps in noisy rooms. For names and jargon it keeps getting wrong, add them in the <b>Dictionary</b> tab.</p></div></details>
+      <details><summary>How do I update to a new version?</summary><div class="a"><p>Download the new version from this page and install it over the old one. Your settings, dictionary and history are kept. On macOS you may need to switch Bolikh on in Accessibility again after updating (see above).</p></div></details>
       <details><summary>How do I change the key or how it behaves?</summary><div class="a"><p>Open Bolikh’s <b>Settings</b>. <b>Dictation key</b> picks the key and <b>Behaviour</b> picks Smart, Hold or Toggle. Fn is available on Macs only.</p></div></details>
       <details><summary>There’s no tray icon on Linux</summary><div class="a"><p>Ubuntu shows tray icons out of the box. On GNOME in Fedora or Arch, install the AppIndicator extension. Without a tray, Bolikh keeps its window open so you can still reach Settings.</p></div></details>
       <details><summary>How do I uninstall Bolikh?</summary><div class="a"><p>macOS: drag Bolikh from Applications to the Bin. Windows: <b>Settings → Apps → Installed apps → Bolikh → Uninstall</b>. Linux: <code>sudo apt remove bolikh</code> or <code>sudo dnf remove bolikh</code>.</p></div></details>

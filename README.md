@@ -26,7 +26,7 @@ The key and behaviour (Smart / Hold / Toggle) are configurable in Settings.
 |---|---|
 | macOS 12+ | Microphone + Accessibility permission (the app walks you through it) |
 | Windows 10/11 | Nothing extra |
-| Linux (X11 or Wayland): Ubuntu 24.04+, Debian 13+, Fedora 39+, Arch | Add yourself to the `input` group: `sudo usermod -aG input $USER`, then log out/in. On **Wayland** also install a typing helper: `wtype` (KDE, Sway, Hyprland) or `ydotool` (GNOME). |
+| Linux (X11 or Wayland): Ubuntu 24.04+, Debian 13+, Fedora 40+ (64-bit Intel/AMD) | Add yourself to the `input` group: `sudo usermod -aG input $USER`, then log out/in. On **Wayland** also install a typing helper: `wtype` (KDE, Sway, Hyprland) or `ydotool` (GNOME). |
 
 Supported languages (auto-detected): Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish, Ukrainian.
 

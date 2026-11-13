@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Newsreader:ital,opsz,wght@1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="styles.css">
+<script defer src="/_vercel/insights/script.js"></script>
 <!--PREVIEW-END-HEAD-->
 </head>
 <body>
@@ -535,10 +536,11 @@ const RELEASE = {
   }
   $("#ver").textContent = RELEASE.version;
 
-  /* download buttons point straight at the files */
-  $$("[data-file]").forEach(a => { a.href = RELEASE.base + RELEASE.files[a.dataset.file]; a.setAttribute("download", ""); });
-  $$("[data-gh]").forEach(a => { a.href = RELEASE.github + RELEASE.files[a.dataset.gh]; });
-  if (os) $("#heroDl").href = RELEASE.base + RELEASE.files[os === "mac" ? "macArm" : os === "win" ? "win" : "deb"];
+  /* download buttons go through the counter (/api/download/<os>), which then sends the file */
+  const KEY = { macArm: "mac", win: "win", deb: "deb", rpm: "rpm" };
+  $$("[data-file]").forEach(a => { a.href = "/api/download/" + KEY[a.dataset.file]; });
+  $$("[data-gh]").forEach(a => { a.href = "/api/download/" + KEY[a.dataset.gh] + "?from=github"; });
+  if (os) $("#heroDl").href = "/api/download/" + (os === "mac" ? "mac" : os === "win" ? "win" : "deb");
 
 
   /* problems & fixes filter */

@@ -312,3 +312,14 @@ footer .about p{color:var(--muted);max-width:42ch}
 .setup-link{font-weight:600;font-size:.92rem;text-decoration:none}
 .setup-link:hover{text-decoration:underline}
 @media (max-width:560px){.screen{height:340px}}
+
+/* problems & fixes */
+.fixhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px}
+.fixfilter{display:flex;flex-wrap:wrap;gap:6px}
+.fixfilter button{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;font-weight:500;font-size:.88rem;color:var(--muted)}
+.fixfilter button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ostag{display:inline-block;margin-left:10px;vertical-align:2px;font-family:var(--f-mono);font-weight:400;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.faq .a ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.faq .a b{color:var(--ink);font-weight:600}
+.alt{margin-top:18px;font-size:.9rem;color:var(--muted)}
+.faq .a>*{min-width:0}

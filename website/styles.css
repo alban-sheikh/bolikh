@@ -86,13 +86,14 @@ nav.main a:hover{color:var(--ink)}
 
 /* demo */
 .demo{display:grid;gap:12px;min-width:0}
-.switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:5px;border:1px solid var(--rule);border-radius:16px;background:var(--surface)}
+.switch{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:5px;border:1px solid var(--rule);border-radius:16px;background:var(--surface)}
 .switch button{display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:transparent;border-radius:11px;padding:10px 6px;cursor:pointer;color:var(--muted);font-weight:600;font-size:.88rem;min-width:0}
 .switch button svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .switch button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .switch button[aria-selected="true"]{background:var(--acc);color:var(--on)}
 .switch button:not([aria-selected="true"]):hover{color:var(--ink);background:var(--raised)}
-@media (max-width:480px){.switch{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1180px){.switch button{font-size:.8rem;gap:6px}}
+@media (max-width:560px){.switch{grid-template-columns:repeat(2,minmax(0,1fr))}.switch button:first-child{grid-column:1/-1}.switch button{font-size:.88rem}}
 .screen{position:relative;height:400px;border-radius:18px;border:1px solid var(--rule);background:var(--surface);box-shadow:0 30px 80px -40px rgba(0,0,0,.6);overflow:hidden}
 .scene{position:absolute;inset:0;display:flex;flex-direction:column;min-width:0}
 .win-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--rule);flex:none}
@@ -323,3 +324,27 @@ footer .about p{color:var(--muted);max-width:42ch}
 .faq .a b{color:var(--ink);font-weight:600}
 .alt{margin-top:18px;font-size:.9rem;color:var(--muted)}
 .faq .a>*{min-width:0}
+
+/* AI prompts section */
+.ai-av{background:var(--acc);color:var(--on)}
+.scene.ai .msgs{padding-top:14px}
+.aigrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.aigrid{grid-template-columns:minmax(0,1fr)}}
+.prompt{border:1px solid var(--rule);border-radius:18px;background:var(--surface);padding:26px 28px;display:grid;gap:14px;align-content:start;min-width:0}
+.prompt .mono{color:var(--acc)}
+.prompt p{font-size:1.04rem;line-height:1.75}
+.aiside{display:grid;gap:20px;min-width:0}
+.race{border:1px solid var(--rule);border-radius:18px;padding:22px 24px;display:grid;gap:16px}
+.rrow{display:grid;gap:8px}
+.rrow .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.98rem}
+.rrow .lbl span{color:var(--muted)}
+.rrow b{font-variant-numeric:tabular-nums}
+.rbar{height:14px;border-radius:7px;background:var(--raised);overflow:hidden}
+.rbar i{display:block;height:100%;border-radius:7px;background:var(--muted)}
+.rrow.fast .lbl span{color:var(--ink);font-weight:600}
+.rrow.fast .rbar i{background:var(--acc)}
+.rnote{font-size:.84rem;color:var(--muted)}
+.pts{display:grid;gap:14px}
+.pts div{border-top:1px solid var(--rule);padding-top:14px;display:grid;gap:4px}
+.pts h3{font-weight:600;font-size:1.04rem}
+.pts p{color:var(--muted);font-size:.94rem}

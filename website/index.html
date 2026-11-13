@@ -10,7 +10,7 @@
 <meta property="og:title" content="Bolikh: speak, and it's written">
 <meta property="og:description" content="Offline voice dictation for every app on macOS, Windows and Linux.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#1B1814">
+<meta name="theme-color" content="#F3EDE3">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -501,7 +501,7 @@ const RELEASE = {
   const root = document.documentElement;
   try { const t = localStorage.getItem("bolikh-theme"); if (t) root.dataset.theme = t; } catch(e) {}
   $("#theme").addEventListener("click", () => {
-    const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    const cur = root.dataset.theme || "light";
     root.dataset.theme = cur === "light" ? "dark" : "light";
     try { localStorage.setItem("bolikh-theme", root.dataset.theme); } catch(e) {}
   });

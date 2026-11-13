@@ -10,7 +10,7 @@
 <meta property="og:title" content="Bolikh: speak, and it's written">
 <meta property="og:description" content="Offline voice dictation for every app on macOS, Windows and Linux.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#1B1814">
+<meta name="theme-color" content="#F3EDE3">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,7 +107,7 @@
 <script>
 (function(){const r=document.documentElement,$=s=>document.querySelector(s);
 try{const t=localStorage.getItem("bolikh-theme");if(t)r.dataset.theme=t}catch(e){}
-$("#theme").addEventListener("click",()=>{const c=r.dataset.theme||(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");r.dataset.theme=c==="light"?"dark":"light";try{localStorage.setItem("bolikh-theme",r.dataset.theme)}catch(e){}});
+$("#theme").addEventListener("click",()=>{const c=r.dataset.theme||"light";r.dataset.theme=c==="light"?"dark":"light";try{localStorage.setItem("bolikh-theme",r.dataset.theme)}catch(e){}});
 const b=$("#burger"),m=$("#mnav");b.addEventListener("click",()=>b.setAttribute("aria-expanded",m.classList.toggle("open")));
 const t=$("#toast");document.querySelectorAll("[data-copy]").forEach(x=>x.addEventListener("click",()=>{const v=x.dataset.copy;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{t.textContent="Copied "+v;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}).catch(()=>{})}));})();
 </script>

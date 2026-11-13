@@ -62,11 +62,8 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          url=$(npx --yes vercel@65.15.0 deploy --prod --yes --token "$VERCEL_TOKEN" 2>deploy.log | tail -1) || { cat deploy.log; exit 1; }
-          cat deploy.log
-          echo "Deployed: $url"
-          echo "### Website deployed to production" >> "$GITHUB_STEP_SUMMARY"
-          echo "$url → https://bolikh.aazadsoftwaresolutions.in" >> "$GITHUB_STEP_SUMMARY"
+          npx --yes vercel@65.15.0 deploy --prod --yes --token "$VERCEL_TOKEN"
+          echo "### Website deployed to production: https://bolikh.aazadsoftwaresolutions.in" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Check the live site
         run: |

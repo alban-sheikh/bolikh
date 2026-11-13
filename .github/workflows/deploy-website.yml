@@ -1,0 +1,73 @@
+name: Deploy website
+
+# Every change merged into main that touches website/ is deployed to production on Vercel
+# (bolikh.aazadsoftwaresolutions.in). Can also be run by hand from the Actions tab.
+#
+# Setup (once):
+#   - Repository secret   AAZAD_VERCEL_TOKEN : a Vercel access token from the Aazad Vercel account
+#   - Repository variable VERCEL_ORG_ID      : team_AKtQAZ9qQ6NmumJkiPTZdG1P
+#   - Repository variable VERCEL_PROJECT_ID  : prj_LDBRQnHw9FUTclxvHaDwWyv6jYHv
+#
+# The site is deployed from a copy of website/ without git history: on Vercel's Hobby plan, deployments
+# whose commit author isn't a member of the Vercel team are blocked.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/deploy-website.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-website
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Vercel (production)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Vercel settings
+        env:
+          VERCEL_TOKEN: ${{ secrets.AAZAD_VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          missing=""
+          [ -n "$VERCEL_TOKEN" ] || missing="$missing secret AAZAD_VERCEL_TOKEN;"
+          [ -n "$VERCEL_ORG_ID" ] || missing="$missing variable VERCEL_ORG_ID;"
+          [ -n "$VERCEL_PROJECT_ID" ] || missing="$missing variable VERCEL_PROJECT_ID;"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository settings:$missing Add them under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Stage website without git history
+        env:
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/site/.vercel"
+          cp -R website "$RUNNER_TEMP/site/website"
+          printf '{"projectId":"%s","orgId":"%s"}\n' "$VERCEL_PROJECT_ID" "$VERCEL_ORG_ID" > "$RUNNER_TEMP/site/.vercel/project.json"
+          ls -la "$RUNNER_TEMP/site" "$RUNNER_TEMP/site/website"
+
+      - name: Deploy
+        working-directory: ${{ runner.temp }}/site
+        env:
+          VERCEL_TOKEN: ${{ secrets.AAZAD_VERCEL_TOKEN }}
+        run: |
+          npx --yes vercel@65.15.0 deploy --prod --yes --token "$VERCEL_TOKEN"
+          echo "### Website deployed to production: https://bolikh.aazadsoftwaresolutions.in" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check the live site
+        run: |
+          sleep 5
+          code=$(curl -s -o /dev/null -w "%{http_code}" https://bolikh.aazadsoftwaresolutions.in/)
+          echo "bolikh.aazadsoftwaresolutions.in → HTTP $code"
+          [ "$code" = "200" ]

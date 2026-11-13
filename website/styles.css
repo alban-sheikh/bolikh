@@ -38,7 +38,7 @@ button{font:inherit;color:inherit}
 .eb{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
 .h2{font-family:var(--f-head);font-style:italic;font-size:clamp(2rem,4.2vw,3.2rem);line-height:1.05;letter-spacing:-.01em}
 .lead{font-size:1.08rem;color:var(--muted);max-width:58ch}
-section{padding-block:clamp(64px,9vw,120px)}
+section{padding-block:clamp(48px,6vw,80px)}
 .sh{display:grid;gap:14px;margin-bottom:clamp(32px,5vw,56px);max-width:780px}
 
 /* logo */
@@ -66,7 +66,7 @@ nav.main a:hover{color:var(--ink)}
   .mnav .btn{margin-top:16px;border-bottom:0;padding:13px 22px}}
 
 /* hero */
-.hero{padding-block:clamp(36px,5vw,72px) clamp(56px,7vw,96px);position:relative;overflow:hidden}
+.hero{padding-block:clamp(32px,4.5vw,64px) clamp(48px,6vw,80px);position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:70%;aspect-ratio:1;background:radial-gradient(closest-side,color-mix(in srgb,var(--glow) 15%,transparent),transparent);pointer-events:none}
 .hero>.in{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr);gap:clamp(32px,4.5vw,60px);align-items:center;position:relative}
 @media (max-width:1000px){.hero>.in{grid-template-columns:minmax(0,1fr)}}
@@ -311,3 +311,4 @@ footer .about p{color:var(--muted);max-width:42ch}
 .sfh{font-family:var(--f-word);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:1.4rem}
 .setup-link{font-weight:600;font-size:.92rem;text-decoration:none}
 .setup-link:hover{text-decoration:underline}
+@media (max-width:560px){.screen{height:340px}}

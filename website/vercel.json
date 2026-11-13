@@ -1,0 +1,22 @@
+{
+  "headers": [
+    {
+      "source": "/downloads/(.*)\\.(dmg|exe|deb|rpm)",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment"
+        }
+      ]
+    },
+    {
+      "source": "/downloads/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

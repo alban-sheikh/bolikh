@@ -335,6 +335,12 @@
         <a class="setup-link" href="#setup" data-setup-link="linux">Step-by-step setup for Linux →</a>
       </article>
     </div>
+    <p class="alt">Download slow or not starting? Get the same files from GitHub:
+      <a data-gh="macArm" href="https://github.com/alban-sheikh/bolikh/releases/latest">Mac</a> ·
+      <a data-gh="win" href="https://github.com/alban-sheikh/bolikh/releases/latest">Windows</a> ·
+      <a data-gh="deb" href="https://github.com/alban-sheikh/bolikh/releases/latest">.deb</a> ·
+      <a data-gh="rpm" href="https://github.com/alban-sheikh/bolikh/releases/latest">.rpm</a>.
+      Check a file with <a href="downloads/SHA256SUMS.txt">SHA256SUMS.txt</a> (<a href="#fixes" data-fixlink="all">how</a>).</p>
     <div class="ver">
       <span>Disk space: about 1 GB, including the speech model.</span>
       <span>Memory: 8 GB RAM recommended.</span>
@@ -375,30 +381,41 @@
         <li><span class="sn">4</span><div class="sb"><h3>Microphone and speech model</h3><p>Open Bolikh, click <b>Test</b> and say a few words to check the microphone. Then let it download the speech model once (about 670 MB).</p></div></li>
         <li><span class="sn">5</span><div class="sb"><h3>Try it</h3><p>Click in the practice box, hold <span class="k">Right Ctrl</span>, say a sentence and let go. Bolikh then waits in the system tray.</p></div></li>
     </ol>
-    <div class="sfaq">
-      <h3 class="sfh">Setup questions</h3>
+    <div class="sfaq" id="fixes">
+      <div class="fixhead">
+        <h3 class="sfh">Problems and fixes</h3>
+        <div class="fixfilter" role="group" aria-label="Show fixes for"><button type="button" data-fix="all" aria-pressed="true">All systems</button><button type="button" data-fix="mac" aria-pressed="false">macOS</button><button type="button" data-fix="win" aria-pressed="false">Windows</button><button type="button" data-fix="linux" aria-pressed="false">Linux</button></div>
+      </div>
+      <p class="muted">Something not working? Most problems have a quick fix you can do yourself. Pick your system to see the questions for it.</p>
       <div class="faq">
-      <details><summary>Does Bolikh work on my Mac?</summary><div class="a"><p>Open the Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4 and later), Bolikh works. If it says <b>Processor: Intel</b>, it doesn’t yet: the speech engine Bolikh uses isn’t available for Intel Macs at the moment.</p></div></details>
-      <details><summary>macOS won’t open Bolikh (“Apple could not verify…”)</summary><div class="a"><p>Click Done, then open <b>System Settings → Privacy &amp; Security</b>. Scroll down, click <b>Open Anyway</b> next to the Bolikh message, and confirm. You only need to do this the first time.</p></div></details>
-      <details><summary>Windows shows “Windows protected your PC”</summary><div class="a"><p>Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this the first time.</p></div></details>
-      <details><summary>Bolikh is switched on in Accessibility, but the key does nothing</summary><div class="a"><p>This can happen after an update. In <b>Privacy &amp; Security → Accessibility</b>, select Bolikh, remove it with the <b>−</b> button, then open Bolikh and switch it on again.</p></div></details>
-      <details><summary>The key does nothing on Linux</summary><div class="a"><p>Run <code>groups</code> and check that <code>input</code> is in the list. If you only just added it, log out and back in. On Wayland, also check that <code>wtype</code> or <code>ydotool</code> is installed. Bolikh’s setup screen shows which of these is missing.</p></div></details>
-      <details><summary>The text doesn’t appear in one particular app</summary><div class="a"><p>On Windows, Bolikh can’t type into apps that run as administrator unless Bolikh runs as administrator too. On Linux, most terminals paste with Ctrl+Shift+V, which Bolikh doesn’t send yet, so dictating into a Linux terminal doesn’t work for now. Terminals on macOS and Windows work.</p></div></details>
-      <details><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>Bolikh uses your system’s default input. Change it in your sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>), then try again.</p></div></details>
-      <details><summary>The speech model download stopped or failed</summary><div class="a"><p>Check your internet connection and that about 1 GB of disk space is free, then click <b>Retry</b> in the setup screen. On office networks, the firewall must allow <code>huggingface.co</code>. Every file is checked when it arrives, so an interrupted download can’t leave a broken model behind.</p></div></details>
-      <details><summary>macOS says Bolikh “is damaged and can’t be opened”</summary><div class="a"><p>The download is fine. macOS shows this for apps that aren’t notarized by Apple yet. Move Bolikh to Applications, open Terminal and run:</p><div class="cmd"><code>xattr -cr /Applications/Bolikh.app</code><button type="button" class="cbtn" data-copy="xattr -cr /Applications/Bolikh.app">Copy</button></div><p>Then open Bolikh again.</p></div></details>
-      <details><summary>I clicked “Don’t Allow” for the microphone</summary><div class="a"><p>macOS: <b>System Settings → Privacy &amp; Security → Microphone</b>, switch Bolikh on, then quit and reopen Bolikh. Windows: <b>Settings → Privacy &amp; security → Microphone</b>, turn on microphone access and “Let desktop apps access your microphone”.</p></div></details>
-      <details><summary>My antivirus warns about Bolikh or removes it</summary><div class="a"><p>Bolikh isn’t code-signed yet, and some antivirus tools are suspicious of any unsigned app. Bolikh contains no ads, trackers or network code beyond the one model download, and its full source code is public. Restore it from quarantine or add it to your antivirus’ allowed apps.</p></div></details>
-      <details><summary>The Windows installer wants to download WebView2</summary><div class="a"><p>Bolikh’s window uses Microsoft Edge WebView2, which Windows 11 and most updated Windows 10 PCs already have. If yours doesn’t, the installer downloads it from Microsoft automatically. This needs an internet connection and only happens once.</p></div></details>
-      <details><summary>Linux says there are dependency problems</summary><div class="a"><p>Install with <code>apt</code> rather than <code>dpkg -i</code>: <code>sudo apt install ./Bolikh-linux-amd64.deb</code> downloads everything Bolikh needs from your distribution. If you already used <code>dpkg</code>, run <code>sudo apt -f install</code> to finish. On Fedora, <code>dnf install</code> handles this automatically.</p></div></details>
-      <details><summary>Linux shows an error mentioning GLIBC</summary><div class="a"><p>Your distribution is older than Bolikh supports (for example Ubuntu 22.04 or Debian 12). Bolikh needs Ubuntu 24.04, Debian 13, Fedora 40 or newer.</p></div></details>
-      <details><summary>I hold the key and nothing happens at all</summary><div class="a"><p>Bolikh has to be running: look for its icon in the menu bar (Mac) or system tray (Windows, Linux) and open it if it isn’t there. Turn on <b>Launch at login</b> in Settings so it’s always ready. Also check that setup is finished: every step in the setup screen should have a tick.</p></div></details>
-      <details><summary>The text appears in the wrong place</summary><div class="a"><p>Bolikh types wherever your cursor is when you let go of the key. Click into the text box first, then hold the key and speak.</p></div></details>
-      <details><summary>Some words come out wrong</summary><div class="a"><p>Speak at a normal pace, keep a steady distance from the microphone and reduce background noise. A headset helps in noisy rooms. For names and jargon it keeps getting wrong, add them in the <b>Dictionary</b> tab.</p></div></details>
-      <details><summary>How do I update to a new version?</summary><div class="a"><p>Download the new version from this page and install it over the old one. Your settings, dictionary and history are kept. On macOS you may need to switch Bolikh on in Accessibility again after updating (see above).</p></div></details>
-      <details><summary>How do I change the key or how it behaves?</summary><div class="a"><p>Open Bolikh’s <b>Settings</b>. <b>Dictation key</b> picks the key and <b>Behaviour</b> picks Smart, Hold or Toggle. Fn is available on Macs only.</p></div></details>
-      <details><summary>There’s no tray icon on Linux</summary><div class="a"><p>Ubuntu shows tray icons out of the box. On GNOME in Fedora or Arch, install the AppIndicator extension. Without a tray, Bolikh keeps its window open so you can still reach Settings.</p></div></details>
-      <details><summary>How do I uninstall Bolikh?</summary><div class="a"><p>macOS: drag Bolikh from Applications to the Bin. Windows: <b>Settings → Apps → Installed apps → Bolikh → Uninstall</b>. Linux: <code>sudo apt remove bolikh</code> or <code>sudo dnf remove bolikh</code>.</p></div></details>
+        <details data-os="all"><summary>The download is very slow or doesn’t finish</summary><div class="a"><p>Bolikh downloads come from this website first. If a download is slow or stops, try the <b>GitHub</b> link under the download buttons: it’s the same file from a different server. Some internet providers (for example some Airtel and Jio connections) occasionally have trouble reaching GitHub, so if one source is slow, the other usually isn’t. Switching to mobile data or another Wi-Fi also helps.</p></div></details>
+        <details data-os="all"><summary>How do I check the download isn’t damaged?</summary><div class="a"><p>Compare the file’s fingerprint with the one in <a href="downloads/SHA256SUMS.txt">SHA256SUMS.txt</a>. In the folder where the file is:</p><p><b>macOS</b></p><div class="cmd"><code>shasum -a 256 Bolikh-macos-apple-silicon.dmg</code><button type="button" class="cbtn" data-copy="shasum -a 256 Bolikh-macos-apple-silicon.dmg">Copy</button></div><p><b>Windows</b> (PowerShell)</p><div class="cmd"><code>Get-FileHash .\Bolikh-windows-x64-setup.exe</code><button type="button" class="cbtn" data-copy="Get-FileHash .\Bolikh-windows-x64-setup.exe">Copy</button></div><p><b>Linux</b></p><div class="cmd"><code>sha256sum Bolikh-linux-amd64.deb</code><button type="button" class="cbtn" data-copy="sha256sum Bolikh-linux-amd64.deb">Copy</button></div><p>The long code it prints must match the line for that file. If it doesn’t, download the file again.</p></div></details>
+        <details data-os="all"><summary>Bolikh stopped working after I updated it</summary><div class="a"><p><b>macOS:</b> every update needs Accessibility switched on again, see “I switched on Accessibility, but Bolikh keeps asking” below. <b>Windows:</b> quit Bolikh from the tray and open it again. <b>Linux:</b> check you’re still in the <code>input</code> group with <code>groups</code>, then log out and back in.</p></div></details>
+        <details data-os="all"><summary>I hold the key and nothing happens at all</summary><div class="a"><p>Bolikh has to be running: look for its icon in the menu bar (Mac) or system tray (Windows, Linux) and open it if it isn’t there. Turn on <b>Launch at login</b> in Settings so it’s always ready. Also check that setup is finished: every step in the setup screen should have a tick.</p></div></details>
+        <details data-os="all"><summary>My keyboard doesn’t have the dictation key</summary><div class="a"><p>Some laptops and compact keyboards have no Right Option or Right Ctrl key. Open Bolikh’s <b>Settings → Dictation key</b> and pick another one, for example Right Shift, Left Option/Alt or, on a Mac, Fn.</p></div></details>
+        <details data-os="all"><summary>The text doesn’t appear in one particular app</summary><div class="a"><p>On Windows, Bolikh can’t type into apps that run as administrator unless Bolikh runs as administrator too. On Linux, most terminals paste with Ctrl+Shift+V, which Bolikh doesn’t send yet, so dictating into a Linux terminal doesn’t work for now. Terminals on macOS and Windows work.</p></div></details>
+        <details data-os="all"><summary>The text appears in the wrong place</summary><div class="a"><p>Bolikh types wherever your cursor is when you let go of the key. Click into the text box first, then hold the key and speak.</p></div></details>
+        <details data-os="all"><summary>I clicked “Don’t Allow” for the microphone</summary><div class="a"><p>macOS: <b>System Settings → Privacy &amp; Security → Microphone</b>, switch Bolikh on, then quit and reopen Bolikh. Windows: <b>Settings → Privacy &amp; security → Microphone</b>, turn on microphone access and “Let desktop apps access your microphone”.</p></div></details>
+        <details data-os="all"><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>Bolikh uses your system’s default input. Change it in your sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>), then try again.</p></div></details>
+        <details data-os="all"><summary>The speech model download stopped or failed</summary><div class="a"><p>Check your internet connection and that about 1 GB of disk space is free, then click <b>Retry</b> in the setup screen. On office networks, the firewall must allow <code>huggingface.co</code>. Every file is checked when it arrives, so an interrupted download can’t leave a broken model behind.</p></div></details>
+        <details data-os="all"><summary>Some words come out wrong</summary><div class="a"><p>Speak at a normal pace, keep a steady distance from the microphone and reduce background noise. A headset helps in noisy rooms. For names and jargon it keeps getting wrong, add them in the <b>Dictionary</b> tab.</p></div></details>
+        <details data-os="all"><summary>My antivirus warns about Bolikh or removes it</summary><div class="a"><p>Bolikh isn’t code-signed yet, and some antivirus tools are suspicious of any unsigned app. Bolikh contains no ads, trackers or network code beyond the one model download, and its full source code is public. Restore it from quarantine or add it to your antivirus’ allowed apps.</p></div></details>
+        <details data-os="all"><summary>How do I update to a new version?</summary><div class="a"><p>Download the new version from this page and install it over the old one. Your settings, dictionary and history are kept. On macOS you may need to switch Bolikh on in Accessibility again after updating (see above).</p></div></details>
+        <details data-os="all"><summary>How do I change the key or how it behaves?</summary><div class="a"><p>Open Bolikh’s <b>Settings</b>. <b>Dictation key</b> picks the key and <b>Behaviour</b> picks Smart, Hold or Toggle. Fn is available on Macs only.</p></div></details>
+        <details data-os="all"><summary>How do I uninstall Bolikh?</summary><div class="a"><p>macOS: drag Bolikh from Applications to the Bin. Windows: <b>Settings → Apps → Installed apps → Bolikh → Uninstall</b>. Linux: <code>sudo apt remove bolikh</code> or <code>sudo dnf remove bolikh</code>.</p></div></details>
+        <details data-os="mac"><summary>Does Bolikh work on my Mac?<span class="ostag">macOS</span></summary><div class="a"><p>Open the Apple menu → <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4 and later), Bolikh works. If it says <b>Processor: Intel</b>, it doesn’t yet: the speech engine Bolikh uses isn’t available for Intel Macs at the moment.</p></div></details>
+        <details data-os="mac"><summary>macOS won’t open Bolikh (“Apple could not verify…”)<span class="ostag">macOS</span></summary><div class="a"><p>Click Done, then open <b>System Settings → Privacy &amp; Security</b>. Scroll down, click <b>Open Anyway</b> next to the Bolikh message, and confirm. You only need to do this the first time.</p></div></details>
+        <details data-os="mac"><summary>macOS says Bolikh “is damaged and can’t be opened”<span class="ostag">macOS</span></summary><div class="a"><p>The download is fine. macOS shows this for apps that aren’t notarized by Apple yet. Move Bolikh to Applications, open Terminal and run:</p><div class="cmd"><code>xattr -cr /Applications/Bolikh.app</code><button type="button" class="cbtn" data-copy="xattr -cr /Applications/Bolikh.app">Copy</button></div><p>Then open Bolikh again.</p></div></details>
+        <details data-os="mac"><summary>I switched on Accessibility, but Bolikh keeps asking<span class="ostag">macOS</span></summary><div class="a"><p>macOS remembers the permission for one exact build of Bolikh, so after installing or updating it can show Bolikh as switched on while still treating the new version as not allowed. Switching it off and on isn’t enough; remove it and add it again:</p><ol><li>Quit Bolikh (menu bar icon → <b>Quit Bolikh</b>).</li><li>Open <b>System Settings → Privacy &amp; Security → Accessibility</b>.</li><li>Select every <b>Bolikh</b> entry (and any old <b>Aazad Voice</b> entry) and remove it with the <b>−</b> button.</li><li>Open Bolikh again, click <b>Open Settings</b> in its setup screen and switch on the new Bolikh entry.</li></ol><p>If the list won’t let you remove it, run this in Terminal, then do step 4:</p><div class="cmd"><code>tccutil reset Accessibility com.aazad.voice</code><button type="button" class="cbtn" data-copy="tccutil reset Accessibility com.aazad.voice">Copy</button></div></div></details>
+        <details data-os="win"><summary>Windows shows “Windows protected your PC”<span class="ostag">Windows</span></summary><div class="a"><p>Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this the first time.</p></div></details>
+        <details data-os="win"><summary>The Windows installer wants to download WebView2<span class="ostag">Windows</span></summary><div class="a"><p>Bolikh’s window uses Microsoft Edge WebView2, which Windows 11 and most updated Windows 10 PCs already have. If yours doesn’t, the installer downloads it from Microsoft automatically. This needs an internet connection and only happens once.</p></div></details>
+        <details data-os="win"><summary>Windows says VCRUNTIME140.dll or MSVCP140.dll is missing<span class="ostag">Windows</span></summary><div class="a"><p>Bolikh installs these Microsoft files next to itself, so this shouldn’t happen. If it does, uninstall Bolikh, install it again, and if the message stays, install the <b>Microsoft Visual C++ Redistributable (x64)</b> from Microsoft’s website, then restart your PC.</p></div></details>
+        <details data-os="win"><summary>The key works in most apps but not in one<span class="ostag">Windows</span></summary><div class="a"><p>Windows doesn’t let normal apps type into apps that run <b>as administrator</b>. Run that app normally, or right-click Bolikh and choose <b>Run as administrator</b> too.</p></div></details>
+        <details data-os="linux"><summary>The key does nothing on Linux<span class="ostag">Linux</span></summary><div class="a"><p>Run <code>groups</code> and check that <code>input</code> is in the list. If you only just added it, log out and back in. On Wayland, also check that <code>wtype</code> or <code>ydotool</code> is installed. Bolikh’s setup screen shows which of these is missing.</p></div></details>
+        <details data-os="linux"><summary>Linux says there are dependency problems<span class="ostag">Linux</span></summary><div class="a"><p>Install with <code>apt</code> rather than <code>dpkg -i</code>: <code>sudo apt install ./Bolikh-linux-amd64.deb</code> downloads everything Bolikh needs from your distribution. If you already used <code>dpkg</code>, run <code>sudo apt -f install</code> to finish. On Fedora, <code>dnf install</code> handles this automatically.</p></div></details>
+        <details data-os="linux"><summary>Linux shows an error mentioning GLIBC<span class="ostag">Linux</span></summary><div class="a"><p>Your distribution is older than Bolikh supports (for example Ubuntu 22.04 or Debian 12). Bolikh needs Ubuntu 24.04, Debian 13, Fedora 40 or newer.</p></div></details>
+        <details data-os="linux"><summary>There’s no tray icon on Linux<span class="ostag">Linux</span></summary><div class="a"><p>Ubuntu shows tray icons out of the box. On GNOME in Fedora or Arch, install the AppIndicator extension. Without a tray, Bolikh keeps its window open so you can still reach Settings.</p></div></details>
+        <details data-os="linux"><summary>Dictation doesn’t work in a Linux terminal<span class="ostag">Linux</span></summary><div class="a"><p>Most Linux terminals paste with Ctrl+Shift+V, and Bolikh sends Ctrl+V, so text doesn’t appear in terminals yet. It works in every other app. This will be fixed in a later version.</p></div></details>
       </div>
     </div>
   </div>
@@ -442,7 +459,7 @@
     </div>
     <div>
       <h4>Product</h4>
-      <ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#languages">Languages</a></li><li><a href="#download">Download</a></li><li><a href="#setup">Setup guide</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">Source code</a></li></ul>
+      <ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#languages">Languages</a></li><li><a href="#download">Download</a></li><li><a href="#setup">Setup guide</a></li><li><a href="#fixes">Problems and fixes</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">Source code</a></li></ul>
     </div>
     <div>
       <h4>Company</h4>
@@ -465,7 +482,8 @@
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {
   version: "0.2.1",
-  base: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
+  base: "downloads/",   /* served by this website, copied from the latest GitHub release on every deploy */
+  github: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
   files: {
     macArm:   "Bolikh-macos-apple-silicon.dmg",
     win:      "Bolikh-windows-x64-setup.exe",
@@ -518,8 +536,20 @@ const RELEASE = {
   $("#ver").textContent = RELEASE.version;
 
   /* download buttons point straight at the files */
-  $$("[data-file]").forEach(a => { a.href = RELEASE.base + RELEASE.files[a.dataset.file]; });
+  $$("[data-file]").forEach(a => { a.href = RELEASE.base + RELEASE.files[a.dataset.file]; a.setAttribute("download", ""); });
+  $$("[data-gh]").forEach(a => { a.href = RELEASE.github + RELEASE.files[a.dataset.gh]; });
   if (os) $("#heroDl").href = RELEASE.base + RELEASE.files[os === "mac" ? "macArm" : os === "win" ? "win" : "deb"];
+
+
+  /* problems & fixes filter */
+  const fixBtns = $$("[data-fix]");
+  const showFixes = k => {
+    fixBtns.forEach(b => b.setAttribute("aria-pressed", b.dataset.fix === k));
+    $$("#fixes details").forEach(d => d.hidden = !(k === "all" || d.dataset.os === k || d.dataset.os === "all"));
+  };
+  fixBtns.forEach(b => b.addEventListener("click", () => showFixes(b.dataset.fix)));
+  $$("[data-setup-tab]").forEach(b => b.addEventListener("click", () => showFixes(b.dataset.setupTab)));
+  $$("[data-fixlink]").forEach(a => a.addEventListener("click", () => showFixes(a.dataset.fixlink)));
 
   /* setup guide tabs */
   const stabs = $$("[data-setup-tab]");
@@ -535,7 +565,7 @@ const RELEASE = {
     showSetup(n); $(`#st-${n}`).focus();
   });
   $$("[data-setup-link]").forEach(a => a.addEventListener("click", () => showSetup(a.dataset.setupLink)));
-  if (os) showSetup(os);
+  if (os) { showSetup(os); showFixes(os); }
 
   /* clean-up examples */
   const EX = [

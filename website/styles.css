@@ -1,17 +1,17 @@
 /* Bolikh product site. Layout: header → hero (words left, live multi-app dictation demo right) → three moves → clean-up examples → features → 25 languages with flags → privacy band → downloads for all three systems → FAQ → closing band → footer.
-   Aazad Software Solutions system: Golden Hour colours, Cinema fonts, warm charcoal dark by default. */
+   Aazad Software Solutions system: Golden Hour colours, Cinema fonts, light by default, warm charcoal dark on request. */
 :root{
-  --bg:#1B1814; --surface:#26221C; --raised:#2E2923; --rule:#3A342C; --ink:#F5EEE3; --muted:#B6AC9A;
-  --acc:#EDB64A; --glow:#F2B44E; --on:#1B1814; --ok:#8FC79A; --strike:#D6926E;
+  --bg:#F3EDE3; --surface:#FFFBF5; --raised:#EFE6D8; --rule:#E2D9CA; --ink:#17120C; --muted:#6B6152;
+  --acc:#8A5A0E; --glow:#E9A93A; --on:#FFFFFF; --ok:#2F7A44; --strike:#A4532C;
   --night:#120F0C; --night-ink:#F5EEE3; --night-muted:#B6AC9A; --night-rule:#3A342C;
   --f-word:"Big Shoulders Display",Impact,"Arial Narrow",sans-serif;
   --f-head:"Newsreader",Georgia,"Times New Roman",serif;
   --f-body:"Hanken Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
-  color-scheme:dark;
+  color-scheme:light;
 }
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F3EDE3;--surface:#FFFBF5;--raised:#EFE6D8;--rule:#E2D9CA;--ink:#17120C;--muted:#6B6152;--acc:#8A5A0E;--glow:#E9A93A;--on:#FFFFFF;--ok:#2F7A44;--strike:#A4532C;color-scheme:light}}
-:root[data-theme="light"]{--bg:#F3EDE3;--surface:#FFFBF5;--raised:#EFE6D8;--rule:#E2D9CA;--ink:#17120C;--muted:#6B6152;--acc:#8A5A0E;--glow:#E9A93A;--on:#FFFFFF;--ok:#2F7A44;--strike:#A4532C;color-scheme:light}
+/* Light is the default for every visitor. Dark applies only after the visitor picks it with the theme button. */
+:root[data-theme="dark"]{--bg:#1B1814;--surface:#26221C;--raised:#2E2923;--rule:#3A342C;--ink:#F5EEE3;--muted:#B6AC9A;--acc:#EDB64A;--glow:#F2B44E;--on:#1B1814;--ok:#8FC79A;--strike:#D6926E;color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:80px}

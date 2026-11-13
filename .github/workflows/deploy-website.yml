@@ -89,4 +89,8 @@ jobs:
             echo "/$p → HTTP $code"
             [ "$code" = "200" ] || fail=1
           done
+          # The download counter must redirect to the hosted file (HEAD requests aren't counted).
+          loc=$(curl -s -o /dev/null -I -w "%{http_code} %{redirect_url}" "https://bolikh.aazadsoftwaresolutions.in/api/download/mac")
+          echo "/api/download/mac → $loc"
+          case "$loc" in "302 "*"/downloads/Bolikh-macos-apple-silicon.dmg") ;; *) fail=1 ;; esac
           exit $fail

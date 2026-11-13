@@ -6,9 +6,9 @@
 <!--PREVIEW-START-->
 <title>Bolikh</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Bolikh: hold a key, speak, and your words are typed in any app. Offline dictation for macOS, Windows and Linux. Your voice never leaves your computer.">
-<meta property="og:title" content="Bolikh: speak, and it's written">
-<meta property="og:description" content="Offline voice dictation for every app on macOS, Windows and Linux.">
+<meta name="description" content="Bolikh: speak your AI prompts, emails and messages instead of typing them. Hold a key, talk, and the text is typed into any app. Offline dictation for macOS, Windows and Linux.">
+<meta property="og:title" content="Bolikh: don't type your prompt. Say it.">
+<meta property="og:description" content="Speak long AI prompts in seconds. Offline voice dictation for every app on macOS, Windows and Linux.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#F3EDE3">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
@@ -32,6 +32,7 @@
   <div class="in bar">
     <a class="brand" href="#top" aria-label="Bolikh home"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg><span class="word">Bolikh</span></a>
     <nav class="main" aria-label="Main">
+      <a href="#ai">AI prompts</a>
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
       <a href="#languages">Languages</a>
@@ -47,6 +48,7 @@
     </div>
   </div>
   <nav class="in mnav" id="mnav" aria-label="Menu">
+    <a href="#ai">AI prompts</a>
     <a href="#how">How it works</a>
     <a href="#features">Features</a>
     <a href="#languages">Languages</a>
@@ -63,8 +65,8 @@
   <div class="in">
     <div class="txt">
       <p class="meaning"><b>Bolikh</b> <span><i>bol</i> “speak” + <i>likh</i> “write”</span></p>
-      <h1>Hold a key. Speak. <em>Bolikh writes it.</em></h1>
-      <p class="lead">Your speech becomes clean text in any app: email, team chat, documents, the terminal, the browser. It runs on your own computer, so your voice never leaves it.</p>
+      <h1>Don’t type your prompt. <em>Say it.</em></h1>
+      <p class="lead">A long prompt for ChatGPT, Claude or Cursor takes minutes to type and seconds to say. Hold a key, speak, and Bolikh types it into any app: AI tools, email, chat, documents, the terminal. It runs on your own computer, so your voice never leaves it.</p>
       <div class="ctas">
         <a class="btn p" href="#download" id="heroDl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14"/></svg><span id="heroDlText">Download Bolikh</span></a>
         <a class="btn s" href="#how">How it works</a>
@@ -76,6 +78,7 @@
         <a href="#dl-linux" data-os-link="linux"><svg aria-hidden="true"><use href="#i-linux"/></svg>Linux</a>
       </div>
       <div class="facts" aria-label="Key facts">
+        <span class="chip">AI prompts</span>
         <span class="chip">Works offline</span>
         <span class="chip">No account</span>
         <span class="chip">Open source</span>
@@ -86,14 +89,25 @@
 
     <div class="demo" id="demo">
       <div class="switch" role="tablist" aria-label="Pick an app to see Bolikh type into it">
-        <button type="button" role="tab" id="tab-email" aria-controls="screen" aria-selected="true" data-scene="email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg><span>Email</span></button>
+        <button type="button" role="tab" id="tab-ai" aria-controls="screen" aria-selected="true" data-scene="ai"><svg viewBox="0 0 24 24"><path d="M11 4l1.7 4.8L17.5 10.5l-4.8 1.7L11 17l-1.7-4.8L4.5 10.5l4.8-1.7L11 4Z"/><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8Z"/></svg><span>AI prompt</span></button>
+        <button type="button" role="tab" id="tab-email" aria-controls="screen" aria-selected="false" data-scene="email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg><span>Email</span></button>
         <button type="button" role="tab" id="tab-chat" aria-controls="screen" aria-selected="false" data-scene="chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg><span>Team chat</span></button>
         <button type="button" role="tab" id="tab-term" aria-controls="screen" aria-selected="false" data-scene="term"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7 9 3 3-3 3M12 15h5"/></svg><span>Terminal</span></button>
         <button type="button" role="tab" id="tab-docs" aria-controls="screen" aria-selected="false" data-scene="docs"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6V3Z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg><span>Docs</span></button>
       </div>
 
-      <div class="screen" id="screen" role="tabpanel" aria-labelledby="tab-email" aria-live="polite">
-        <div class="scene" data-scene="email">
+      <div class="screen" id="screen" role="tabpanel" aria-labelledby="tab-ai" aria-live="polite">
+        <div class="scene ai" data-scene="ai">
+          <div class="win-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">AI coding agent · New task</span></div>
+          <div class="cmain">
+            <div class="msgs" data-msgs>
+              <div class="msg"><span class="av ai-av">AI</span><div><div class="who">Agent</div>Ready. What should I build?</div></div>
+            </div>
+            <div class="composer"><div class="ctext" data-t="main" data-ph="Describe the task…"></div><span class="sendb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span></div>
+          </div>
+        </div>
+
+        <div class="scene" data-scene="email" hidden>
           <div class="win-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="mono">Mail · New message</span></div>
           <div class="compose">
             <div class="field"><span>To</span><b>Priya Mehta</b></div>
@@ -142,6 +156,34 @@
         <span class="keycap" id="keycap">Right ⌥ Option</span>
         <span class="hint" id="keyHint">Hold the key on your keyboard to try it here.</span>
         <span class="cleaned" id="cleaned"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="g" id="ai" style="padding-top:0">
+  <div class="in">
+    <div class="sh">
+      <span class="eb">For AI prompts</span>
+      <h2 class="h2">Talk to your AI. Don’t type to it.</h2>
+      <p class="lead">The more detail you give an AI, the better its answer, and detail is slow to type. Say the whole thing out loud and Bolikh types it into the prompt box.</p>
+    </div>
+    <div class="aigrid">
+      <div class="prompt">
+        <span class="mono">One real prompt · 105 words</span>
+        <p>Build a settings page for our web app. Add a dark mode switch that follows the system theme by default and remembers the user’s choice after a reload. Reuse the existing Button and Card components, and keep the layout the same as the profile page. Store the preference in local storage under a clear key, and apply the theme before the first paint so there is no flash. Write unit tests for the toggle and one end-to-end test that reloads the page. Don’t change the navigation or any API routes. When you’re done, list the files you changed and explain anything you weren’t sure about.</p>
+      </div>
+      <div class="aiside">
+        <div class="race" aria-label="Time to enter this prompt">
+          <div class="rrow"><div class="lbl"><span>Typing it</span><b>about 2 min 40 s</b></div><div class="rbar"><i style="width:100%"></i></div></div>
+          <div class="rrow fast"><div class="lbl"><span>Saying it with Bolikh</span><b>about 40 s</b></div><div class="rbar"><i style="width:27%"></i></div></div>
+          <p class="rnote">At average speeds: about 40 words a minute typing, about 150 speaking.</p>
+        </div>
+        <div class="pts">
+          <div><h3>Say more, get better answers</h3><p>When you talk, you naturally explain the background, the limits and what “done” looks like. That is the detail AI tools need.</p></div>
+          <div><h3>Works where you prompt</h3><p>ChatGPT, Claude, Gemini and Copilot in the browser, Cursor and VS Code, and terminal agents such as Claude Code on macOS and Windows.</p></div>
+          <div><h3>Your prompt stays yours</h3><p>Your speech is turned into text on your own computer and Bolikh sends it nowhere. Only the AI tool you type into receives your prompt.</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -431,6 +473,7 @@
     <div class="faq">
       <details><summary>What does “Bolikh” mean?</summary><div class="a"><p>It joins two Hindi and Urdu words: <em>bol</em>, “speak”, and <em>likh</em>, “write”. That is the whole app: you speak, it writes.</p></div></details>
       <details><summary>Does it need the internet?</summary><div class="a"><p>Only once, to download the speech model on first launch. After that, dictation works fully offline.</p></div></details>
+      <details><summary>Can I dictate prompts for ChatGPT, Claude or Cursor?</summary><div class="a"><p>Yes, and it’s one of the best uses for Bolikh. Click in the prompt box of any AI tool, hold the key and describe what you want in as much detail as you like. Bolikh types your words into the box; the AI tool does the rest. It works in browser tools such as ChatGPT, Claude and Gemini, in editors such as Cursor and VS Code, and in terminal agents on macOS and Windows. Terminals on Linux aren’t supported yet.</p></div></details>
       <details><summary>Which apps does it work with?</summary><div class="a"><p>Any app where you can type: Gmail and other web apps, Outlook, Slack, Teams, WhatsApp Desktop, Word, Google Docs, Notion, VS Code, terminals and more. It types at your cursor by pasting, the same way you would.</p></div></details>
       <details><summary>Which languages can I speak?</summary><div class="a"><p>English and 24 other European languages, shown above. Bolikh detects the language on its own. Hindi and Urdu are planned for a later version.</p></div></details>
       <details><summary>Why does it remove “um” and “uh”?</summary><div class="a"><p>Filler sounds are almost never wanted in written text, so they are taken out and the sentence is tidied up. Real words are left alone. You can switch this off in Settings if you want a word-for-word transcript.</p></div></details>
@@ -460,7 +503,7 @@
     </div>
     <div>
       <h4>Product</h4>
-      <ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#languages">Languages</a></li><li><a href="#download">Download</a></li><li><a href="#setup">Setup guide</a></li><li><a href="#fixes">Problems and fixes</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">Source code</a></li></ul>
+      <ul><li><a href="#ai">AI prompts</a></li><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#languages">Languages</a></li><li><a href="#download">Download</a></li><li><a href="#setup">Setup guide</a></li><li><a href="#fixes">Problems and fixes</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">Source code</a></li></ul>
     </div>
     <div>
       <h4>Company</h4>
@@ -589,12 +632,16 @@ const RELEASE = {
 
   /* ---------- live demo ---------- */
   const screen = $("#screen"), hud = $("#hud"), hudSt = $("#hudSt"), bars = $("#bars"), key = $("#keycap"), cleaned = $("#cleaned"), hint = $("#keyHint");
-  const ORDER = ["email", "chat", "term", "docs"];
+  const ORDER = ["ai", "email", "chat", "term", "docs"];
   const initial = {}; $$(".scene").forEach(s => initial[s.dataset.scene] = s.innerHTML);
   const sceneEl = n => screen.querySelector(`.scene[data-scene="${n}"]`);
   const div = (cls, html) => { const d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; return d; };
 
   const SCENES = {
+    ai: [
+      { text: "Add a dark mode switch to the settings page. Save the choice so it stays after a reload, and follow the system theme by default.", rm: "um · so" },
+      { text: " Reuse our Button component, write tests for the toggle, and don't touch the navigation.", rm: "uh", send: true }
+    ],
     email: [
       { text: "Hi Priya, thanks for sending the designs over.", rm: "um" },
       { text: "\n\nI've left a few notes. Can we go through them on Thursday at eleven?", rm: "uh · new paragraph" }
@@ -713,7 +760,7 @@ const RELEASE = {
   if ("IntersectionObserver" in window) new IntersectionObserver(es => { onScreen = es[0].isIntersecting; resume(); }, { threshold: .15 }).observe(screen);
   document.addEventListener("visibilitychange", resume);
 
-  loadScene("email");
+  loadScene("ai");
   if (reduce) showAll(); else later(playLine, 900);
 })();
 </script>

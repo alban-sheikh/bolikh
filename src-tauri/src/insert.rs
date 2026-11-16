@@ -109,6 +109,19 @@ fn press_paste() -> Result<(), String> {
     r.map_err(|e| format!("Could not send paste shortcut: {e}"))
 }
 
+/// Presses Backspace `count` times to remove the text typed by the last dictation.
+/// On macOS this must run on the main thread.
+pub fn backspace(count: usize) -> Result<(), String> {
+    let mut enigo = Enigo::new(&enigo::Settings::default())
+        .map_err(|e| format!("Keyboard control unavailable: {e}"))?;
+    // A safety cap: never hold the keyboard for more than a few thousand presses.
+    for _ in 0..count.min(4000) {
+        enigo.key(Key::Backspace, Direction::Click).map_err(|e| format!("Could not send Backspace: {e}"))?;
+        std::thread::sleep(Duration::from_millis(2));
+    }
+    Ok(())
+}
+
 #[cfg(target_os = "linux")]
 fn run(cmd: &str, args: &[&str]) -> bool {
     std::process::Command::new(cmd)

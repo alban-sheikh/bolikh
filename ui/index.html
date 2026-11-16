@@ -61,7 +61,7 @@
         <h2>Tips</h2>
         <div class="tips">
           <div class="card tip"><div class="ico"><svg><use href="#i-hand"/></svg></div><div><b>Hands-free</b><span>Tap the key once, talk as long as you like, tap again to finish.</span></div></div>
-          <div class="card tip"><div class="ico"><svg><use href="#i-return"/></svg></div><div><b>Formatting</b><span>Say "new line" or "new paragraph". Punctuation is automatic.</span></div></div>
+          <div class="card tip"><div class="ico"><svg><use href="#i-return"/></svg></div><div><b>Formatting</b><span>Say "new line", "bullet point" or "scratch that". Punctuation is automatic; you can also say "comma" or "question mark".</span></div></div>
           <div class="card tip"><div class="ico"><svg><use href="#i-book"/></svg></div><div><b>Names &amp; jargon</b><span>Teach spellings in Dictionary, e.g. "azad" → "Aazad".</span></div></div>
           <div class="card tip"><div class="ico"><svg><use href="#i-x"/></svg></div><div><b>Changed your mind?</b><span>Press Esc while recording and nothing is typed.</span></div></div>
         </div>
@@ -80,8 +80,10 @@
         <h2>Output</h2>
         <div class="card rows">
           <div class="row"><div class="label"><b>Remove filler words</b><span>Strips "um", "uh", "hmm" from what you say.</span></div><label class="switch"><input type="checkbox" data-key="removeFillers"><i></i></label></div>
-          <div class="row"><div class="label"><b>Write numbers as digits</b><span>"forty eight" becomes 48. English only; "one" to "ten" on their own stay as words.</span></div><label class="switch"><input type="checkbox" data-key="numbersAsDigits"><i></i></label></div>
-          <div class="row"><div class="label"><b>Voice commands</b><span>"new line" and "new paragraph" become line breaks.</span></div><label class="switch"><input type="checkbox" data-key="voiceCommands"><i></i></label></div>
+          <div class="row"><div class="label"><b>Write numbers as digits</b><span>"forty eight" becomes 48, "fifty rupees" ₹50, "three thirty pm" 3:30 PM, "twenty first" 21st. English only; "one" to "ten" on their own stay as words.</span></div><label class="switch"><input type="checkbox" data-key="numbersAsDigits"><i></i></label></div>
+          <div class="row"><div class="label"><b>Remove repeated words</b><span>"the the plan" becomes "the plan".</span></div><label class="switch"><input type="checkbox" data-key="removeRepeats"><i></i></label></div>
+          <div class="row"><div class="label"><b>Spoken symbols and addresses</b><span>Say "comma", "question mark", "open bracket", "hashtag", "slash" or "john at gmail dot com" and the symbol is typed.</span></div><label class="switch"><input type="checkbox" data-key="spokenSymbols"><i></i></label></div>
+          <div class="row"><div class="label"><b>Voice commands</b><span>"new line", "new paragraph", "bullet point", "numbered list" then "next item", "all caps" before a word, "tab key", and "scratch that" to delete what you just dictated.</span></div><label class="switch"><input type="checkbox" data-key="voiceCommands"><i></i></label></div>
           <div class="row"><div class="label"><b>Add a space after each dictation</b><span>So consecutive dictations flow naturally.</span></div><label class="switch"><input type="checkbox" data-key="addTrailingSpace"><i></i></label></div>
           <div class="row"><div class="label"><b>Restore clipboard</b><span>Put back what you had copied after the text is inserted.</span></div><label class="switch"><input type="checkbox" data-key="restoreClipboard"><i></i></label></div>
         </div>
@@ -98,7 +100,7 @@
       <!-- Dictionary -->
       <section class="page" id="page-dictionary">
         <h1>Dictionary</h1>
-        <p class="sub">Fix words the model gets wrong, or create spoken shortcuts.</p>
+        <p class="sub">Fix words the model gets wrong, or create spoken shortcuts for text you type often. Type \n where you want a new line.</p>
         <div class="card add-row">
           <input type="text" id="dict-from" placeholder="When I say…" />
           <span class="arrow">→</span>

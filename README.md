@@ -5,7 +5,7 @@ Hold a key, speak, let go: your words are typed into whatever text field you're 
 
 - **100% on-device.** Speech recognition (NVIDIA Parakeet TDT 0.6B v3) runs locally through ONNX Runtime. No account, no cloud, no telemetry. Audio is never written to disk.
 - **Fast.** ~10 s of speech transcribes in ~0.25 s on an Apple M5 Pro CPU.
-- **Clean output.** Automatic punctuation and capitalisation, filler words (um, uh, hmm) removed, custom dictionary, "new line" / "new paragraph" commands.
+- **Clean output.** Automatic punctuation and capitalisation, filler words (um, uh, hmm) removed, spoken numbers written as digits, custom dictionary, "new line" / "new paragraph" commands.
 - **Works everywhere.** Inserts at the cursor in any app and restores your clipboard afterwards.
 
 ## Using it
@@ -50,7 +50,7 @@ src-tauri/src/
   hotkey.rs       global push-to-talk state machine (smart / hold / toggle, Esc cancels)
   audio.rs        microphone capture (cpal) + 16 kHz windowed-sinc resampler
   engine.rs       Parakeet v3 ONNX: verified download from Hugging Face, load, transcribe
-  text.rs         filler removal, dictionary, voice commands (unit-tested)
+  text.rs         filler removal, numbers, dictionary, voice commands (unit-tested)
   insert.rs       clipboard + paste shortcut per OS (incl. Wayland), clipboard restore
   permissions.rs  per-OS permission checks
   settings.rs, history.rs

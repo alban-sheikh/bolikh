@@ -313,7 +313,7 @@
 <section class="g" id="download">
   <div class="in">
     <div class="sh">
-      <span class="eb">Download · version <span id="ver">0.2.2</span></span>
+      <span class="eb">Download · version <span id="ver">0.2.3</span></span>
       <h2 class="h2">One app for macOS, Windows and Linux.</h2>
       <p class="lead">Pick your system. On first launch, Bolikh walks you through microphone and permission setup and downloads the speech model.</p>
     </div>
@@ -445,7 +445,7 @@
       <details><summary>Which apps does it work with?</summary><div class="a"><p>Any app where you can type: Gmail and other web apps, Outlook, Slack, Teams, WhatsApp Desktop, Word, Google Docs, Notion, VS Code, terminals and more. It types at your cursor by pasting, the same way you would.</p></div></details>
       <details><summary>Can I use it to write prompts for AI tools?</summary><div class="a"><p>Yes. Click in the prompt box of ChatGPT, Claude, Gemini, Cursor or any other AI tool, hold the key and describe what you want. Bolikh types your words into the box, which is handy for long, detailed prompts. Many AI tools have their own voice input; Bolikh gives you the same key in every app, works offline and keeps your voice on your computer. Terminal agents work on macOS and Windows; terminals on Linux aren’t supported yet.</p></div></details>
       <details><summary>Which languages can I speak?</summary><div class="a"><p>English and 24 other European languages, shown above. Bolikh detects the language on its own. Hindi and Urdu are planned for a later version.</p></div></details>
-      <details><summary>Does it write numbers as digits?</summary><div class="a"><p>Yes, from version 0.2.2. Say “forty eight” and Bolikh types 48; “three point five” becomes 3.5 and “fifty percent” becomes 50%. A single “one” to “ten” stays a word, so “one of them” reads normally. This works for English, and you can switch it off in Settings.</p></div></details>
+      <details><summary>Does it write numbers as digits?</summary><div class="a"><p>Yes, from version 0.2.3. Say “forty eight” and Bolikh types 48; “three point five” becomes 3.5 and “fifty percent” becomes 50%. A single “one” to “ten” stays a word, so “one of them” reads normally. This works for English, and you can switch it off in Settings.</p></div></details>
       <details><summary>Why does it remove “um” and “uh”?</summary><div class="a"><p>Filler sounds are almost never wanted in written text, so they are taken out and the sentence is tidied up. Real words are left alone. You can switch this off in Settings if you want a word-for-word transcript.</p></div></details>
       <details><summary>Does Bolikh record or store my voice?</summary><div class="a"><p>No. Audio stays in memory only while you speak and is discarded as soon as it has been turned into text. Nothing is sent to us or anyone else.</p></div></details>
       <details><summary>Is Bolikh open source?</summary><div class="a"><p>Yes. The full source code is on <a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">GitHub</a> under the GPL-3.0 licence, so anyone can read it, check what it does with their voice, and build it themselves.</p></div></details>
@@ -495,7 +495,7 @@
 /* Downloads come from the public releases page. Each file keeps the same name for every version,
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {
-  version: "0.2.2",
+  version: "0.2.3",
   base: "downloads/",   /* served by this website, copied from the latest GitHub release on every deploy */
   github: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
   files: {

@@ -325,26 +325,6 @@ footer .about p{color:var(--muted);max-width:42ch}
 .alt{margin-top:18px;font-size:.9rem;color:var(--muted)}
 .faq .a>*{min-width:0}
 
-/* AI prompts section */
+/* AI prompt demo scene */
 .ai-av{background:var(--acc);color:var(--on)}
 .scene.ai .msgs{padding-top:14px}
-.aigrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
-@media (max-width:900px){.aigrid{grid-template-columns:minmax(0,1fr)}}
-.prompt{border:1px solid var(--rule);border-radius:18px;background:var(--surface);padding:26px 28px;display:grid;gap:14px;align-content:start;min-width:0}
-.prompt .mono{color:var(--acc)}
-.prompt p{font-size:1.04rem;line-height:1.75}
-.aiside{display:grid;gap:20px;min-width:0}
-.race{border:1px solid var(--rule);border-radius:18px;padding:22px 24px;display:grid;gap:16px}
-.rrow{display:grid;gap:8px}
-.rrow .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.98rem}
-.rrow .lbl span{color:var(--muted)}
-.rrow b{font-variant-numeric:tabular-nums}
-.rbar{height:14px;border-radius:7px;background:var(--raised);overflow:hidden}
-.rbar i{display:block;height:100%;border-radius:7px;background:var(--muted)}
-.rrow.fast .lbl span{color:var(--ink);font-weight:600}
-.rrow.fast .rbar i{background:var(--acc)}
-.rnote{font-size:.84rem;color:var(--muted)}
-.pts{display:grid;gap:14px}
-.pts div{border-top:1px solid var(--rule);padding-top:14px;display:grid;gap:4px}
-.pts h3{font-weight:600;font-size:1.04rem}
-.pts p{color:var(--muted);font-size:.94rem}

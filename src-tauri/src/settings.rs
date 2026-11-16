@@ -56,6 +56,17 @@ pub enum Mode {
     Toggle,
 }
 
+/// Which paste shortcut to press on Linux, where terminals use Ctrl+Shift+V.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Default)]
+#[serde(rename_all = "camelCase")]
+pub enum LinuxPaste {
+    /// Ctrl+Shift+V when the focused window is a terminal, Ctrl+V otherwise.
+    #[default]
+    Auto,
+    CtrlV,
+    CtrlShiftV,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Replacement {
     pub from: String,
@@ -76,6 +87,7 @@ pub struct Settings {
     pub remove_repeats: bool,
     pub spoken_symbols: bool,
     pub keep_history: bool,
+    pub linux_paste: LinuxPaste,
     pub replacements: Vec<Replacement>,
     pub onboarded: bool,
 }
@@ -94,6 +106,7 @@ impl Default for Settings {
             remove_repeats: true,
             spoken_symbols: true,
             keep_history: true,
+            linux_paste: LinuxPaste::Auto,
             replacements: Vec::new(),
             onboarded: false,
         }

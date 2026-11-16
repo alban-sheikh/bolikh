@@ -44,6 +44,7 @@ document.querySelectorAll("input[data-key]").forEach((input) =>
   input.addEventListener("change", () => save({ [input.dataset.key]: input.checked }))
 );
 $("#trigger").addEventListener("change", (e) => save({ trigger: e.target.value }));
+$("#linux-paste").addEventListener("change", (e) => save({ linuxPaste: e.target.value }));
 document.querySelectorAll("#mode button").forEach((b) =>
   b.addEventListener("click", () => save({ mode: b.dataset.v }))
 );
@@ -162,6 +163,7 @@ function render() {
   if (document.activeElement !== trig) trig.value = s.trigger;
   document.querySelectorAll("#mode button").forEach((b) => b.classList.toggle("on", b.dataset.v === s.mode));
   $("#mode-help").textContent = MODE_HELP[s.mode];
+  $("#linux-paste").value = s.linuxPaste;
   document.querySelectorAll("input[data-key]").forEach((i) => (i.checked = !!s[i.dataset.key]));
   $("#autostart").checked = status.autostart;
   $("#about-version").textContent = `Version ${status.version}`;

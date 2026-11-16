@@ -257,7 +257,7 @@ impl Core {
                 return;
             }
             core.hud("hidden", None, None);
-            core.insert(text.clone(), settings.restore_clipboard);
+            core.insert(text.clone(), settings.restore_clipboard, settings.linux_paste);
             if settings.keep_history {
                 let ts = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0);
                 core.history.lock().unwrap().add(history::Item { text: text.trim().to_string(), ts, duration });
@@ -279,12 +279,12 @@ impl Core {
         self.emit_status();
     }
 
-    fn insert(self: &Arc<Self>, text: String, restore: bool) {
+    fn insert(self: &Arc<Self>, text: String, restore: bool, linux_paste: settings::LinuxPaste) {
         let core = self.clone();
         // Keyboard simulation must run on the main thread on macOS.
         let _ = self.app.run_on_main_thread(move || {
             let saved = if restore { Some(insert::snapshot()) } else { None };
-            match insert::paste(&text) {
+            match insert::paste(&text, linux_paste) {
                 insert::Outcome::Pasted => {
                     *core.last_inserted.lock().unwrap() = text.chars().count();
                     if let Some(saved) = saved {

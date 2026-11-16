@@ -167,7 +167,7 @@
     </div>
     <div class="steps">
       <div class="step"><span class="n">1</span><h3>Hold</h3><p>Press and hold your dictation key: Right Option on a Mac, Right Ctrl on Windows and Linux. A small bar at the bottom of the screen shows Bolikh is listening.</p></div>
-      <div class="step"><span class="n">2</span><h3>Speak</h3><p>Talk the way you normally would. Pauses, “um”s and “uh”s are fine. Say “new paragraph” or “new line” to format as you go.</p></div>
+      <div class="step"><span class="n">2</span><h3>Speak</h3><p>Talk the way you normally would. Pauses, “um”s and “uh”s are fine. Say “new line”, “bullet point” or “scratch that” to format and fix as you go.</p></div>
       <div class="step"><span class="n">3</span><h3>Release</h3><p>Let go. In a fraction of a second the cleaned-up text appears where your cursor is, and your clipboard is put back the way it was.</p></div>
     </div>
   </div>
@@ -313,7 +313,7 @@
 <section class="g" id="download">
   <div class="in">
     <div class="sh">
-      <span class="eb">Download · version <span id="ver">0.2.3</span></span>
+      <span class="eb">Download · version <span id="ver">0.2.4</span></span>
       <h2 class="h2">One app for macOS, Windows and Linux.</h2>
       <p class="lead">Pick your system. On first launch, Bolikh walks you through microphone and permission setup and downloads the speech model.</p>
     </div>
@@ -445,7 +445,9 @@
       <details><summary>Which apps does it work with?</summary><div class="a"><p>Any app where you can type: Gmail and other web apps, Outlook, Slack, Teams, WhatsApp Desktop, Word, Google Docs, Notion, VS Code, terminals and more. It types at your cursor by pasting, the same way you would.</p></div></details>
       <details><summary>Can I use it to write prompts for AI tools?</summary><div class="a"><p>Yes. Click in the prompt box of ChatGPT, Claude, Gemini, Cursor or any other AI tool, hold the key and describe what you want. Bolikh types your words into the box, which is handy for long, detailed prompts. Many AI tools have their own voice input; Bolikh gives you the same key in every app, works offline and keeps your voice on your computer. Terminal agents work on macOS and Windows; terminals on Linux aren’t supported yet.</p></div></details>
       <details><summary>Which languages can I speak?</summary><div class="a"><p>English and 24 other European languages, shown above. Bolikh detects the language on its own. Hindi and Urdu are planned for a later version.</p></div></details>
-      <details><summary>Does it write numbers as digits?</summary><div class="a"><p>Yes, from version 0.2.3. Say “forty eight” and Bolikh types 48; “three point five” becomes 3.5 and “fifty percent” becomes 50%. A single “one” to “ten” stays a word, so “one of them” reads normally. This works for English, and you can switch it off in Settings.</p></div></details>
+      <details><summary>Does it write numbers as digits?</summary><div class="a"><p>Yes. Say “forty eight” and Bolikh types 48. It also writes money (“fifty rupees” → ₹50), times (“three thirty pm” → 3:30 PM), positions and dates (“twenty first” → 21st, “November seventeenth” → November 17th), decimals and percentages. A single “one” to “ten” stays a word, so “one of them” reads normally. This works for English, and you can switch it off in Settings.</p></div></details>
+      <details><summary>Can I say punctuation, symbols and email addresses?</summary><div class="a"><p>Yes. Punctuation is added automatically, and you can also say it: “comma”, “question mark”, “open bracket”, “hashtag”, “slash”, “underscore”. Say “john at gmail dot com” and Bolikh types john@gmail.com. “Period” and “dash” are not treated as symbols because they are everyday words; say “full stop” and “hyphen” instead. You can switch this off in Settings.</p></div></details>
+      <details><summary>What voice commands are there?</summary><div class="a"><p>“New line” and “new paragraph” for line breaks. “Bullet point” starts a bullet. “Numbered list” starts a list and “next item” adds the next number. “All caps” before a word writes it in capitals. “Scratch that” in the middle of a sentence drops what you said before it; said on its own, it deletes the dictation you just made.</p></div></details>
       <details><summary>Why does it remove “um” and “uh”?</summary><div class="a"><p>Filler sounds are almost never wanted in written text, so they are taken out and the sentence is tidied up. Real words are left alone. You can switch this off in Settings if you want a word-for-word transcript.</p></div></details>
       <details><summary>Does Bolikh record or store my voice?</summary><div class="a"><p>No. Audio stays in memory only while you speak and is discarded as soon as it has been turned into text. Nothing is sent to us or anyone else.</p></div></details>
       <details><summary>Is Bolikh open source?</summary><div class="a"><p>Yes. The full source code is on <a href="https://github.com/alban-sheikh/bolikh" target="_blank" rel="noopener">GitHub</a> under the GPL-3.0 licence, so anyone can read it, check what it does with their voice, and build it themselves.</p></div></details>
@@ -495,7 +497,7 @@
 /* Downloads come from the public releases page. Each file keeps the same name for every version,
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {
-  version: "0.2.3",
+  version: "0.2.4",
   base: "downloads/",   /* served by this website, copied from the latest GitHub release on every deploy */
   github: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
   files: {

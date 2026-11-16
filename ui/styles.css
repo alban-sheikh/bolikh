@@ -224,3 +224,7 @@ code, .code { font-family: var(--mono); font-size: 12.5px; background: var(--pan
   .brand div, .nav button span, .privacy-chip { display: none; }
   .tips, .stats { grid-template-columns: 1fr; }
 }
+
+/* Settings that only apply on Linux */
+.linux-only{display:none!important}
+.os-linux .linux-only{display:flex!important}

@@ -53,6 +53,8 @@ pub struct Core {
     history: Mutex<history::History>,
     tray: Mutex<Option<Tray>>,
     hud_gen: AtomicU64,
+    /// Length in characters of the last dictation typed, for "scratch that".
+    last_inserted: Mutex<usize>,
 }
 
 #[derive(Serialize, Clone)]
@@ -245,6 +247,10 @@ impl Core {
                 }
             };
             let settings = core.settings();
+            if settings.voice_commands && text::is_scratch_only(&raw) {
+                core.scratch_last();
+                return;
+            }
             let text = text::process(&raw, &settings);
             if text.trim().is_empty() {
                 core.hud_message("Didn't catch that");
@@ -280,6 +286,7 @@ impl Core {
             let saved = if restore { Some(insert::snapshot()) } else { None };
             match insert::paste(&text) {
                 insert::Outcome::Pasted => {
+                    *core.last_inserted.lock().unwrap() = text.chars().count();
                     if let Some(saved) = saved {
                         let app = core.app.clone();
                         std::thread::spawn(move || {
@@ -292,6 +299,23 @@ impl Core {
                     log::warn!("auto-paste unavailable: {reason}");
                     core.hud_message("Copied: press paste to insert");
                 }
+            }
+        });
+    }
+
+    /// "Scratch that" said on its own: backspace over the previous dictation.
+    fn scratch_last(self: &Arc<Self>) {
+        let count = std::mem::take(&mut *self.last_inserted.lock().unwrap());
+        if count == 0 {
+            self.hud_message("Nothing to scratch");
+            return;
+        }
+        self.hud("hidden", None, None);
+        let core = self.clone();
+        let _ = self.app.run_on_main_thread(move || {
+            if let Err(reason) = insert::backspace(count) {
+                log::warn!("scratch that failed: {reason}");
+                core.hud_message("Couldn't delete the last dictation");
             }
         });
     }
@@ -569,6 +593,7 @@ pub fn run() {
                 history: Mutex::new(history::History::load(data_dir.join("history.json"))),
                 tray: Mutex::new(None),
                 hud_gen: AtomicU64::new(0),
+                last_inserted: Mutex::new(0),
             });
             app.manage(core.clone());
 

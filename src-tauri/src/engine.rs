@@ -149,3 +149,34 @@ impl Engine {
             .map_err(|e| format!("Transcription failed: {e}"))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Developer check against the real model: shows what it writes for spoken phrases and
+    /// what the clean-up turns that into. Needs the model already downloaded by the app.
+    ///   BOLIKH_MODELS=<app data>/models BOLIKH_WAVS=<folder of 16 kHz mono 16-bit .wav> \
+    ///   cargo test --lib real_model -- --ignored --nocapture
+    #[test]
+    #[ignore]
+    fn real_model() {
+        let engine = Engine::new(PathBuf::from(std::env::var("BOLIKH_MODELS").unwrap()));
+        engine.prepare(&|_| {}).unwrap();
+        let settings = crate::settings::Settings { add_trailing_space: false, ..Default::default() };
+        let mut files: Vec<_> = std::fs::read_dir(std::env::var("BOLIKH_WAVS").unwrap())
+            .unwrap()
+            .filter_map(|e| e.ok().map(|e| e.path()))
+            .filter(|p| p.extension().is_some_and(|x| x == "wav"))
+            .collect();
+        files.sort();
+        for path in files {
+            let bytes = std::fs::read(&path).unwrap();
+            let data = bytes.windows(4).position(|w| w == b"data").unwrap() + 8;
+            let samples: Vec<f32> =
+                bytes[data..].chunks_exact(2).map(|b| i16::from_le_bytes([b[0], b[1]]) as f32 / 32768.0).collect();
+            let raw = engine.transcribe_16k(&samples).unwrap();
+            println!("{}\n  model: {raw}\n  typed: {}", path.display(), crate::text::process(&raw, &settings));
+        }
+    }
+}

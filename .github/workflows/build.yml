@@ -43,8 +43,11 @@ jobs:
           node-version: 20
           cache: npm
 
+      # Pinned: Rust 1.100.0 changed the build folder layout, which breaks the Windows
+      # build step of ort-sys 2.0.0-rc.12. Raise this once ort is updated.
       - uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: "1.99.1"
           targets: ${{ matrix.rust_targets }}
 
       - uses: swatinem/rust-cache@v2

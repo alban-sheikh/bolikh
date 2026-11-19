@@ -57,12 +57,21 @@
         "recommends": [
           "wtype",
           "ydotool"
+        ],
+        "conflicts": [
+          "aazad-voice"
+        ],
+        "replaces": [
+          "aazad-voice"
         ]
       },
       "rpm": {
         "depends": [
           "alsa-lib",
           "libayatana-appindicator-gtk3"
+        ],
+        "obsoletes": [
+          "aazad-voice"
         ]
       }
     },

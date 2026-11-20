@@ -87,6 +87,10 @@ pub struct Settings {
     pub remove_repeats: bool,
     pub spoken_symbols: bool,
     pub keep_history: bool,
+    /// Dictations older than this many days are deleted from history. 0 = keep them.
+    pub history_days: u32,
+    /// Show the recording indicator at the top of the screen instead of the bottom.
+    pub hud_at_top: bool,
     pub linux_paste: LinuxPaste,
     /// Name of the microphone to record from; empty follows the system default.
     pub microphone: String,
@@ -112,6 +116,8 @@ impl Default for Settings {
             remove_repeats: true,
             spoken_symbols: true,
             keep_history: true,
+            history_days: 0,
+            hud_at_top: false,
             linux_paste: LinuxPaste::Auto,
             microphone: String::new(),
             auto_stop_seconds: 0,

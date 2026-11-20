@@ -126,6 +126,28 @@ function renderDictionary() {
   });
 }
 
+// Words to leave out: the user's own filler words.
+function renderSkipWords() {
+  const list = $("#skip-list");
+  const items = status.settings.removeWords || [];
+  list.replaceChildren(...items.map((w, i) => {
+    const del = el("button", { className: "chip-x", title: "Remove", type: "button", textContent: "×" });
+    del.onclick = () => save({ removeWords: items.filter((_, j) => j !== i) }).then(renderSkipWords);
+    return el("span", { className: "word-chip" }, el("span", { textContent: w }), del);
+  }));
+  if (!items.length) list.append(el("span", { className: "chips-empty", textContent: "Nothing here yet." }));
+}
+function addSkipWord() {
+  const input = $("#skip-word");
+  const word = input.value.trim().replace(/\s+/g, " ");
+  const items = status.settings.removeWords || [];
+  if (word && !items.some((w) => w.toLowerCase() === word.toLowerCase())) save({ removeWords: [...items, word] }).then(renderSkipWords);
+  input.value = "";
+  input.focus();
+}
+$("#skip-add").addEventListener("click", addSkipWord);
+$("#skip-word").addEventListener("keydown", (e) => { if (e.key === "Enter") addSkipWord(); });
+
 // ---------- History ----------
 async function loadHistory() {
   [history, totals] = await Promise.all([invoke("get_history"), invoke("get_totals")]);
@@ -245,6 +267,7 @@ function render() {
   $("#autostart").checked = status.autostart;
   $("#about-version").textContent = `Version ${status.version}`;
   renderDictionary();
+  renderSkipWords();
 
   // Status rows
   const rows = $("#status-rows");

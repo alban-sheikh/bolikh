@@ -18,12 +18,17 @@ GROUPS = [
     ("Lines and lists",
      "Say the command in the middle of your sentence, without pausing for it.",
      [("Hi Priya new line thanks for the update", "Hi Priya\nThanks for the update"),
+      ("First point change line second point", "First point\nSecond point"),
       ("Here is the plan new paragraph first we test", "Here is the plan\n\nFirst we test"),
+      ("Hello team Bolikh new line thanks", "Hello team\nThanks"),
+      ("Notes create a bullet point call Harsh", "Notes\n• Call Harsh"),
       ("Things to buy bullet point milk bullet point eggs", "Things to buy\n• Milk\n• Eggs"),
       ("Shopping numbered list milk next item eggs next item bread", "Shopping:\n1. Milk\n2. Eggs\n3. Bread"),
       ("name tab key age", "name	age")],
      "A numbered list keeps counting while you keep talking. When you start a new dictation, say "
-     "“numbered list” again and it starts from 1."),
+     "“numbered list” again and it starts from 1. You can say “Bolikh”, “create”, “insert” or “add” "
+     "before any of these commands. To write words like “new line” as ordinary text, switch on "
+     "“Commands need a lead word” in Settings; the commands then only work with a lead word."),
     ("Fixing and emphasis",
      "Change your mind while speaking, or right after.",
      [("Send it today scratch that send it tomorrow", "Send it tomorrow"),

@@ -328,3 +328,18 @@ footer .about p{color:var(--muted);max-width:42ch}
 /* AI prompt demo scene */
 .ai-av{background:var(--acc);color:var(--on)}
 .scene.ai .msgs{padding-top:14px}
+
+/* Guide */
+.gcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:900px){.gcards{grid-template-columns:minmax(0,1fr)}}
+.gcard{border:1px solid var(--rule);border-radius:18px;padding:24px;background:var(--surface);display:grid;gap:12px;min-width:0}
+.gcard h3{font-family:var(--f-word);font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:1.35rem;line-height:1}
+.gcard .gintro,.gcard .gn{font-size:.9rem;color:var(--muted)}
+.gt{display:grid;border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.gr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;padding:10px 14px;align-items:start;min-width:0}
+.gr+.gr{border-top:1px solid var(--rule)}
+.gr.gh{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:var(--raised)}
+.gs{font-size:.92rem;overflow-wrap:anywhere}
+.gs::before{content:"“";color:var(--muted)}.gs::after{content:"”";color:var(--muted)}
+.go{font-family:var(--f-mono);font-size:.8rem;white-space:pre-wrap;tab-size:6;color:var(--acc);overflow-wrap:anywhere}
+@media (max-width:1120px){nav.main{gap:16px}}

@@ -101,6 +101,8 @@ pub struct Settings {
     /// The speech model is dropped from memory after this many idle minutes. 0 = never.
     pub idle_unload_minutes: u32,
     pub replacements: Vec<Replacement>,
+    /// Words and phrases the user never wants typed (their own filler words).
+    pub remove_words: Vec<String>,
     pub onboarded: bool,
 }
 
@@ -126,6 +128,7 @@ impl Default for Settings {
             auto_stop_seconds: 0,
             idle_unload_minutes: 0,
             replacements: Vec::new(),
+            remove_words: Vec::new(),
             onboarded: false,
         }
     }

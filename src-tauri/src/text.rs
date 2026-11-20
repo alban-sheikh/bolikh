@@ -20,6 +20,10 @@ pub fn process(raw: &str, s: &Settings) -> String {
     if s.remove_repeats {
         text = remove_repeats(&text);
     }
+    text = remove_words(&text, &s.remove_words);
+    if text.is_empty() {
+        return text;
+    }
     if s.voice_commands {
         text = apply_scratch(&text);
     }
@@ -133,6 +137,53 @@ static FILLER: Lazy<Regex> = Lazy::new(|| {
 
 fn is_word_joiner(c: char) -> bool {
     c.is_alphabetic() || matches!(c, '\'' | '’' | '-')
+}
+
+/// Takes out the user's own filler words ("like", "you know", "basically") wherever they are
+/// said, together with the commas the model puts around them, and capitalises what follows
+/// when the word opened a sentence.
+pub fn remove_words(input: &str, words: &[String]) -> String {
+    let alternatives: Vec<String> = words
+        .iter()
+        .map(|w| w.trim())
+        .filter(|w| !w.is_empty())
+        .map(|w| w.split_whitespace().map(regex::escape).collect::<Vec<_>>().join(r"\s+"))
+        .collect();
+    if alternatives.is_empty() {
+        return input.to_string();
+    }
+    let Ok(re) = Regex::new(&format!(r"(?i)(?:,\s*)?\b(?:{})\b(?:\s*,)?", alternatives.join("|"))) else {
+        return input.to_string();
+    };
+    let mut text = String::new();
+    let mut cursor = 0;
+    for m in re.find_iter(input) {
+        // Leave parts of hyphenated or apostrophised words alone ("like-minded", "like's").
+        let core = m.as_str().trim_matches(|c: char| c == ',' || c.is_whitespace());
+        let core_start = m.start() + m.as_str().find(core).unwrap_or(0);
+        let before = input[..core_start].chars().last();
+        let after = input[core_start + core.len()..].chars().next();
+        if before.is_some_and(is_word_joiner) || after.is_some_and(is_word_joiner) {
+            continue;
+        }
+        text.push_str(&input[cursor..m.start()]);
+        let prior = text.trim_end();
+        let opens_sentence = prior.is_empty() || prior.ends_with(['.', '!', '?', '\n']);
+        text.push(if opens_sentence { MARKER } else { ' ' });
+        cursor = m.end();
+    }
+    text.push_str(&input[cursor..]);
+
+    static TIDY: Lazy<Vec<(Regex, &'static str)>> = Lazy::new(|| {
+        [(r"[ \t]{2,}", " "), (r"[ \t]+([,.;:!?])", "$1"), ("\u{1}[ \t,.;:!?]+", "\u{1}"), (r"^[ \t]+", "")]
+            .into_iter()
+            .map(|(p, r)| (Regex::new(p).unwrap(), r))
+            .collect()
+    });
+    for (re, to) in TIDY.iter() {
+        text = re.replace_all(&text, *to).into_owned();
+    }
+    capitalize_marked(text.trim_end_matches([' ', '\t']), false)
 }
 
 pub fn remove_fillers(input: &str) -> String {
@@ -979,6 +1030,26 @@ mod tests {
         let mut off = settings();
         off.spoken_symbols = false;
         assert_eq!(process("Hello comma world", &off), "Hello comma world");
+    }
+
+    #[test]
+    fn removes_the_users_own_filler_words() {
+        let mut s = settings();
+        s.remove_words = vec!["like".into(), "you know".into(), " Basically ".into(), "".into()];
+        for (said, typed) in [
+            ("I was, like, going to the shop.", "I was going to the shop."),
+            ("It was like really good.", "It was really good."),
+            ("Like, I think we should wait.", "I think we should wait."),
+            ("So, you know, we waited. Basically it worked.", "So we waited. It worked."),
+            ("It was good, you know.", "It was good."),
+            ("We are like-minded and I dislike delays.", "We are like-minded and I dislike delays."),
+            ("Like.", ""),
+            ("It worked. Like. We left.", "It worked. We left."),
+        ] {
+            assert_eq!(process(said, &s).trim_end(), typed, "said: {said}");
+        }
+        // Nothing listed: nothing removed.
+        assert_eq!(process("I was, like, going.", &settings()).trim_end(), "I was, like, going.");
     }
 
     #[test]

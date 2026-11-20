@@ -210,30 +210,35 @@ pub fn remove_fillers(input: &str) -> String {
 /// the model adds after it is dropped ("Hello. New line. World" → "Hello.\nWorld").
 static COMMANDS: Lazy<Vec<(Regex, &'static str)>> = Lazy::new(|| {
     [
-        ("new paragraph", "\n\n"),
-        ("new line", "\n"),
-        ("next line", "\n"),
-        ("bullet point", "\n• \u{1}"),
-        ("tab key", "\t"),
+        // The model also writes these as "Newline", "new-line" or in the plural.
+        (r"new[\s-]*paragraphs?", "\n\n"),
+        (r"new[\s-]*lines?", "\n"),
+        (r"next\s+line", "\n"),
+        (r"bullet\s+points?", "\n• \u{1}"),
+        (r"tab\s+key", "\t"),
     ]
     .into_iter()
     .map(|(phrase, out)| {
-        let p = format!(r"(?i)\s*\b{}\b[,.;:!?]?\s*", phrase.replace(' ', r"\s+"));
+        let p = format!(r"(?i)\s*\b{phrase}\b[,.;:!?]?\s*");
         (Regex::new(&p).unwrap(), out)
     })
     .collect()
 });
 
 fn apply_voice_commands(input: &str) -> String {
-    static LIST: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)\s*\bnumbered\s+list\b[,.;:!?]?\s*").unwrap());
-    static ITEM: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)[,.;:!?]?\s*\bnext\s+item\b[,.;:!?]?\s*").unwrap());
+    static LIST: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)[,;:]?\s*\bnumber(?:ed|ing)?\s+lists?\b[,.;:!?]?\s*").unwrap());
+    static ITEM: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)[,.;:!?]?\s*\bnext\s+items?\b[,.;:!?]?\s*").unwrap());
     static CAPS: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"(?i)\ball\s+caps\b[,.]?\s+([\p{L}\p{N}'’-]+)").unwrap());
 
     let mut text = input.to_string();
     // "Numbered list milk, next item eggs" → "1. Milk\n2. Eggs". "Next item" only counts inside a list.
     if let Some(start) = LIST.find(&text) {
-        let (head, tail) = (text[..start.start()].to_string(), text[start.end()..].to_string());
+        let (mut head, tail) = (text[..start.start()].to_string(), text[start.end()..].to_string());
+        // "Shopping list, numbered list milk" → "Shopping list:" introduces the list.
+        if head.chars().last().is_some_and(|c| c.is_alphanumeric()) {
+            head.push(':');
+        }
         let mut n = 1;
         let mut list = format!("\n1. {MARKER}");
         let mut cursor = 0;
@@ -254,7 +259,34 @@ fn apply_voice_commands(input: &str) -> String {
     if text.starts_with("\n• ") || text.starts_with("\n1. ") {
         text.remove(0);
     }
-    capitalize_marked(&text, true)
+    capitalize_marked(&drop_hanging_commas(&text), true)
+}
+
+/// The model often puts a comma before a spoken command, which would be left hanging at the end
+/// of the line. It is kept after a short opening such as "Dear team," or "Thanks,", where a
+/// comma belongs, and dropped after list items and longer lines.
+fn drop_hanging_commas(text: &str) -> String {
+    if !text.contains('\n') {
+        return text.to_string();
+    }
+    let lines: Vec<&str> = text.split('\n').collect();
+    let last = lines.len() - 1;
+    let mut out: Vec<String> = Vec::with_capacity(lines.len());
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim_end();
+        let hanging = i < last && (trimmed.ends_with(',') || trimmed.ends_with(';'));
+        let is_item = trimmed.starts_with("• ") || trimmed.split(". ").next().is_some_and(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()));
+        let before_list = i < last && (lines[i + 1].starts_with("• ") || lines[i + 1].starts_with("1. "));
+        if hanging && !is_item && before_list {
+            // "Things to do, bullet point …" → "Things to do:" introduces the list.
+            out.push(format!("{}:", &trimmed[..trimmed.len() - 1]));
+        } else if hanging && (is_item || trimmed.split_whitespace().count() > 3) {
+            out.push(trimmed[..trimmed.len() - 1].to_string());
+        } else {
+            out.push(line.to_string());
+        }
+    }
+    out.join("\n")
 }
 
 /// Top-level domains recognised after a spoken "dot".
@@ -926,6 +958,16 @@ mod tests {
             ("Bullet point milk. Bullet point eggs.", "• Milk.\n• Eggs."),
             ("Shopping. Numbered list milk, next item eggs, next item bread.", "Shopping.\n1. Milk\n2. Eggs\n3. Bread."),
             ("The next item is ready.", "The next item is ready."),
+            // What the model really wrote for a user: "number list", and commas around commands.
+            (
+                "Create a shopping list, number list, milk, next item eggs, next item coffee, next item aroma.",
+                "Create a shopping list:\n1. Milk\n2. Eggs\n3. Coffee\n4. Aroma.",
+            ),
+            ("Hello team, Newline. I will be late today, new line, thanks.", "Hello team,\nI will be late today\nThanks."),
+            ("Price first. New paragraph. Speed second.", "Price first.\n\nSpeed second."),
+            ("Things to do. Bullet point call Harsh, bullet point send the invoice.", "Things to do.\n• Call Harsh\n• Send the invoice."),
+            ("I read the newspaper online.", "I read the newspaper online."),
+            ("Things to do, bullet point call Harsh, bullet point send the invoice.", "Things to do:\n• Call Harsh\n• Send the invoice."),
             ("This is all caps urgent, please.", "This is URGENT, please."),
             ("Name tab key age", "Name\tage"),
             ("Send it Monday. Scratch that. send it Tuesday.", "Send it Tuesday."),

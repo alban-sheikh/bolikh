@@ -75,8 +75,10 @@ GROUPS = [
     ("Automatic clean-up",
      "Bolikh tidies what you say without being asked.",
      [("I I think the the plan is um good", "I think the plan is good")],
-     "For names and special words Bolikh gets wrong, open Dictionary and add what it wrote and what it "
-     "should write. Every feature in this guide can be switched off in Settings."),
+     "Have your own habit words, such as “like” or “you know”? Add them under “Words to leave out” in "
+     "Dictionary and Bolikh removes those too. For names and special words Bolikh gets wrong, add what "
+     "it wrote and what it should write, also in Dictionary. Every feature in this guide can be "
+     "switched off in Settings."),
 ]
 
 esc = html.escape

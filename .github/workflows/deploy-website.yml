@@ -66,11 +66,34 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          d="$RUNNER_TEMP/site/website/downloads"
+          site="$RUNNER_TEMP/site/website"
+          d="$site/downloads"
           mkdir -p "$d"
-          gh release download --repo "$GITHUB_REPOSITORY" --dir "$d" --pattern 'Bolikh-*' --pattern 'SHA256SUMS.txt'
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)
+          ver="${tag#v}"
+          case "$ver" in ''|*[!0-9.]*) echo "::error::Unexpected release tag: $tag"; exit 1 ;; esac
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --dir "$d" --pattern 'Bolikh-*' --pattern 'SHA256SUMS.txt'
           (cd "$d" && sha256sum -c SHA256SUMS.txt)
-          ls -la "$d"
+
+          # On this website the installers carry the version in their name
+          # (Bolikh-0.3.0-macos-apple-silicon.dmg), so a downloaded file says which version it is.
+          # The release on GitHub keeps the plain names, which keeps its "latest" links working.
+          cd "$d"
+          for f in Bolikh-*; do mv "$f" "Bolikh-$ver-${f#Bolikh-}"; done
+          sed -i "s/  Bolikh-/  Bolikh-$ver-/" SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+          ls -la
+
+          # The pages name the files in their instructions and show the version: fill both in.
+          cd "$site"
+          names='macos-apple-silicon\.dmg|windows-x64-setup\.exe|linux-amd64\.deb|linux-x86_64\.rpm'
+          sed -i -E "s/Bolikh-($names)/Bolikh-$ver-\\1/g" ./*.html
+          sed -i -E "s|(<span id=\"ver\">)[^<]*|\\1$ver|; s|^(  version: \")[^\"]*|\\1$ver|" index.html
+          grep -q "Bolikh-$ver-linux-amd64.deb" index.html
+          grep -q "<span id=\"ver\">$ver<" index.html
+          # Tells the download counter which file names to send people to.
+          printf '{"version":"%s"}\n' "$ver" > api/_release.json
+          echo "ver=$ver" >> "$GITHUB_ENV"
 
       - name: Deploy
         working-directory: ${{ runner.temp }}/site
@@ -84,7 +107,7 @@ jobs:
         run: |
           sleep 5
           fail=0
-          for p in "" downloads/SHA256SUMS.txt downloads/Bolikh-macos-apple-silicon.dmg downloads/Bolikh-windows-x64-setup.exe downloads/Bolikh-linux-amd64.deb downloads/Bolikh-linux-x86_64.rpm; do
+          for p in "" downloads/SHA256SUMS.txt "downloads/Bolikh-$ver-macos-apple-silicon.dmg" "downloads/Bolikh-$ver-windows-x64-setup.exe" "downloads/Bolikh-$ver-linux-amd64.deb" "downloads/Bolikh-$ver-linux-x86_64.rpm"; do
             code=$(curl -s -o /dev/null -I -w "%{http_code}" "https://bolikh.aazadsoftwaresolutions.in/$p")
             echo "/$p → HTTP $code"
             [ "$code" = "200" ] || fail=1
@@ -92,5 +115,5 @@ jobs:
           # The download counter must redirect to the hosted file (HEAD requests aren't counted).
           loc=$(curl -s -o /dev/null -I -w "%{http_code} %{redirect_url}" "https://bolikh.aazadsoftwaresolutions.in/api/download/mac")
           echo "/api/download/mac → $loc"
-          case "$loc" in "302 "*"/downloads/Bolikh-macos-apple-silicon.dmg") ;; *) fail=1 ;; esac
+          case "$loc" in "302 "*"/downloads/Bolikh-$ver-macos-apple-silicon.dmg") ;; *) fail=1 ;; esac
           exit $fail

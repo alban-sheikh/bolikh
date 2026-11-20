@@ -11,3 +11,4 @@ src-tauri/vcruntime/
 .vercel
 .env*
 website/downloads/
+website/api/_release.json

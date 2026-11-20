@@ -10,6 +10,14 @@ const FILES = {
 };
 const GITHUB = "https://github.com/alban-sheikh/bolikh/releases/latest/download/";
 
+// On this website the installers carry the version in their name. The deploy workflow renames
+// them and writes the version to _release.json; without that file the plain names are used.
+let VERSION = "";
+try {
+  VERSION = String(require("./_release.json").version || "");
+} catch {}
+for (const f of Object.values(FILES)) f.local = VERSION ? f.file.replace(/^Bolikh-/, `Bolikh-${VERSION}-`) : f.file;
+
 function redis() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;

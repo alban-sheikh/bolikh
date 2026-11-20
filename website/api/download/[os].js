@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     return res.end("Unknown download. Use mac, win, deb or rpm.");
   }
   const fromGithub = req.query && req.query.from === "github";
-  const target = fromGithub ? GITHUB + entry.file : "/downloads/" + entry.file;
+  const target = fromGithub ? GITHUB + entry.file : "/downloads/" + entry.local;
 
   const ua = req.headers["user-agent"] || "";
   if (req.method === "GET" && isPerson(ua)) {

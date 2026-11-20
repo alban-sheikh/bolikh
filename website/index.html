@@ -323,7 +323,7 @@
 <section class="g" id="download">
   <div class="in">
     <div class="sh">
-      <span class="eb">Download · version <span id="ver">0.2.5</span></span>
+      <span class="eb">Download · version <span id="ver">0.2.6</span></span>
       <h2 class="h2">One app for macOS, Windows and Linux.</h2>
       <p class="lead">Pick your system. On first launch, Bolikh walks you through microphone and permission setup and downloads the speech model.</p>
     </div>
@@ -418,7 +418,8 @@
         <details data-os="all"><summary>The text doesn’t appear in one particular app</summary><div class="a"><p>On Windows, Bolikh can’t type into apps that run as administrator unless Bolikh runs as administrator too. On Linux, if text doesn’t appear in a terminal, see “Dictation doesn’t work in a Linux terminal” below.</p></div></details>
         <details data-os="all"><summary>The text appears in the wrong place</summary><div class="a"><p>Bolikh types wherever your cursor is when you let go of the key. Click into the text box first, then hold the key and speak.</p></div></details>
         <details data-os="all"><summary>I clicked “Don’t Allow” for the microphone</summary><div class="a"><p>macOS: <b>System Settings → Privacy &amp; Security → Microphone</b>, switch Bolikh on, then quit and reopen Bolikh. Windows: <b>Settings → Privacy &amp; security → Microphone</b>, turn on microphone access and “Let desktop apps access your microphone”.</p></div></details>
-        <details data-os="all"><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>Bolikh uses your system’s default input. Change it in your sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>), then try again.</p></div></details>
+        <details data-os="all"><summary>Bolikh is listening to the wrong microphone</summary><div class="a"><p>On macOS and Windows, open Bolikh’s <b>Settings</b> and choose the microphone under <b>Microphone</b>, then click <b>Test</b> to check it. “System default” follows your computer’s sound settings (macOS: <b>System Settings → Sound → Input</b>; Windows: <b>Settings → System → Sound → Input</b>). On Linux, Bolikh always uses the input chosen in your system’s sound settings.</p></div></details>
+        <details data-os="all"><summary>Bolikh says “No sound from the microphone” or “Too quiet”</summary><div class="a"><p>“No sound from the microphone” means the recording was silent: the microphone is muted, unplugged, or the wrong one is selected. “Too quiet” means Bolikh heard something but couldn’t make out words. Open Bolikh’s <b>Settings</b>, click <b>Test</b> under <b>Microphone</b>, and if it reports very quiet or no sound, pick another microphone or raise the input volume in your computer’s sound settings.</p></div></details>
         <details data-os="all"><summary>The speech model download stopped or failed</summary><div class="a"><p>Check your internet connection and that about 1 GB of disk space is free, then click <b>Retry</b> in the setup screen. On office networks, the firewall must allow <code>huggingface.co</code>. Every file is checked when it arrives, so an interrupted download can’t leave a broken model behind.</p></div></details>
         <details data-os="all"><summary>Some words come out wrong</summary><div class="a"><p>Speak at a normal pace, keep a steady distance from the microphone and reduce background noise. A headset helps in noisy rooms. For names and jargon it keeps getting wrong, add them in the <b>Dictionary</b> tab.</p></div></details>
         <details data-os="all"><summary>My antivirus warns about Bolikh or removes it</summary><div class="a"><p>Bolikh isn’t code-signed yet, and some antivirus tools are suspicious of any unsigned app. Bolikh contains no ads, trackers or network code beyond the one model download, and its full source code is public. Restore it from quarantine or add it to your antivirus’ allowed apps.</p></div></details>
@@ -507,7 +508,7 @@
 /* Downloads come from the public releases page. Each file keeps the same name for every version,
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {
-  version: "0.2.5",
+  version: "0.2.6",
   base: "downloads/",   /* served by this website, copied from the latest GitHub release on every deploy */
   github: "https://github.com/alban-sheikh/bolikh/releases/latest/download/",
   files: {

@@ -40,14 +40,20 @@ pub enum ModelState {
     Failed { error: String },
 }
 
+/// Longest piece of audio handed to the model in one go, in seconds. The model itself fails
+/// beyond about 6.5 minutes; one-minute pieces also keep memory use flat on long dictations.
+const MAX_PIECE_SECS: usize = 60;
+
 pub struct Engine {
     dir: PathBuf,
     model: Mutex<Option<ParakeetModel>>,
+    /// Held while the model is being read from disk, so two callers never load it twice.
+    loading: Mutex<()>,
 }
 
 impl Engine {
     pub fn new(models_root: PathBuf) -> Self {
-        Self { dir: models_root.join(MODEL_DIR_NAME), model: Mutex::new(None) }
+        Self { dir: models_root.join(MODEL_DIR_NAME), model: Mutex::new(None), loading: Mutex::new(()) }
     }
 
     pub fn is_ready(&self) -> bool {
@@ -70,13 +76,28 @@ impl Engine {
             self.download(&|p| on_state(ModelState::Downloading { progress: p }))?;
         }
         on_state(ModelState::Loading);
+        self.load()?;
+        on_state(ModelState::Ready);
+        Ok(())
+    }
+
+    /// Reads the downloaded model into memory if it isn't there. Blocking (a few seconds).
+    pub fn load(&self) -> Result<(), String> {
+        let _one_at_a_time = self.loading.lock().unwrap();
+        if self.is_ready() {
+            return Ok(());
+        }
         let model = ParakeetModel::load(&self.dir, &Quantization::Int8)
             .map_err(|e| format!("Could not load speech model: {e}"))?;
         *self.model.lock().unwrap() = Some(model);
         // Warm-up so the first real dictation is instant.
         let _ = self.transcribe_16k(&vec![0.0; 16_000]);
-        on_state(ModelState::Ready);
         Ok(())
+    }
+
+    /// Drops the model from memory. `load` brings it back from disk.
+    pub fn unload(&self) {
+        *self.model.lock().unwrap() = None;
     }
 
     fn download(&self, progress: &dyn Fn(f32)) -> Result<(), String> {
@@ -134,8 +155,23 @@ impl Engine {
         Ok(())
     }
 
-    /// Transcribe 16 kHz mono audio.
+    /// Transcribe 16 kHz mono audio of any length. Long audio is cut at pauses into pieces the
+    /// model can take, and the pieces' text is joined.
     pub fn transcribe_16k(&self, audio: &[f32]) -> Result<String, String> {
+        let mut text = String::new();
+        for piece in crate::audio::split_long(audio, MAX_PIECE_SECS) {
+            let part = self.transcribe_piece(piece)?;
+            if !part.is_empty() {
+                if !text.is_empty() {
+                    text.push(' ');
+                }
+                text.push_str(&part);
+            }
+        }
+        Ok(text)
+    }
+
+    fn transcribe_piece(&self, audio: &[f32]) -> Result<String, String> {
         let mut guard = self.model.lock().unwrap();
         let model = guard.as_mut().ok_or("Speech model is not loaded yet.")?;
         let mut samples = audio.to_vec();
@@ -175,8 +211,28 @@ mod tests {
             let data = bytes.windows(4).position(|w| w == b"data").unwrap() + 8;
             let samples: Vec<f32> =
                 bytes[data..].chunks_exact(2).map(|b| i16::from_le_bytes([b[0], b[1]]) as f32 / 32768.0).collect();
-            let raw = engine.transcribe_16k(&samples).unwrap();
+            // Same path as the app: silence trimmed first.
+            let speech = crate::audio::trim_silence(&samples);
+            println!("  {:.1} s, {:.1} s after trimming", samples.len() as f32 / 16_000.0, speech.len() as f32 / 16_000.0);
+            let raw = engine.transcribe_16k(speech).unwrap();
             println!("{}\n  model: {raw}\n  typed: {}", path.display(), crate::text::process(&raw, &settings));
         }
+    }
+
+    /// Developer check of "free memory when idle": the model can be dropped and brought back.
+    ///   BOLIKH_MODELS=<app data>/models cargo test --lib reloads_after_unload -- --ignored --nocapture
+    #[test]
+    #[ignore]
+    fn reloads_after_unload() {
+        let engine = Engine::new(std::env::var("BOLIKH_MODELS").expect("set BOLIKH_MODELS").into());
+        engine.load().unwrap();
+        assert!(engine.is_ready());
+        engine.unload();
+        assert!(!engine.is_ready());
+        assert!(engine.transcribe_16k(&vec![0.0; 16_000]).is_err());
+        let t = std::time::Instant::now();
+        engine.load().unwrap();
+        println!("reloaded in {:?}", t.elapsed());
+        assert!(engine.transcribe_16k(&vec![0.0; 16_000]).is_ok());
     }
 }

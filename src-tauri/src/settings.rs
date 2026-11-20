@@ -90,6 +90,10 @@ pub struct Settings {
     pub linux_paste: LinuxPaste,
     /// Name of the microphone to record from; empty follows the system default.
     pub microphone: String,
+    /// Hands-free dictation ends by itself after this many seconds without speech. 0 = never.
+    pub auto_stop_seconds: u32,
+    /// The speech model is dropped from memory after this many idle minutes. 0 = never.
+    pub idle_unload_minutes: u32,
     pub replacements: Vec<Replacement>,
     pub onboarded: bool,
 }
@@ -110,6 +114,8 @@ impl Default for Settings {
             keep_history: true,
             linux_paste: LinuxPaste::Auto,
             microphone: String::new(),
+            auto_stop_seconds: 0,
+            idle_unload_minutes: 0,
             replacements: Vec::new(),
             onboarded: false,
         }

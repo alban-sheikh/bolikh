@@ -153,7 +153,7 @@ def page(key):
     s = s[:a] + head + s[b:]
 
     # body
-    btns = "".join(f'<a class="btn {c}" href="/api/download/{f}">{label}</a>' for f, label, c in p["buttons"])
+    btns = "".join(f'<a class="btn {c}" rel="nofollow" href="/api/download/{f}">{label}</a>' for f, label, c in p["buttons"])
     points = "".join(f'<div style="display:grid;gap:6px"><h3 style="font-weight:600;font-size:1.08rem">{t}</h3>'
                      f'<p class="muted">{d}</p></div>' for t, d in p["points"])
     others = " · ".join(f'<a href="{PAGES[k]["file"]}">Bolikh for {PAGES[k]["name"]}</a>' for k in ORDER if k != key)

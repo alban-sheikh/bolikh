@@ -1,7 +1,7 @@
 // GET /api/download/mac  (or win, deb, rpm)          → counts one download, then sends the file from this site
 // GET /api/download/mac?from=github                   → counts it under "GitHub", then sends the file from GitHub
-// HEAD requests, link previews and bots are not counted. If counting fails the download still starts.
-const { FILES, GITHUB, pipeline, day, BOT } = require("../_counter");
+// HEAD requests, link previews, bots and anything that is not a common web browser are not counted. If counting fails the download still starts.
+const { FILES, GITHUB, pipeline, day, browser, isPerson } = require("../_counter");
 
 module.exports = async (req, res) => {
   const key = String((req.query && req.query.os) || "").toLowerCase();
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   const target = fromGithub ? GITHUB + entry.file : "/downloads/" + entry.file;
 
   const ua = req.headers["user-agent"] || "";
-  if (req.method === "GET" && !BOT.test(ua)) {
+  if (req.method === "GET" && isPerson(ua)) {
     const d = day();
     const src = fromGithub ? "github" : "site";
     try {
@@ -25,6 +25,7 @@ module.exports = async (req, res) => {
         ["INCR", `dl:src:${src}`],
         ["INCR", `dl:day:${d}`],
         ["INCR", `dl:day:${d}:${key}`],
+        ["INCR", `dl:browser:${browser(ua)}`],
       ]);
     } catch (e) {
       console.error("download count failed:", e.message);

@@ -597,6 +597,12 @@ First we test</span></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+/* Counts this page view as a plain number (no cookie, no identifier). The session flag only tells a first page from a later one. */
+try{let n="1";try{if(sessionStorage.getItem("bolikh-seen"))n="0";else sessionStorage.setItem("bolikh-seen","1")}catch(e){}
+const pg=location.pathname.replace(/^\/|\.html$/g,"")||"home";
+fetch("/api/visit?p="+encodeURIComponent(pg==="index"?"home":pg)+"&n="+n,{method:"POST",keepalive:true}).catch(()=>{})}catch(e){}
+</script>
+<script>
 /* Downloads come from the public releases page. Each file keeps the same name for every version,
    so ".../releases/latest/download/<name>" always serves the newest build and this page never needs editing. */
 const RELEASE = {

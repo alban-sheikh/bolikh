@@ -41,6 +41,24 @@ function day(d = new Date()) {
   return new Date(d.getTime() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
-const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|slack|curl|wget|python|headless|monitor|uptime/i;
+const BOT = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|discord|slack|curl|wget|python|headless|monitor|uptime|lighthouse|inspection|google|bing|yandex|baidu|duckduck|archiver|scan|scrapy|phantom|selenium|puppeteer|playwright|http-client|httpclient|axios|okhttp|node-fetch|undici|java\/|go-http|libwww|postman|insomnia|ahrefs|semrush|vercel/i;
 
-module.exports = { FILES, GITHUB, pipeline, day, BOT, redis };
+// Which kind of browser a request came from, as a coarse label. Anything that isn't one of the
+// common browsers is "other", which is how scripts and unknown crawlers show up in the stats.
+function browser(ua) {
+  if (!/^Mozilla\/5\.0 /.test(ua)) return "other";
+  if (/Edg\//.test(ua)) return "edge";
+  if (/Firefox\//.test(ua)) return "firefox";
+  if (/OPR\/|Opera/.test(ua)) return "other";
+  if (/Chrome\/|CriOS\//.test(ua)) return "chrome";
+  if (/Safari\//.test(ua)) return "safari";
+  return "other";
+}
+const BROWSERS = ["chrome", "safari", "firefox", "edge", "other"];
+
+// A real person in a browser: not a known bot or tool, and one of the common browsers.
+function isPerson(ua) {
+  return !BOT.test(ua) && browser(ua) !== "other";
+}
+
+module.exports = { FILES, GITHUB, pipeline, day, BOT, redis, browser, BROWSERS, isPerson };

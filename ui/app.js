@@ -45,6 +45,37 @@ document.querySelectorAll("input[data-key]").forEach((input) =>
 );
 $("#trigger").addEventListener("change", (e) => save({ trigger: e.target.value }));
 $("#linux-paste").addEventListener("change", (e) => save({ linuxPaste: e.target.value }));
+
+// Microphone: "" means the system default. A saved microphone that is unplugged stays in the list,
+// marked as not connected, so the choice isn't silently lost; recording falls back to the default.
+const micSelect = $("#microphone");
+async function loadMicrophones() {
+  let names = [];
+  try { names = await invoke("list_microphones"); } catch (e) {}
+  const saved = status ? status.settings.microphone : "";
+  const options = [el("option", { value: "", textContent: "System default" }),
+    ...names.map((n) => el("option", { value: n, textContent: n }))];
+  if (saved && !names.includes(saved)) options.push(el("option", { value: saved, textContent: saved + " (not connected)" }));
+  micSelect.replaceChildren(...options);
+  micSelect.value = saved;
+}
+micSelect.addEventListener("change", (e) => save({ microphone: e.target.value }));
+// Plugging a microphone in usually happens while Bolikh is in the background: refresh on return.
+window.addEventListener("focus", () => { if (document.activeElement !== micSelect) loadMicrophones(); });
+
+const MIC_TEST_HELP = $("#mic-test-help").textContent;
+$("#mic-test").addEventListener("click", async (e) => {
+  const btn = e.currentTarget, help = $("#mic-test-help");
+  btn.disabled = true; btn.textContent = "Listening…"; help.textContent = "Say a few words.";
+  try {
+    const peak = await invoke("test_microphone");
+    help.textContent = peak > 0.02 ? "Microphone works." : peak > 0.003
+      ? "Very quiet. Speak closer, raise the input volume, or pick another microphone."
+      : "No sound at all. Check that the microphone isn't muted, or pick another one.";
+  } catch (err) { help.textContent = String(err); }
+  btn.disabled = false; btn.textContent = "Test";
+  setTimeout(() => { if (!btn.disabled) help.textContent = MIC_TEST_HELP; }, 8000);
+});
 document.querySelectorAll("#mode button").forEach((b) =>
   b.addEventListener("click", () => save({ mode: b.dataset.v }))
 );
@@ -164,6 +195,8 @@ function render() {
   document.querySelectorAll("#mode button").forEach((b) => b.classList.toggle("on", b.dataset.v === s.mode));
   $("#mode-help").textContent = MODE_HELP[s.mode];
   $("#linux-paste").value = s.linuxPaste;
+  if (!micSelect.options.length) loadMicrophones();
+  else if (document.activeElement !== micSelect) micSelect.value = s.microphone;
   document.querySelectorAll("input[data-key]").forEach((i) => (i.checked = !!s[i.dataset.key]));
   $("#autostart").checked = status.autostart;
   $("#about-version").textContent = `Version ${status.version}`;

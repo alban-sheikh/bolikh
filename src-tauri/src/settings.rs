@@ -88,6 +88,8 @@ pub struct Settings {
     pub spoken_symbols: bool,
     pub keep_history: bool,
     pub linux_paste: LinuxPaste,
+    /// Name of the microphone to record from; empty follows the system default.
+    pub microphone: String,
     pub replacements: Vec<Replacement>,
     pub onboarded: bool,
 }
@@ -107,6 +109,7 @@ impl Default for Settings {
             spoken_symbols: true,
             keep_history: true,
             linux_paste: LinuxPaste::Auto,
+            microphone: String::new(),
             replacements: Vec::new(),
             onboarded: false,
         }

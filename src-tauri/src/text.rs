@@ -35,8 +35,9 @@ pub fn process(raw: &str, s: &Settings) -> String {
         }
     }
     if s.voice_commands {
-        text = apply_voice_commands(&text);
+        text = apply_voice_commands(&text, s.command_lead_word);
     }
+    text = fix_app_name(&text);
     if s.spoken_symbols {
         text = spoken_addresses(&text);
         text = spoken_symbols(&text);
@@ -208,32 +209,60 @@ pub fn remove_fillers(input: &str) -> String {
 
 /// Spoken formatting commands. Punctuation before the command is kept; punctuation
 /// the model adds after it is dropped ("Hello. New line. World" → "Hello.\nWorld").
-static COMMANDS: Lazy<Vec<(Regex, &'static str)>> = Lazy::new(|| {
-    [
-        // The model also writes these as "Newline", "new-line" or in the plural.
-        (r"new[\s-]*paragraphs?", "\n\n"),
-        (r"new[\s-]*lines?", "\n"),
-        (r"next\s+line", "\n"),
-        (r"bullet\s+points?", "\n• \u{1}"),
-        (r"tab\s+key", "\t"),
-    ]
-    .into_iter()
-    .map(|(phrase, out)| {
-        let p = format!(r"(?i)\s*\b{phrase}\b[,.;:!?]?\s*");
-        (Regex::new(&p).unwrap(), out)
-    })
-    .collect()
+const COMMAND_PHRASES: [(&str, &str); 4] = [
+    // The model also writes these as "Newline", "new-line" or in the plural.
+    (r"new[\s-]*paragraphs?|next\s+paragraph|change\s+(?:the\s+)?paragraph", "\n\n"),
+    (r"new[\s-]*lines?|next\s+line|change\s+(?:the\s+)?line", "\n"),
+    (r"bullet\s+points?", "\n• \u{1}"),
+    (r"tab\s+key", "\t"),
+];
+
+/// How the model writes the app's name when it is said aloud. "Bowling" and "bollocks" are real
+/// words, so they only count as the name right before a command.
+const NAME_HEARD: &str = r"bow?ll?i(?:kh?|ck?|g|ch|que)|boleek|boling|polikh?";
+
+/// A word said before a command to mark it as one: "Bolikh new line", "create a new line",
+/// "insert a bullet point". May be followed by "a" or "the".
+static LEAD: Lazy<String> = Lazy::new(|| {
+    format!(r"\b(?:{NAME_HEARD}|bowling|bollocks|insert|create|add)\b[,:]?\s+(?:(?:a|the)\s+)?")
 });
 
-fn apply_voice_commands(input: &str) -> String {
-    static LIST: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)[,;:]?\s*\bnumber(?:ed|ing)?\s+lists?\b[,.;:!?]?\s*").unwrap());
+/// The command table in two forms: lead word optional (index 0) and lead word required (1).
+static COMMANDS: Lazy<[Vec<(Regex, &'static str)>; 2]> = Lazy::new(|| {
+    let build = |lead_needed: bool| {
+        let q = if lead_needed { "" } else { "?" };
+        COMMAND_PHRASES
+            .iter()
+            .map(|(phrase, out)| {
+                let p = format!(r"(?i)\s*(?:{}){q}\b(?:{phrase})\b[,.;:!?]?\s*", LEAD.as_str());
+                (Regex::new(&p).unwrap(), *out)
+            })
+            .collect()
+    };
+    [build(false), build(true)]
+});
+
+/// Writes the app's name properly however the model spelled it.
+fn fix_app_name(text: &str) -> String {
+    static NAME: Lazy<Regex> = Lazy::new(|| Regex::new(&format!(r"(?i)\b(?:{NAME_HEARD})\b")).unwrap());
+    NAME.replace_all(text, "Bolikh").into_owned()
+}
+
+fn apply_voice_commands(input: &str, lead_needed: bool) -> String {
+    static LISTS: Lazy<[Regex; 2]> = Lazy::new(|| {
+        let build = |q: &str| {
+            Regex::new(&format!(r"(?i)[,;:]?\s*(?:{}){q}\bnumber(?:ed|ing)?\s+lists?\b[,.;:!?]?\s*", LEAD.as_str())).unwrap()
+        };
+        [build("?"), build("")]
+    });
+    let list_re = &LISTS[lead_needed as usize];
     static ITEM: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)[,.;:!?]?\s*\bnext\s+items?\b[,.;:!?]?\s*").unwrap());
     static CAPS: Lazy<Regex> =
         Lazy::new(|| Regex::new(r"(?i)\ball\s+caps\b[,.]?\s+([\p{L}\p{N}'’-]+)").unwrap());
 
     let mut text = input.to_string();
     // "Numbered list milk, next item eggs" → "1. Milk\n2. Eggs". "Next item" only counts inside a list.
-    if let Some(start) = LIST.find(&text) {
+    if let Some(start) = list_re.find(&text) {
         let (mut head, tail) = (text[..start.start()].to_string(), text[start.end()..].to_string());
         // "Shopping list, numbered list milk" → "Shopping list:" introduces the list.
         if head.chars().last().is_some_and(|c| c.is_alphanumeric()) {
@@ -251,7 +280,7 @@ fn apply_voice_commands(input: &str) -> String {
         list.push_str(&tail[cursor..]);
         text = head + &list;
     }
-    for (re, out) in COMMANDS.iter() {
+    for (re, out) in COMMANDS[lead_needed as usize].iter() {
         text = re.replace_all(&text, NoExpand(out)).into_owned();
     }
     text = CAPS.replace_all(&text, |c: &regex::Captures| c[1].to_uppercase()).into_owned();
@@ -952,6 +981,45 @@ mod tests {
         assert_eq!(process("Hello comma world", &off), "Hello comma world");
     }
 
+    #[test]
+    fn lead_words_and_more_line_commands() {
+        check(&[
+            // Sentences a user really dictated.
+            ("Let's keep it public. Change line. So plan the content.", "Let's keep it public.\nSo plan the content."),
+            ("First point, change the line, second point", "First point,\nSecond point"),
+            ("First part. Next paragraph. Second part.", "First part.\n\nSecond part."),
+            // A lead word before the command is taken with it.
+            ("Hello team. Bolikh new line. Thanks.", "Hello team.\nThanks."),
+            ("Hello team, bolic change the line, thanks", "Hello team,\nThanks"),
+            ("Hello team. Bowling, new line. Thanks.", "Hello team.\nThanks."),
+            ("Notes create a new line done", "Notes\nDone"),
+            ("Things to do insert a bullet point call Harsh add a bullet point send it", "Things to do\n• Call Harsh\n• Send it"),
+            ("Shopping, create a numbered list, milk, next item eggs", "Shopping:\n1. Milk\n2. Eggs"),
+            // The app's name is written properly; real words are left alone.
+            ("It's not writing bolic itself.", "It's not writing Bolikh itself."),
+            ("bowlic writes the text", "Bolikh writes the text"),
+            ("I use Polik and Bolig and bolikh daily.", "I use Bolikh and Bolikh and Bolikh daily."),
+            ("The police found a metabolic bollard.", "The police found a metabolic bollard."),
+            ("We went bowling on Friday.", "We went bowling on Friday."),
+            ("That is symbolic.", "That is symbolic."),
+        ]);
+
+        // With "lead word needed" on, the bare phrases are ordinary words.
+        let mut strict = settings();
+        strict.command_lead_word = true;
+        for (said, typed) in [
+            ("We opened a new line of business.", "We opened a new line of business."),
+            ("Press enter for a new line in the file.", "Press enter for a new line in the file."),
+            ("The numbered list is ready.", "The numbered list is ready."),
+            ("Hello team. Bolikh new line. Thanks.", "Hello team.\nThanks."),
+            ("Hello team, create a new line, thanks", "Hello team,\nThanks"),
+            ("Shopping, bolic numbered list, milk, next item eggs", "Shopping:\n1. Milk\n2. Eggs"),
+            ("Things to do. Insert a bullet point call Harsh.", "Things to do.\n• Call Harsh."),
+        ] {
+            assert_eq!(process(said, &strict).trim_end(), typed, "said: {said}");
+        }
+    }
+
     /// Prints what the examples in the in-app and website guide really produce:
     /// `cargo test --lib guide_examples -- --ignored --nocapture`
     #[test]
@@ -960,6 +1028,9 @@ mod tests {
         let s = settings();
         for said in [
             "Hi Priya new line thanks for the update",
+            "First point change line second point",
+            "Hello team Bolikh new line thanks",
+            "Notes create a bullet point call Harsh",
             "Here is the plan new paragraph first we test",
             "Things to buy bullet point milk bullet point eggs",
             "Shopping numbered list milk next item eggs next item bread",

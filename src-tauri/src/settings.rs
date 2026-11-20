@@ -82,6 +82,8 @@ pub struct Settings {
     pub add_trailing_space: bool,
     pub restore_clipboard: bool,
     pub voice_commands: bool,
+    /// Voice commands only count when a lead word comes first ("Bolikh new line", "create a new line").
+    pub command_lead_word: bool,
     pub remove_fillers: bool,
     pub numbers_as_digits: bool,
     pub remove_repeats: bool,
@@ -111,6 +113,7 @@ impl Default for Settings {
             add_trailing_space: true,
             restore_clipboard: true,
             voice_commands: true,
+            command_lead_word: false,
             remove_fillers: true,
             numbers_as_digits: true,
             remove_repeats: true,

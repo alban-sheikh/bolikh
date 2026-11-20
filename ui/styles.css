@@ -229,3 +229,15 @@ code, .code { font-family: var(--mono); font-size: 12.5px; background: var(--pan
 .linux-only{display:none!important}
 .os-linux .not-linux{display:none!important}
 .os-linux .linux-only{display:flex!important}
+
+/* Guide */
+.ghint { color: var(--text-2); margin: -4px 0 10px; font-size: 13px; }
+.gnote { color: var(--text-2); font-size: 12.5px; margin: 10px 2px 0; max-width: 640px; }
+.gtable .grow { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; padding: 10px 18px; align-items: start; }
+.gtable .grow + .grow { border-top: 1px solid var(--border); }
+.gtable .ghead { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); padding-block: 8px; }
+.gsay { color: var(--text); }
+.gsay::before { content: "“"; color: var(--text-3); }
+.gsay::after { content: "”"; color: var(--text-3); }
+.gout { font-family: var(--mono); font-size: 12.5px; white-space: pre-wrap; tab-size: 6; color: var(--accent); overflow-wrap: anywhere; }
+.tip a { color: var(--accent); }

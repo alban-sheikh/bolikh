@@ -6,7 +6,8 @@ use std::sync::{Arc, Mutex};
 pub type LevelFn = Arc<dyn Fn(f32) + Send + Sync>;
 
 enum Cmd {
-    Start(Sender<Result<(), String>>),
+    /// Device name to record from; empty means the system default.
+    Start(String, Sender<Result<(), String>>),
     Stop(Sender<(Vec<f32>, u32)>),
 }
 
@@ -26,9 +27,11 @@ impl Recorder {
         Self { tx }
     }
 
-    pub fn start(&self) -> Result<(), String> {
+    /// Starts capture from the named microphone, or the system default when `device` is empty
+    /// or no longer connected.
+    pub fn start(&self, device: &str) -> Result<(), String> {
         let (tx, rx) = mpsc::channel();
-        self.tx.send(Cmd::Start(tx)).map_err(|e| e.to_string())?;
+        self.tx.send(Cmd::Start(device.to_string(), tx)).map_err(|e| e.to_string())?;
         rx.recv().map_err(|e| e.to_string())?
     }
 
@@ -49,10 +52,10 @@ fn worker(rx: Receiver<Cmd>, on_level: LevelFn) {
 
     while let Ok(cmd) = rx.recv() {
         match cmd {
-            Cmd::Start(reply) => {
+            Cmd::Start(device, reply) => {
                 stream = None;
                 buffer.lock().unwrap().clear();
-                match open_stream(buffer.clone(), on_level.clone()) {
+                match open_stream(&device, buffer.clone(), on_level.clone()) {
                     Ok((s, r)) => {
                         rate = r;
                         stream = Some(s);
@@ -75,11 +78,46 @@ fn worker(rx: Receiver<Cmd>, on_level: LevelFn) {
     }
 }
 
-fn open_stream(buffer: Arc<Mutex<Vec<f32>>>, on_level: LevelFn) -> Result<(cpal::Stream, u32), String> {
+/// Names of the microphones the system offers, in the system's order, without duplicates.
+pub fn input_devices() -> Vec<String> {
+    let mut names: Vec<String> = Vec::new();
+    if let Ok(devices) = cpal::default_host().input_devices() {
+        for name in devices.filter_map(|d| d.name().ok()) {
+            if !names.contains(&name) {
+                names.push(name);
+            }
+        }
+    }
+    names
+}
+
+/// The microphone called `name`, or the system default when `name` is empty or not connected.
+fn pick_device(host: &cpal::Host, name: &str) -> Option<cpal::Device> {
+    if !name.is_empty() {
+        let found = host
+            .input_devices()
+            .ok()
+            .and_then(|mut devices| devices.find(|d| d.name().map(|n| n == name).unwrap_or(false)));
+        if found.is_some() {
+            return found;
+        }
+        log::warn!("microphone {name:?} not found, using the system default");
+    }
+    host.default_input_device()
+}
+
+/// Loudest sample of a recording, 0…1. Used to tell silence and very quiet speech apart from speech.
+pub fn peak(samples: &[f32]) -> f32 {
+    samples.iter().fold(0f32, |m, s| m.max(s.abs()))
+}
+
+fn open_stream(
+    device: &str,
+    buffer: Arc<Mutex<Vec<f32>>>,
+    on_level: LevelFn,
+) -> Result<(cpal::Stream, u32), String> {
     let host = cpal::default_host();
-    let device = host
-        .default_input_device()
-        .ok_or_else(|| "No microphone found.".to_string())?;
+    let device = pick_device(&host, device).ok_or_else(|| "No microphone found.".to_string())?;
     let supported = device
         .default_input_config()
         .map_err(|e| format!("Microphone unavailable: {e}"))?;
@@ -186,6 +224,19 @@ pub fn resample_to_16k(input: &[f32], from_rate: u32) -> Vec<f32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn peak_is_the_loudest_sample() {
+        assert_eq!(peak(&[]), 0.0);
+        assert_eq!(peak(&[0.1, -0.6, 0.3]), 0.6);
+    }
+
+    /// Prints the microphones this computer offers: `cargo test --lib lists_microphones -- --ignored --nocapture`
+    #[test]
+    #[ignore]
+    fn lists_microphones() {
+        println!("{:#?}", input_devices());
+    }
 
     #[test]
     fn resample_length_and_tone() {

@@ -227,4 +227,5 @@ code, .code { font-family: var(--mono); font-size: 12.5px; background: var(--pan
 
 /* Settings that only apply on Linux */
 .linux-only{display:none!important}
+.os-linux .not-linux{display:none!important}
 .os-linux .linux-only{display:flex!important}

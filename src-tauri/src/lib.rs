@@ -26,6 +26,10 @@ use tauri_plugin_autostart::ManagerExt;
 
 const HUD_W: f64 = 380.0;
 const HUD_H: f64 = 84.0;
+/// Loudest sample (0…1) below which a recording counts as silence: a muted or wrong microphone.
+const SILENT_PEAK: f32 = 0.003;
+/// Below this, an empty transcript is blamed on volume rather than on unclear speech.
+const QUIET_PEAK: f32 = 0.03;
 /// macOS keeps the transparent HUD permanently ordered-in (click-through) so it
 /// never activates the app; elsewhere it is shown/hidden on demand.
 const HUD_ALWAYS_VISIBLE: bool = cfg!(target_os = "macos");
@@ -203,7 +207,7 @@ impl Core {
             self.hud_message(self.model_message());
             return;
         }
-        if let Err(e) = self.recorder.start() {
+        if let Err(e) = self.recorder.start(&self.settings().microphone) {
             self.hud_message(e);
             return;
         }
@@ -234,6 +238,12 @@ impl Core {
             self.hud("hidden", None, None);
             return;
         }
+        // A muted, unplugged or wrong microphone gives near-silence: say so instead of transcribing it.
+        let peak = audio::peak(&samples);
+        if peak < SILENT_PEAK {
+            self.hud_message("No sound from the microphone");
+            return;
+        }
         self.hud("transcribing", None, Some("stop"));
 
         let core = self.clone();
@@ -253,7 +263,7 @@ impl Core {
             }
             let text = text::process(&raw, &settings);
             if text.trim().is_empty() {
-                core.hud_message("Didn't catch that");
+                core.hud_message(if peak < QUIET_PEAK { "Too quiet, speak closer to the microphone" } else { "Didn't catch that" });
                 return;
             }
             core.hud("hidden", None, None);
@@ -502,6 +512,17 @@ fn set_autostart(app: AppHandle, enabled: bool) -> bool {
     al.is_enabled().unwrap_or(false)
 }
 
+/// Microphones to offer in Settings. Empty on Linux, where the sound server's own device choice
+/// is followed (raw ALSA device names are not something to pick from).
+#[tauri::command]
+async fn list_microphones() -> Vec<String> {
+    if cfg!(target_os = "linux") {
+        return Vec::new();
+    }
+    // Asking the system for its devices can take a moment; keep it off the main thread.
+    tauri::async_runtime::spawn_blocking(audio::input_devices).await.unwrap_or_default()
+}
+
 /// Records ~1.5 s and reports the peak level, so onboarding can confirm the mic works
 /// (and triggers the OS microphone permission prompt).
 #[tauri::command]
@@ -511,13 +532,13 @@ async fn test_microphone(core: tauri::State<'_, Arc<Core>>) -> Result<f32, Strin
         if core.session.lock().unwrap().recording {
             return Err("Dictation in progress".to_string());
         }
-        core.recorder.start()?;
+        core.recorder.start(&core.settings().microphone)?;
         std::thread::sleep(Duration::from_millis(1500));
         let (samples, _) = core.recorder.stop();
         if samples.is_empty() {
             return Err("No audio received. Check microphone permission.".into());
         }
-        Ok(samples.iter().fold(0f32, |m, s| m.max(s.abs())))
+        Ok(audio::peak(&samples))
     })
     .await
     .map_err(|e| e.to_string())?
@@ -558,7 +579,8 @@ pub fn run() {
             open_permission_settings,
             toggle_dictation,
             set_autostart,
-            test_microphone
+            test_microphone,
+            list_microphones
         ])
         .setup(|app| {
             #[cfg(target_os = "macos")]

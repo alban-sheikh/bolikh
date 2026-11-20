@@ -6,6 +6,7 @@ Hold a key, speak, let go: your words are typed into whatever text field you're 
 - **100% on-device.** Speech recognition (NVIDIA Parakeet TDT 0.6B v3) runs locally through ONNX Runtime. No account, no cloud, no telemetry. Audio is never written to disk.
 - **Fast.** ~10 s of speech transcribes in ~0.25 s on an Apple M5 Pro CPU.
 - **Clean output.** Automatic punctuation and capitalisation, filler words and repeated words removed, spoken numbers written as digits (48, ₹50, 3:30 PM, 21st), spoken punctuation, symbols and email addresses, custom dictionary with snippets, and voice commands ("new line", "bullet point", "numbered list", "all caps", "scratch that").
+- **Your microphone, your choice.** Pick which microphone to use (macOS and Windows), test it from Settings, and get a clear message when a recording is silent or too quiet.
 - **Works everywhere.** Inserts at the cursor in any app and restores your clipboard afterwards.
 
 ## Using it

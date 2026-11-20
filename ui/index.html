@@ -77,6 +77,12 @@
           <div class="row"><div class="label"><b>Behaviour</b><span id="mode-help"></span></div>
             <div class="seg" id="mode"><button data-v="smart">Smart</button><button data-v="hold">Hold</button><button data-v="toggle">Toggle</button></div></div>
         </div>
+        <h2>Microphone</h2>
+        <div class="card rows">
+          <div class="row not-linux"><div class="label"><b>Microphone</b><span>System default follows the input chosen in your computer's sound settings.</span></div><select id="microphone"></select></div>
+          <div class="row linux-only"><div class="label"><b>Microphone</b><span>Bolikh uses the input device chosen in your system's sound settings.</span></div></div>
+          <div class="row"><div class="label"><b>Test the microphone</b><span id="mic-test-help">Listens for a moment and tells you whether it can hear you. Nothing is saved.</span></div><button class="btn small" id="mic-test" type="button">Test</button></div>
+        </div>
         <h2>Output</h2>
         <div class="card rows">
           <div class="row"><div class="label"><b>Remove filler words</b><span>Strips "um", "uh", "hmm" from what you say.</span></div><label class="switch"><input type="checkbox" data-key="removeFillers"><i></i></label></div>

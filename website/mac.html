@@ -79,7 +79,7 @@
     <article class="os" style="max-width:520px">
       <div class="os-h"><svg aria-hidden="true"><use href="#i-apple"/></svg><h3>macOS</h3></div>
       <p class="req">Macs with Apple Silicon (M1 or newer), macOS 12 Monterey or later. Intel Macs aren’t supported yet.</p>
-      <div class="btns"><a class="btn p" href="/api/download/mac">Download for Mac</a></div>
+      <div class="btns"><a class="btn p" rel="nofollow" href="/api/download/mac">Download for Mac</a></div>
       <p class="req">Open the .dmg and drag Bolikh to Applications.</p>
     </article>
     <div style="display:grid;gap:20px">
@@ -140,6 +140,10 @@
 </footer>
 <div class="toast" id="toast" role="status"></div>
 <script>
+/* Counts this page view as a plain number (no cookie, no identifier). The session flag only tells a first page from a later one. */
+try{let n="1";try{if(sessionStorage.getItem("bolikh-seen"))n="0";else sessionStorage.setItem("bolikh-seen","1")}catch(e){}
+const pg=location.pathname.replace(/^\/|\.html$/g,"")||"home";
+fetch("/api/visit?p="+encodeURIComponent(pg==="index"?"home":pg)+"&n="+n,{method:"POST",keepalive:true}).catch(()=>{})}catch(e){}
 (function(){const r=document.documentElement,$=s=>document.querySelector(s);
 try{const t=localStorage.getItem("bolikh-theme");if(t)r.dataset.theme=t}catch(e){}
 $("#theme").addEventListener("click",()=>{const c=r.dataset.theme||"light";r.dataset.theme=c==="light"?"dark":"light";try{localStorage.setItem("bolikh-theme",r.dataset.theme)}catch(e){}});

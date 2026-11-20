@@ -1,7 +1,8 @@
 // GET /api/stats?key=STATS_KEY            → private stats page (HTML)
 // GET /api/stats?key=STATS_KEY&format=json → the same numbers as JSON
 // STATS_KEY is a password you choose and set in Vercel → Project → Settings → Environment Variables.
-const { FILES, pipeline, day, redis } = require("./_counter");
+const { FILES, pipeline, day, redis, BROWSERS } = require("./_counter");
+const PAGES = ["home", "mac", "windows", "linux", "privacy"];
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const n = (v) => Number(v || 0);
@@ -46,6 +47,11 @@ module.exports = async (req, res) => {
     ["GET", "dl:src:site"],
     ["GET", "dl:src:github"],
     ...days.flatMap((d) => [["GET", `dl:day:${d}`], ...keys.map((k) => ["GET", `dl:day:${d}:${k}`])]),
+    ["GET", "vis:total"],
+    ["GET", "pv:total"],
+    ...PAGES.map((p) => ["GET", `pv:page:${p}`]),
+    ...days.flatMap((d) => [["GET", `vis:day:${d}`], ["GET", `pv:day:${d}`]]),
+    ...BROWSERS.map((b) => ["GET", `dl:browser:${b}`]),
   ];
   const [r, gh] = await Promise.all([pipeline(cmds, 4000), githubCounts()]);
   let i = 0;
@@ -53,14 +59,26 @@ module.exports = async (req, res) => {
   const byOs = Object.fromEntries(keys.map((k) => [k, n(r[i++])]));
   const bySource = { site: n(r[i++]), github: n(r[i++]) };
   const daily = days.map((d) => ({ day: d, total: n(r[i++]), ...Object.fromEntries(keys.map((k) => [k, n(r[i++])])) }));
+  const visits = n(r[i++]);
+  const pageViews = n(r[i++]);
+  const byPage = Object.fromEntries(PAGES.map((p) => [p, n(r[i++])]));
+  for (const d of daily) {
+    d.visits = n(r[i++]);
+    d.pageViews = n(r[i++]);
+  }
+  const byBrowser = Object.fromEntries(BROWSERS.map((b) => [b, n(r[i++])]));
   const data = {
+    visits,
+    pageViews,
+    byPage,
+    downloadsByBrowser: byBrowser,
     total,
     byOs,
     linuxTotal: byOs.deb + byOs.rpm,
     bySource,
     last30Days: daily,
     githubReleaseDownloads: gh, // GitHub's own counter: includes the GitHub backup link and the copies our deploy workflow downloads (one per deploy)
-    note: "Counts downloads started from bolikh.aazadsoftwaresolutions.in since counting began. Bots and link previews are excluded.",
+    note: "Downloads are counted when someone clicks a download button on bolikh.aazadsoftwaresolutions.in. Visits and page views are counted since 20 November 2026; a visit is one browser tab's session. Bots, link previews and scripts are excluded.",
   };
 
   if (req.query.format === "json") {
@@ -73,12 +91,12 @@ module.exports = async (req, res) => {
     ? Object.entries(gh).filter(([name]) => name.startsWith("Bolikh-")).map(([name, v]) => row(name, v)).join("")
     : `<tr><td colspan="2">GitHub numbers unavailable right now.</td></tr>`;
   const dayRows = daily
-    .map((d) => `<tr><td>${d.day}</td>${["total", ...keys].map((k) => `<td>${d[k]}</td>`).join("")}</tr>`)
+    .map((d) => `<tr><td>${d.day}</td>${["visits", "pageViews", "total", ...keys].map((k) => `<td>${d[k]}</td>`).join("")}</tr>`)
     .join("");
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bolikh downloads</title><meta name="robots" content="noindex">
+<title>Bolikh stats</title><meta name="robots" content="noindex">
 <style>
 :root{--bg:#1B1814;--s:#26221C;--r:#3A342C;--i:#F5EEE3;--m:#B6AC9A;--a:#EDB64A;color-scheme:dark}
 @media (prefers-color-scheme:light){:root{--bg:#F3EDE3;--s:#FFFBF5;--r:#E2D9CA;--i:#17120C;--m:#6B6152;--a:#8A5A0E;color-scheme:light}}
@@ -90,16 +108,20 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;back
 td,th{padding:7px 12px;border-bottom:1px solid var(--r);text-align:right}td:first-child,th:first-child{text-align:left}th{color:var(--m);font-weight:600;font-size:.8rem}
 tr.t td{font-weight:700}.wrap{overflow-x:auto}p{color:var(--m);margin:0;font-size:.9rem}
 </style></head><body><main>
-<h1>Bolikh downloads</h1>
+<h1>Bolikh stats</h1>
 <div class="big">
+<div class="k"><b>${visits.toLocaleString("en-IN")}</b><span>Visits</span></div>
+<div class="k"><b>${pageViews.toLocaleString("en-IN")}</b><span>Page views</span></div>
 <div class="k"><b>${total.toLocaleString("en-IN")}</b><span>Total downloads</span></div>
 <div class="k"><b>${byOs.mac.toLocaleString("en-IN")}</b><span>macOS</span></div>
 <div class="k"><b>${byOs.win.toLocaleString("en-IN")}</b><span>Windows</span></div>
 <div class="k"><b>${data.linuxTotal.toLocaleString("en-IN")}</b><span>Linux (.deb ${byOs.deb} · .rpm ${byOs.rpm})</span></div>
 </div>
 <section><h2>Where the file came from</h2><table>${row("This website", bySource.site)}${row("GitHub backup link", bySource.github)}${row("Total", total, true)}</table></section>
-<section><h2>Last 30 days (India time)</h2><div class="wrap"><table><tr><th>Day</th><th>Total</th><th>macOS</th><th>Windows</th><th>.deb</th><th>.rpm</th></tr>${dayRows}</table></div></section>
+<section><h2>Last 30 days (India time)</h2><div class="wrap"><table><tr><th>Day</th><th>Visits</th><th>Page views</th><th>Downloads</th><th>macOS</th><th>Windows</th><th>.deb</th><th>.rpm</th></tr>${dayRows}</table></div></section>
+<section><h2>Page views by page</h2><table>${PAGES.map((p) => row(p === "home" ? "Home" : p[0].toUpperCase() + p.slice(1), byPage[p])).join("")}</table></section>
+<section><h2>Downloads by browser (counted from 20 November 2026)</h2><table>${BROWSERS.filter((b) => b !== "other").map((b) => row(b[0].toUpperCase() + b.slice(1), byBrowser[b])).join("")}</table></section>
 <section><h2>GitHub's own download count (all versions; includes the backup link and one copy per website deploy)</h2><table>${ghRows}</table></section>
-<p>${esc(data.note)} Visitor numbers: Vercel → project “bolikh” → Analytics. Raw data: add <code>&amp;format=json</code> to this address.</p>
+<p>${esc(data.note)} Raw data: add <code>&amp;format=json</code> to this address.</p>
 </main></body></html>`);
 };

@@ -71,7 +71,7 @@
 <section class="g" style="padding-block:48px 96px">
   <div class="in" style="max-width:760px;display:grid;gap:28px">
     <p class="mono muted"><a href="index.html" style="color:inherit;text-decoration:none">Bolikh</a> / Privacy</p>
-    <div style="display:grid;gap:14px"><span class="eb">Privacy policy · updated 12 November 2026</span>
+    <div style="display:grid;gap:14px"><span class="eb">Privacy policy · updated 20 November 2026</span>
     <h1 class="h2">What Bolikh does with your data.</h1>
     <p class="lead">In short: your voice is turned into text on your own computer, and nothing about your dictation is sent to us.</p></div>
     <div class="faq" style="max-width:none">
@@ -80,7 +80,7 @@
       <details open><summary>Clipboard</summary><div class="a"><p>To type the text, Bolikh briefly places it on your clipboard, pastes it, and then restores what was there before. It does not keep or send clipboard contents.</p></div></details>
       <details open><summary>Internet connections</summary><div class="a"><p>Bolikh connects to the internet for one thing: downloading the speech model (NVIDIA Parakeet TDT 0.6B v3, about 670 MB) from Hugging Face on first launch, or again if you choose Retry. Hugging Face sees a normal download request from your IP address. After that, Bolikh works offline.</p></div></details>
       <details open><summary>Accounts, analytics and tracking</summary><div class="a"><p>There is no account, no analytics, no crash reporting and no advertising in the app. Bolikh’s source code is public, so you can check all of this yourself.</p></div></details>
-      <details open><summary>This website</summary><div class="a"><p>This website uses no cookies. We count visits with Vercel Web Analytics, which doesn’t use cookies or identify you, and only gives us totals such as the number of visitors and which pages they viewed. We also count how many times each installer is downloaded: we store only a number per system and per day, never your IP address or anything else about you.</p></div></details>
+      <details open><summary>This website</summary><div class="a"><p>This website uses no cookies. We count visits with Vercel Web Analytics and with our own counter. Neither uses cookies or identifies you; they only give us totals such as the number of visits and which pages were viewed. We also count how many times each installer is downloaded. For all of these we store only numbers (per day, per page, per system and per type of browser), never your IP address or anything else about you.</p></div></details>
       <details open><summary>Permissions</summary><div class="a"><p>Microphone, to hear you. On macOS, Accessibility, to notice the dictation key in other apps and to paste. On Linux, access to input devices for the key. These are used only for dictation.</p></div></details>
       <details open><summary>If you contact us</summary><div class="a"><p>If you email or message us, we use your details only to reply and to send you the download you asked for. We do not sell or share them.</p></div></details>
       <details open><summary>Contact</summary><div class="a"><p>Aazad Software Solutions · <button class="copy" type="button" data-copy="info@aazadsoftwaresolutions.in">info@aazadsoftwaresolutions.in</button> · <button class="copy" type="button" data-copy="+91 93409 62123">+91 93409 62123</button></p></div></details>
@@ -115,6 +115,10 @@
 </footer>
 <div class="toast" id="toast" role="status"></div>
 <script>
+/* Counts this page view as a plain number (no cookie, no identifier). The session flag only tells a first page from a later one. */
+try{let n="1";try{if(sessionStorage.getItem("bolikh-seen"))n="0";else sessionStorage.setItem("bolikh-seen","1")}catch(e){}
+const pg=location.pathname.replace(/^\/|\.html$/g,"")||"home";
+fetch("/api/visit?p="+encodeURIComponent(pg==="index"?"home":pg)+"&n="+n,{method:"POST",keepalive:true}).catch(()=>{})}catch(e){}
 (function(){const r=document.documentElement,$=s=>document.querySelector(s);
 try{const t=localStorage.getItem("bolikh-theme");if(t)r.dataset.theme=t}catch(e){}
 $("#theme").addEventListener("click",()=>{const c=r.dataset.theme||"light";r.dataset.theme=c==="light"?"dark":"light";try{localStorage.setItem("bolikh-theme",r.dataset.theme)}catch(e){}});

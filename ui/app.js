@@ -34,6 +34,8 @@ function showPage(name) {
   if (name === "history") loadHistory();
 }
 
+$("#open-guide").addEventListener("click", (e) => { e.preventDefault(); showPage("guide"); });
+
 // ---------- Settings ----------
 async function save(patch) {
   status.settings = { ...status.settings, ...patch };

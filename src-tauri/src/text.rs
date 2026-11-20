@@ -952,6 +952,50 @@ mod tests {
         assert_eq!(process("Hello comma world", &off), "Hello comma world");
     }
 
+    /// Prints what the examples in the in-app and website guide really produce:
+    /// `cargo test --lib guide_examples -- --ignored --nocapture`
+    #[test]
+    #[ignore]
+    fn guide_examples() {
+        let s = settings();
+        for said in [
+            "Hi Priya new line thanks for the update",
+            "Here is the plan new paragraph first we test",
+            "Things to buy bullet point milk bullet point eggs",
+            "Shopping numbered list milk next item eggs next item bread",
+            "name tab key age",
+            "this is all caps urgent",
+            "Send it today scratch that send it tomorrow",
+            "Hello comma how are you question mark",
+            "That is great exclamation mark",
+            "see the notes open bracket page two close bracket",
+            "he said open quote hello close quote",
+            "use hashtag launch",
+            "my file underscore name",
+            "either slash or",
+            "tom ampersand jerry",
+            "wait ellipsis",
+            "this is the end full stop",
+            "two plus sign two equals sign four",
+            "state hyphen of hyphen the hyphen art",
+            "it costs forty eight",
+            "pay fifty rupees",
+            "pay twenty dollars",
+            "meet at three thirty pm",
+            "on the twenty first",
+            "on november seventeenth",
+            "growth was twelve percent",
+            "it is three point five",
+            "in nineteen ninety nine",
+            "two lakh fifty thousand",
+            "mail john at gmail dot com",
+            "visit example dot com",
+            "I I think the the plan is um good",
+        ] {
+            println!("{said}  =>  {:?}", process(said, &s));
+        }
+    }
+
     #[test]
     fn more_voice_commands() {
         check(&[

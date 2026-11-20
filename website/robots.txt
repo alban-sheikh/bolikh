@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://bolikh.aazadsoftwaresolutions.in/sitemap.xml

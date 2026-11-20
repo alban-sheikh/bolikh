@@ -167,6 +167,10 @@ First we test</span></div>
           <div class="row linux-only"><div class="label"><b>Microphone</b><span>Bolikh uses the input device chosen in your system's sound settings.</span></div></div>
           <div class="row"><div class="label"><b>Test the microphone</b><span id="mic-test-help">Listens for a moment and tells you whether it can hear you. Nothing is saved.</span></div><button class="btn small" id="mic-test" type="button">Test</button></div>
         </div>
+        <h2>Recording</h2>
+        <div class="card rows">
+          <div class="row"><div class="label"><b>Stop after a pause</b><span>In hands-free dictation, Bolikh finishes by itself when you stop talking. Holding the key is not affected.</span></div><select data-num-key="autoStopSeconds"><option value="0">Off</option><option value="2">After 2 seconds</option><option value="3">After 3 seconds</option><option value="5">After 5 seconds</option></select></div>
+        </div>
         <h2>Output</h2>
         <div class="card rows">
           <div class="row"><div class="label"><b>Remove filler words</b><span>Strips "um", "uh", "hmm" from what you say.</span></div><label class="switch"><input type="checkbox" data-key="removeFillers"><i></i></label></div>
@@ -182,6 +186,7 @@ First we test</span></div>
         <div class="card rows">
           <div class="row"><div class="label"><b>Sound effects</b><span>Subtle tones when recording starts and stops.</span></div><label class="switch"><input type="checkbox" data-key="playSounds"><i></i></label></div>
           <div class="row"><div class="label"><b>Keep history</b><span>Stored only on this computer.</span></div><label class="switch"><input type="checkbox" data-key="keepHistory"><i></i></label></div>
+          <div class="row"><div class="label"><b>Free memory when idle</b><span>Unloads the speech model when you haven't dictated for a while. The next dictation then takes a moment longer to appear.</span></div><select data-num-key="idleUnloadMinutes"><option value="0">Never</option><option value="5">After 5 minutes</option><option value="15">After 15 minutes</option><option value="60">After 1 hour</option></select></div>
           <div class="row"><div class="label"><b>Launch at login</b><span>Start Bolikh in the background when you sign in.</span></div><label class="switch"><input type="checkbox" id="autostart"><i></i></label></div>
         </div>
         <h2>Status</h2>

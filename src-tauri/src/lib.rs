@@ -30,6 +30,8 @@ const HUD_H: f64 = 84.0;
 const SILENT_PEAK: f32 = 0.003;
 /// Below this, an empty transcript is blamed on volume rather than on unclear speech.
 const QUIET_PEAK: f32 = 0.03;
+/// Meter level (0…1, see `audio`) from which a sound counts as speech: about -40 dB.
+const VOICE_LEVEL: f32 = 0.33;
 /// macOS keeps the transparent HUD permanently ordered-in (click-through) so it
 /// never activates the app; elsewhere it is shown/hidden on demand.
 const HUD_ALWAYS_VISIBLE: bool = cfg!(target_os = "macos");
@@ -39,6 +41,16 @@ struct Session {
     recording: bool,
     hands_free: bool,
     started: Option<Instant>,
+    /// Counts recordings, so a watcher started for one never acts on a later one.
+    id: u64,
+}
+
+/// What the microphone has heard during the current recording, fed by the level meter.
+#[derive(Default)]
+struct Voice {
+    /// Milliseconds since app start when speech was last heard.
+    last_ms: AtomicU64,
+    heard: std::sync::atomic::AtomicBool,
 }
 
 struct Tray {
@@ -59,6 +71,12 @@ pub struct Core {
     hud_gen: AtomicU64,
     /// Length in characters of the last dictation typed, for "scratch that".
     last_inserted: Mutex<usize>,
+    epoch: Instant,
+    voice: Arc<Voice>,
+    /// When the speech model was last needed, for freeing memory when idle.
+    last_used: Mutex<Instant>,
+    /// True while the model is out of memory because the app was idle (it is still on disk).
+    asleep: std::sync::atomic::AtomicBool,
 }
 
 #[derive(Serialize, Clone)]
@@ -203,19 +221,33 @@ impl Core {
                 return;
             }
         }
+        let settings = self.settings();
+        let core = self.app.state::<Arc<Core>>().inner().clone();
         if !self.engine.is_ready() {
-            self.hud_message(self.model_message());
-            return;
+            if !self.asleep.load(Ordering::SeqCst) {
+                self.hud_message(self.model_message());
+                return;
+            }
+            // The model was freed while idle: bring it back while the user is speaking.
+            let waker = core.clone();
+            std::thread::spawn(move || waker.wake_model());
         }
-        if let Err(e) = self.recorder.start(&self.settings().microphone) {
+        *self.last_used.lock().unwrap() = Instant::now();
+        if let Err(e) = self.recorder.start(&settings.microphone) {
             self.hud_message(e);
             return;
         }
-        {
+        self.voice.heard.store(false, Ordering::SeqCst);
+        let id = {
             let mut s = self.session.lock().unwrap();
             s.recording = true;
             s.hands_free = hands_free;
             s.started = Some(Instant::now());
+            s.id += 1;
+            s.id
+        };
+        if settings.auto_stop_seconds > 0 {
+            core.watch_for_pause(id, settings.auto_stop_seconds);
         }
         self.hud(if hands_free { "handsFree" } else { "listening" }, None, Some("start"));
         self.emit_status();
@@ -249,7 +281,11 @@ impl Core {
         let core = self.clone();
         std::thread::spawn(move || {
             let audio16k = audio::resample_to_16k(&samples, rate);
-            let raw = match core.engine.transcribe_16k(&audio16k) {
+            let speech = audio::trim_silence(&audio16k);
+            // No-op unless the model was freed while idle and is still loading.
+            core.wake_model();
+            *core.last_used.lock().unwrap() = Instant::now();
+            let raw = match core.engine.transcribe_16k(speech) {
                 Ok(t) => t,
                 Err(e) => {
                     core.hud_message(e);
@@ -272,6 +308,57 @@ impl Core {
                 let ts = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0);
                 core.history.lock().unwrap().add(history::Item { text: text.trim().to_string(), ts, duration });
                 let _ = core.app.emit("history", ());
+            }
+        });
+    }
+
+    /// Ends a hands-free recording once speech has been heard and then `secs` of quiet follow.
+    /// Recordings made by holding the key are left alone: the key decides those.
+    fn watch_for_pause(self: Arc<Self>, id: u64, secs: u32) {
+        std::thread::spawn(move || loop {
+            std::thread::sleep(Duration::from_millis(150));
+            {
+                let s = self.session.lock().unwrap();
+                if !s.recording || s.id != id {
+                    return;
+                }
+                if !s.hands_free {
+                    continue;
+                }
+            }
+            let quiet_ms = (self.epoch.elapsed().as_millis() as u64).saturating_sub(self.voice.last_ms.load(Ordering::Relaxed));
+            if self.voice.heard.load(Ordering::SeqCst) && quiet_ms >= secs as u64 * 1000 {
+                self.stop_recording();
+                return;
+            }
+        });
+    }
+
+    /// Loads the model again after it was freed while idle. Blocking; safe to call from several
+    /// threads, and does nothing when the model is already in memory.
+    fn wake_model(&self) {
+        if !self.asleep.load(Ordering::SeqCst) {
+            return;
+        }
+        match self.engine.load() {
+            Ok(()) => self.asleep.store(false, Ordering::SeqCst),
+            Err(e) => log::error!("model: {e}"),
+        }
+    }
+
+    /// Frees the speech model's memory after the idle time chosen in Settings. Runs for the
+    /// life of the app; the model comes back from disk on the next dictation.
+    fn watch_for_idle(self: Arc<Self>) {
+        std::thread::spawn(move || loop {
+            std::thread::sleep(Duration::from_secs(30));
+            let minutes = self.settings().idle_unload_minutes as u64;
+            if minutes == 0 || !self.engine.is_ready() || self.session.lock().unwrap().recording {
+                continue;
+            }
+            if self.last_used.lock().unwrap().elapsed() >= Duration::from_secs(minutes * 60) {
+                self.asleep.store(true, Ordering::SeqCst);
+                self.engine.unload();
+                log::info!("speech model freed after {minutes} idle minutes");
             }
         });
     }
@@ -596,7 +683,13 @@ pub fn run() {
             let last_level = Arc::new(AtomicU64::new(0));
             let level_app = handle.clone();
             let epoch = Instant::now();
+            let voice = Arc::new(Voice::default());
+            let heard = voice.clone();
             let recorder = audio::Recorder::new(Arc::new(move |level: f32| {
+                if level >= VOICE_LEVEL {
+                    heard.last_ms.store(epoch.elapsed().as_millis() as u64, Ordering::Relaxed);
+                    heard.heard.store(true, Ordering::SeqCst);
+                }
                 let now = epoch.elapsed().as_millis() as u64;
                 if now.saturating_sub(last_level.load(Ordering::Relaxed)) >= 33 {
                     last_level.store(now, Ordering::Relaxed);
@@ -616,8 +709,13 @@ pub fn run() {
                 tray: Mutex::new(None),
                 hud_gen: AtomicU64::new(0),
                 last_inserted: Mutex::new(0),
+                epoch,
+                voice,
+                last_used: Mutex::new(Instant::now()),
+                asleep: std::sync::atomic::AtomicBool::new(false),
             });
             app.manage(core.clone());
+            core.clone().watch_for_idle();
 
             // The HUD and tray are conveniences: if the desktop can't provide them
             // (e.g. no system-tray support on Linux), log it and keep the app running.

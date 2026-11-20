@@ -45,6 +45,9 @@ async function save(patch) {
 document.querySelectorAll("input[data-key]").forEach((input) =>
   input.addEventListener("change", () => save({ [input.dataset.key]: input.checked }))
 );
+document.querySelectorAll("select[data-num-key]").forEach((sel) =>
+  sel.addEventListener("change", () => save({ [sel.dataset.numKey]: Number(sel.value) }))
+);
 $("#trigger").addEventListener("change", (e) => save({ trigger: e.target.value }));
 $("#linux-paste").addEventListener("change", (e) => save({ linuxPaste: e.target.value }));
 
@@ -197,6 +200,9 @@ function render() {
   document.querySelectorAll("#mode button").forEach((b) => b.classList.toggle("on", b.dataset.v === s.mode));
   $("#mode-help").textContent = MODE_HELP[s.mode];
   $("#linux-paste").value = s.linuxPaste;
+  document.querySelectorAll("select[data-num-key]").forEach((sel) => {
+    if (document.activeElement !== sel) sel.value = String(s[sel.dataset.numKey] ?? 0);
+  });
   if (!micSelect.options.length) loadMicrophones();
   else if (document.activeElement !== micSelect) micSelect.value = s.microphone;
   document.querySelectorAll("input[data-key]").forEach((i) => (i.checked = !!s[i.dataset.key]));

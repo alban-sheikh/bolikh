@@ -71,6 +71,8 @@ pub struct Core {
     hud_gen: AtomicU64,
     /// Length in characters of the last dictation typed, for "scratch that".
     last_inserted: Mutex<usize>,
+    /// The last dictation typed, kept in memory so the tray menu can copy or paste it again.
+    last_text: Mutex<String>,
     epoch: Instant,
     voice: Arc<Voice>,
     /// When the speech model was last needed, for freeing memory when idle.
@@ -304,12 +306,24 @@ impl Core {
             }
             core.hud("hidden", None, None);
             core.insert(text.clone(), settings.restore_clipboard, settings.linux_paste);
-            if settings.keep_history {
-                let ts = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0);
-                core.history.lock().unwrap().add(history::Item { text: text.trim().to_string(), ts, duration });
-                let _ = core.app.emit("history", ());
+            *core.last_text.lock().unwrap() = text.trim().to_string();
+            {
+                let ts = now_ms();
+                let mut history = core.history.lock().unwrap();
+                history.add(history::Item { text: text.trim().to_string(), ts, duration }, settings.keep_history);
+                history.prune(settings.history_days, ts);
             }
+            let _ = core.app.emit("history", ());
         });
+    }
+
+    /// The last dictation: from this session, or else the newest one in history.
+    fn last_dictation(&self) -> String {
+        let last = self.last_text.lock().unwrap().clone();
+        if !last.is_empty() {
+            return last;
+        }
+        self.history.lock().unwrap().items.first().map(|i| i.text.clone()).unwrap_or_default()
     }
 
     /// Ends a hands-free recording once speech has been heard and then `secs` of quiet follow.
@@ -474,7 +488,12 @@ fn position_hud(app: &AppHandle) {
         let scale = m.scale_factor();
         let area = m.work_area();
         let x = area.position.x as f64 + (area.size.width as f64 - HUD_W * scale) / 2.0;
-        let y = area.position.y as f64 + area.size.height as f64 - (HUD_H + 24.0) * scale;
+        let at_top = app.state::<Arc<Core>>().settings().hud_at_top;
+        let y = if at_top {
+            area.position.y as f64 + 24.0 * scale
+        } else {
+            area.position.y as f64 + area.size.height as f64 - (HUD_H + 24.0) * scale
+        };
         let _ = w.set_position(tauri::PhysicalPosition::new(x as i32, y as i32));
     }
 }
@@ -507,11 +526,23 @@ fn create_hud(app: &tauri::App) -> tauri::Result<()> {
 fn create_tray(app: &tauri::App, core: Arc<Core>) -> tauri::Result<Tray> {
     let status = MenuItem::with_id(app, "status", "Starting…", false, None::<&str>)?;
     let toggle = MenuItem::with_id(app, "toggle", "Start dictation (hands-free)", true, None::<&str>)?;
+    let paste_last = MenuItem::with_id(app, "paste-last", "Paste last dictation", true, None::<&str>)?;
+    let copy_last = MenuItem::with_id(app, "copy-last", "Copy last dictation", true, None::<&str>)?;
     let open = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Bolikh", true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
-        &[&status, &PredefinedMenuItem::separator(app)?, &toggle, &open, &PredefinedMenuItem::separator(app)?, &quit],
+        &[
+            &status,
+            &PredefinedMenuItem::separator(app)?,
+            &toggle,
+            &paste_last,
+            &copy_last,
+            &PredefinedMenuItem::separator(app)?,
+            &open,
+            &PredefinedMenuItem::separator(app)?,
+            &quit,
+        ],
     )?;
     let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray.png"))?;
     TrayIconBuilder::with_id("main")
@@ -524,6 +555,18 @@ fn create_tray(app: &tauri::App, core: Arc<Core>) -> tauri::Result<Tray> {
             "toggle" => {
                 let recording = core.session.lock().unwrap().recording;
                 if recording { core.stop_recording() } else { core.start_recording(true) }
+            }
+            "paste-last" | "copy-last" => {
+                let text = core.last_dictation();
+                if text.is_empty() {
+                    core.hud_message("Nothing dictated yet");
+                } else if e.id().as_ref() == "copy-last" {
+                    insert::copy(&text);
+                    core.hud_message("Copied");
+                } else {
+                    let s = core.settings();
+                    core.insert(text, s.restore_clipboard, s.linux_paste);
+                }
             }
             "settings" => show_main(app),
             "quit" => app.exit(0),
@@ -554,6 +597,9 @@ fn get_status(core: CoreState) -> AppStatus {
 fn save_settings(core: CoreState, settings: Settings) {
     *core.settings.write().unwrap() = settings.clone();
     settings.save(&core.settings_path);
+    if core.history.lock().unwrap().prune(settings.history_days, now_ms()) {
+        let _ = core.app.emit("history", ());
+    }
     core.emit_status();
 }
 
@@ -565,6 +611,66 @@ fn get_history(core: CoreState) -> Vec<history::Item> {
 #[tauri::command]
 fn clear_history(core: CoreState) {
     core.history.lock().unwrap().clear();
+}
+
+#[tauri::command]
+fn get_totals(core: CoreState) -> history::Totals {
+    core.history.lock().unwrap().totals
+}
+
+/// Writes exported history to the Downloads folder and returns the file's path.
+#[tauri::command]
+fn export_history(app: AppHandle, name: String, text: String) -> Result<String, String> {
+    if name.is_empty() || !name.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_')) || name.starts_with('.') {
+        return Err("Invalid file name".into());
+    }
+    let dir = app.path().download_dir().map_err(|e| e.to_string())?;
+    let path = dir.join(name);
+    std::fs::write(&path, text).map_err(|e| format!("Could not save the file: {e}"))?;
+    Ok(path.display().to_string())
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateInfo {
+    current: String,
+    latest: String,
+    newer: bool,
+}
+
+/// Whether `latest` is a higher version number than `current` ("0.2.10" > "0.2.9").
+fn is_newer(latest: &str, current: &str) -> bool {
+    let parts = |v: &str| v.trim_start_matches('v').split('.').map(|p| p.parse::<u64>().unwrap_or(0)).collect::<Vec<_>>();
+    parts(latest) > parts(current)
+}
+
+/// Asks GitHub for the newest published release. Runs only when the user clicks the button;
+/// nothing about the user or their dictations is sent.
+#[tauri::command]
+async fn check_update(app: AppHandle) -> Result<UpdateInfo, String> {
+    let current = app.package_info().version.to_string();
+    let latest = tauri::async_runtime::spawn_blocking(|| -> Result<String, String> {
+        let client = reqwest::blocking::Client::builder()
+            .timeout(Duration::from_secs(15))
+            .user_agent("Bolikh")
+            .build()
+            .map_err(|e| e.to_string())?;
+        let body = client
+            .get("https://api.github.com/repos/alban-sheikh/bolikh/releases/latest")
+            .send()
+            .and_then(|r| r.error_for_status())
+            .and_then(|r| r.text())
+            .map_err(|_| "Could not reach the update server. Check your internet connection.".to_string())?;
+        let json: serde_json::Value = serde_json::from_str(&body).map_err(|e| e.to_string())?;
+        json["tag_name"].as_str().map(|t| t.trim_start_matches('v').to_string()).ok_or_else(|| "Unexpected answer from the update server.".to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())??;
+    Ok(UpdateInfo { newer: is_newer(&latest, &current), current, latest })
+}
+
+fn now_ms() -> i64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_millis() as i64).unwrap_or(0)
 }
 
 #[tauri::command]
@@ -667,7 +773,10 @@ pub fn run() {
             toggle_dictation,
             set_autostart,
             test_microphone,
-            list_microphones
+            list_microphones,
+            get_totals,
+            export_history,
+            check_update
         ])
         .setup(|app| {
             #[cfg(target_os = "macos")]
@@ -709,6 +818,7 @@ pub fn run() {
                 tray: Mutex::new(None),
                 hud_gen: AtomicU64::new(0),
                 last_inserted: Mutex::new(0),
+                last_text: Mutex::new(String::new()),
                 epoch,
                 voice,
                 last_used: Mutex::new(Instant::now()),
@@ -716,6 +826,7 @@ pub fn run() {
             });
             app.manage(core.clone());
             core.clone().watch_for_idle();
+            core.history.lock().unwrap().prune(settings.history_days, now_ms());
 
             // The HUD and tray are conveniences: if the desktop can't provide them
             // (e.g. no system-tray support on Linux), log it and keep the app running.
@@ -763,4 +874,17 @@ pub fn run() {
                 }
             }
         });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_newer;
+
+    #[test]
+    fn compares_versions_by_number() {
+        assert!(is_newer("0.2.10", "0.2.9"));
+        assert!(is_newer("v0.3.0", "0.2.9"));
+        assert!(!is_newer("0.2.9", "0.2.9"));
+        assert!(!is_newer("0.2.8", "0.2.9"));
+    }
 }

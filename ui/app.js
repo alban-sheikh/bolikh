@@ -3,6 +3,8 @@ const { listen } = window.__TAURI__.event;
 
 let status = null;
 let history = [];
+let totals = { words: 0, dictations: 0, seconds: 0 };
+let histQuery = "";
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, props = {}, ...kids) => {
@@ -126,7 +128,7 @@ function renderDictionary() {
 
 // ---------- History ----------
 async function loadHistory() {
-  history = await invoke("get_history");
+  [history, totals] = await Promise.all([invoke("get_history"), invoke("get_totals")]);
   renderHistory();
   renderStats();
 }
@@ -145,11 +147,19 @@ function renderHistory() {
   const words = history.reduce((n, h) => n + h.text.split(/\s+/).filter(Boolean).length, 0);
   $("#hist-summary").textContent = `${history.length} dictations · ${words.toLocaleString()} words`;
   $("#hist-clear").disabled = !history.length;
+  $("#hist-export").disabled = !history.length;
   if (!history.length) {
     list.append(el("div", { className: "empty", textContent: "Nothing dictated yet." }));
     return;
   }
-  for (const h of history) {
+  const q = histQuery.trim().toLowerCase();
+  const shown = q ? history.filter((h) => h.text.toLowerCase().includes(q)) : history;
+  if (q) $("#hist-summary").textContent = `${shown.length} of ${history.length} dictations match`;
+  if (!shown.length) {
+    list.append(el("div", { className: "empty", textContent: "No dictation contains that." }));
+    return;
+  }
+  for (const h of shown) {
     const copy = el("button", { className: "icon-btn", title: "Copy" }, icon("i-copy"));
     copy.onclick = () => invoke("copy_text", { text: h.text });
     list.append(
@@ -165,12 +175,38 @@ $("#hist-clear").addEventListener("click", async () => {
   await invoke("clear_history");
   loadHistory();
 });
+$("#hist-search").addEventListener("input", (e) => { histQuery = e.target.value; renderHistory(); });
+$("#hist-export").addEventListener("click", async () => {
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = (ts) => { const d = new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const text = history.map((h) => `[${stamp(h.ts)}]\n${h.text}\n`).join("\n");
+  const note = $("#hist-export-note");
+  try {
+    const path = await invoke("export_history", { name: `Bolikh-history-${stamp(Date.now()).slice(0, 10)}.txt`, text });
+    note.textContent = ` · Saved to ${path}`;
+  } catch (e) { note.textContent = ` · ${e}`; }
+});
+
+// ---------- Updates ----------
+$("#update-check").addEventListener("click", async (e) => {
+  const btn = e.currentTarget, note = $("#update-note"), get = $("#update-get");
+  btn.disabled = true; note.textContent = "Checking…"; get.hidden = true;
+  try {
+    const u = await invoke("check_update");
+    note.textContent = u.newer ? `Version ${u.latest} is available. You have ${u.current}.` : `You have the latest version (${u.current}).`;
+    get.hidden = !u.newer;
+  } catch (err) { note.textContent = String(err); }
+  btn.disabled = false;
+});
+$("#update-get").addEventListener("click", () => window.__TAURI__.opener.openUrl("https://bolikh.aazadsoftwaresolutions.in/#download"));
+
 function renderStats() {
-  const words = history.reduce((n, h) => n + h.text.split(/\s+/).filter(Boolean).length, 0);
-  const spoken = history.reduce((n, h) => n + h.duration, 0) / 60;
+  // Lifetime totals: they keep counting when history is cleared, limited or switched off.
+  const words = totals.words;
+  const spoken = totals.seconds / 60;
   const typed = words / 40; // average typing speed ~40 wpm
   $("#st-words").textContent = words.toLocaleString();
-  $("#st-sessions").textContent = history.length.toLocaleString();
+  $("#st-sessions").textContent = totals.dictations.toLocaleString();
   $("#st-saved").textContent = `${Math.max(0, Math.round(typed - spoken))} min`;
 }
 

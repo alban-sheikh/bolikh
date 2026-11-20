@@ -186,6 +186,8 @@ First we test</span></div>
         <div class="card rows">
           <div class="row"><div class="label"><b>Sound effects</b><span>Subtle tones when recording starts and stops.</span></div><label class="switch"><input type="checkbox" data-key="playSounds"><i></i></label></div>
           <div class="row"><div class="label"><b>Keep history</b><span>Stored only on this computer.</span></div><label class="switch"><input type="checkbox" data-key="keepHistory"><i></i></label></div>
+          <div class="row"><div class="label"><b>Delete old history</b><span>Removes dictations from History once they are older than this.</span></div><select data-num-key="historyDays"><option value="0">Never</option><option value="1">After 1 day</option><option value="7">After 7 days</option><option value="30">After 30 days</option></select></div>
+          <div class="row"><div class="label"><b>Indicator at the top</b><span>Show the small recording indicator at the top of the screen instead of the bottom.</span></div><label class="switch"><input type="checkbox" data-key="hudAtTop"><i></i></label></div>
           <div class="row"><div class="label"><b>Free memory when idle</b><span>Unloads the speech model when you haven't dictated for a while. The next dictation then takes a moment longer to appear.</span></div><select data-num-key="idleUnloadMinutes"><option value="0">Never</option><option value="5">After 5 minutes</option><option value="15">After 15 minutes</option><option value="60">After 1 hour</option></select></div>
           <div class="row"><div class="label"><b>Launch at login</b><span>Start Bolikh in the background when you sign in.</span></div><label class="switch"><input type="checkbox" id="autostart"><i></i></label></div>
         </div>
@@ -210,7 +212,8 @@ First we test</span></div>
       <section class="page" id="page-history">
         <h1>History</h1>
         <p class="sub">Your recent dictations. Stored only on this computer.</p>
-        <div class="toolbar"><span id="hist-summary"></span><button class="btn small danger" id="hist-clear">Clear history</button></div>
+        <div class="toolbar"><input type="text" id="hist-search" placeholder="Search your dictations" autocomplete="off" spellcheck="false"><span class="tools"><button class="btn small" id="hist-export" type="button">Export</button><button class="btn small danger" id="hist-clear" type="button">Clear history</button></span></div>
+        <p class="hist-note"><span id="hist-summary"></span><span id="hist-export-note"></span></p>
         <div class="card list" id="hist-list"></div>
       </section>
 
@@ -221,6 +224,7 @@ First we test</span></div>
           <h1>Bolikh</h1>
           <p class="sub" id="about-version"></p>
           <p>Private, offline dictation for every app.<br />Speech recognition runs entirely on this computer.</p>
+          <div class="update"><button class="btn small" id="update-check" type="button">Check for updates</button><span id="update-note">Checks only when you click. Contacts github.com.</span><button class="btn small primary" id="update-get" type="button" hidden>Download</button></div>
           <div class="legal" style="margin-top:22px">
             Speech model: NVIDIA Parakeet TDT 0.6B v3, licensed CC-BY-4.0<br />
             ONNX export by istupakov · Runtime: ONNX Runtime (MIT) · transcribe-rs (MIT)<br />

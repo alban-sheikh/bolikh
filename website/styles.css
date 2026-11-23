@@ -343,3 +343,20 @@ footer .about p{color:var(--muted);max-width:42ch}
 .gs::before{content:"“";color:var(--muted)}.gs::after{content:"”";color:var(--muted)}
 .go{font-family:var(--f-mono);font-size:.8rem;white-space:pre-wrap;tab-size:6;color:var(--acc);overflow-wrap:anywhere}
 @media (max-width:1120px){nav.main{gap:16px}}
+
+/* comparison pages */
+.vs-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:14px;background:var(--surface)}
+.vs{border-collapse:collapse;width:100%;font-size:.94rem;line-height:1.45}
+.vs th,.vs td{text-align:left;vertical-align:top;padding:13px 16px;border-bottom:1px solid var(--rule);min-width:150px}
+.vs tbody tr:last-child th,.vs tbody tr:last-child td{border-bottom:0}
+.vs thead th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap}
+.vs tbody th{font-weight:600;color:var(--ink);min-width:130px}
+.vs td{color:var(--muted)}
+.vs thead th:nth-child(2){color:var(--acc)}
+.vs td:nth-child(2){color:var(--ink);background:color-mix(in srgb,var(--glow) 9%,transparent)}
+.vs-list{display:grid;gap:10px;padding-left:1.1em;color:var(--muted);max-width:60ch}
+.vs-list li::marker{color:var(--acc)}
+.vs-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.vs-card{display:grid;gap:6px;padding:16px 18px;border:1px solid var(--rule);border-radius:14px;background:var(--surface);text-decoration:none;color:var(--muted);font-size:.92rem}
+.vs-card b{color:var(--ink);font-size:1.02rem}
+.vs-card:hover{border-color:var(--muted)}

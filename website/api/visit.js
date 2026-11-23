@@ -3,7 +3,8 @@
 // no IP address, no identifier. Bots and anything that is not a common web browser are ignored.
 const { pipeline, day, isPerson } = require("./_counter");
 
-const PAGES = ["home", "mac", "windows", "linux", "privacy"];
+const PAGES = ["home", "mac", "windows", "linux", "privacy", "compare", "wispr-flow-alternative",
+  "superwhisper-alternative", "macwhisper-alternative", "voiceink-alternative", "handy-alternative"];
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");

@@ -2,7 +2,8 @@
 // GET /api/stats?key=STATS_KEY&format=json → the same numbers as JSON
 // STATS_KEY is a password you choose and set in Vercel → Project → Settings → Environment Variables.
 const { FILES, pipeline, day, redis, BROWSERS } = require("./_counter");
-const PAGES = ["home", "mac", "windows", "linux", "privacy"];
+const PAGES = ["home", "mac", "windows", "linux", "privacy", "compare", "wispr-flow-alternative",
+  "superwhisper-alternative", "macwhisper-alternative", "voiceink-alternative", "handy-alternative"];
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const n = (v) => Number(v || 0);

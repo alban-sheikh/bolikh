@@ -373,7 +373,8 @@ fn drop_hanging_commas(text: &str) -> String {
 const TLD: &str = "com|org|net|in|io|co|ai|dev|app|edu|gov|uk|us|de|fr|es|it|nl|ca|au|me|info|biz|xyz|tech";
 
 /// "google dot com" → google.com, "john at gmail dot com" → john@gmail.com.
-/// "at the rate" works too. "Meet me at google dot com" keeps its "at".
+/// "at the rate" works too, and before a name it makes a mention: "at the rate Yoda" → @Yoda.
+/// "Meet me at google dot com" keeps its "at".
 pub fn spoken_addresses(input: &str) -> String {
     static DOMAIN: Lazy<Regex> = Lazy::new(|| {
         Regex::new(&format!(r"(?i)\b([a-z0-9-]+(?:\s+dot\s+[a-z0-9-]+)*)\s+dot\s+({TLD})\b")).unwrap()
@@ -396,13 +397,30 @@ pub fn spoken_addresses(input: &str) -> String {
     let text = DOMAIN.replace_all(input, |c: &regex::Captures| {
         format!("{}.{}", DOT.replace_all(&c[1], "."), &c[2]).to_lowercase()
     });
-    EMAIL
+    let text = EMAIL
         .replace_all(&text, |c: &regex::Captures| {
             let name = DOT.replace_all(&c[1], ".").to_lowercase();
             if NOT_A_NAME.contains(&name.as_str()) {
                 return c[0].to_string();
             }
             format!("{name}@{}", c[2].to_lowercase())
+        })
+        .into_owned();
+    // "at the rate Yoda" → @Yoda. The everyday phrase ("at the rate of five percent", "at the rate we are
+    // going") is followed by "of", a pronoun or a similar small word, and stays as it is.
+    static MENTION: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"(?i)\bat the rate ([a-z][a-z0-9_'’-]*)").unwrap());
+    const NOT_A_MENTION: [&str; 40] = [
+        "of", "at", "in", "we", "we're", "we’re", "you", "you're", "you’re", "they", "they're", "they’re", "i",
+        "i'm", "i’m", "he", "she", "it", "it's", "it’s", "things", "this", "that", "these", "those", "the", "a",
+        "an", "my", "your", "our", "their", "his", "her", "people", "which", "is", "was", "and", "or",
+    ];
+    MENTION
+        .replace_all(&text, |c: &regex::Captures| {
+            if NOT_A_MENTION.contains(&c[1].to_lowercase().as_str()) {
+                return c[0].to_string();
+            }
+            format!("@{}", &c[1])
         })
         .into_owned()
 }
@@ -685,6 +703,35 @@ pub fn convert_numbers(input: &str) -> String {
             .unwrap()
     });
     static MERIDIEM: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?i)^ ([ap])\.? ?m\b(\.?)").unwrap());
+
+    // The model often writes a time in digits by itself: "3 30 pm", "1015 a.m.", "1.45 pm", "4 p.m.".
+    static DIGIT_TIME: Lazy<Regex> =
+        Lazy::new(|| Regex::new(r"(?i)\b(\d{1,2})(?:[ .:]?(\d{2}))? ?([ap])\.? ?m\b(\.?)").unwrap());
+    let timed = DIGIT_TIME.replace_all(input, |c: &regex::Captures| {
+        let whole = c.get(0).unwrap();
+        let before = input[..whole.start()].chars().last();
+        let rest = &input[whole.end()..];
+        let hour: u64 = c[1].parse().unwrap_or(0);
+        let minute = c.get(2).map(|m| m.as_str());
+        let glued = before.is_some_and(|b| b.is_alphanumeric() || matches!(b, '.' | ',' | ':'));
+        // "…and 3 am I": a bare "am" before "I" is the verb.
+        let verb = whole.as_str().to_lowercase().ends_with(" am") && rest.starts_with(" I");
+        let valid = (1..=12).contains(&hour) && minute.is_none_or(|m| m.parse::<u64>().is_ok_and(|m| m < 60));
+        if glued || verb || !valid {
+            return whole.as_str().to_string();
+        }
+        let mut out = match minute {
+            Some(m) => format!("{hour}:{m}"),
+            None => hour.to_string(),
+        };
+        out.push_str(if c[3].eq_ignore_ascii_case("a") { " AM" } else { " PM" });
+        // "p.m." at the end of a sentence: its last dot is also the full stop.
+        if !c[4].is_empty() && rest.trim_start().chars().next().is_none_or(|ch| ch.is_uppercase()) {
+            out.push('.');
+        }
+        out
+    });
+    let input: &str = &timed;
 
     let joins = |c: char| c.is_alphanumeric() || matches!(c, '\'' | '’');
     // Whole words only: not "one's", not a word glued to a digit or an accented letter.
@@ -1000,6 +1047,13 @@ mod tests {
             ("Meet at three thirty pm.", "Meet at 3:30 PM."),
             ("Call at nine a.m. Then lunch at twelve p.m.", "Call at 9 AM. Then lunch at 12 PM."),
             ("I am twenty and three am I.", "I am 20 and three am I."),
+            ("The meeting is at 3 30 pm tomorrow.", "The meeting is at 3:30 PM tomorrow."),
+            ("The meeting is at 3 30 a.m. tomorrow.", "The meeting is at 3:30 AM tomorrow."),
+            ("Call me at 1015 a.m.", "Call me at 10:15 AM."),
+            ("Lunch is at 1.45 pm and the demo is at 4 p.m.", "Lunch is at 1:45 PM and the demo is at 4 PM."),
+            ("It was 10:05 PM already.", "It was 10:05 PM already."),
+            ("We sold 1,200 pm units and 2026 am not a time.", "We sold 1,200 pm units and 2026 am not a time."),
+            ("At 3 am I woke up, and at 3 am I was tired.", "At 3 am I woke up, and at 3 am I was tired."),
         ]);
     }
 
@@ -1026,6 +1080,12 @@ mod tests {
             ("Meet me at Google dot com.", "Meet me at google.com."),
             ("My email is John.smith at the rate example dot co dot in", "My email is john.smith@example.co.in"),
             ("A period of time, a dash of salt.", "A period of time, a dash of salt."),
+            ("At the rate Yoda, how are you?", "@Yoda, how are you?"),
+            ("Thanks at the rate harsh for the quick review.", "Thanks @harsh for the quick review."),
+            ("Thanks at the Rate Harsh for the review.", "Thanks @Harsh for the review."),
+            ("At the rate we are going, we will finish by Friday.", "At the rate we are going, we will finish by Friday."),
+            ("Prices grew at the rate of 5%.", "Prices grew at the rate of 5%."),
+            ("At the rate things are moving, at the rate I work.", "At the rate things are moving, at the rate I work."),
         ]);
         let mut off = settings();
         off.spoken_symbols = false;
@@ -1113,6 +1173,7 @@ mod tests {
             "see the notes open bracket page two close bracket",
             "he said open quote hello close quote",
             "use hashtag launch",
+            "thanks at the rate Priya",
             "my file underscore name",
             "either slash or",
             "tom ampersand jerry",

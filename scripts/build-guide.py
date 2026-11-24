@@ -50,6 +50,7 @@ GROUPS = [
     ("Symbols",
      "For tags, file names, sums and code.",
      [("use hashtag launch", "use #launch"),
+      ("thanks at the rate Priya", "thanks @Priya"),
       ("my file underscore name", "my file_name"),
       ("either slash or", "either/or"),
       ("tom ampersand jerry", "tom & jerry"),

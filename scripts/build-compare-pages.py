@@ -192,7 +192,7 @@ def head(title, desc, url, crumbs, faq):
          "image": f"{SITE}/og.png", "isAccessibleForFree": True,
          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
          "publisher": {"@type": "Organization", "name": "Aazad Software Solutions",
-                       "url": "https://aazadsoftwaresolutions.in"}},
+                       "url": "https://www.aazadsoftwaresolutions.in"}},
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": n, "item": u} for i, (n, u) in enumerate(crumbs)]},
         {"@type": "FAQPage", "mainEntity": [

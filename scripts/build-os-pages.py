@@ -129,7 +129,7 @@ def page(key):
          "image": f"{SITE}/og.png", "isAccessibleForFree": True,
          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
          "publisher": {"@type": "Organization", "name": "Aazad Software Solutions",
-                       "url": "https://aazadsoftwaresolutions.in"}},
+                       "url": "https://www.aazadsoftwaresolutions.in"}},
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "Bolikh", "item": SITE + "/"},
             {"@type": "ListItem", "position": 2, "name": f"Bolikh for {p['name']}", "item": url}]}]}
